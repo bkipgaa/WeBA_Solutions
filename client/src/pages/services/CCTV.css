@@ -1,0 +1,28 @@
+/* Additional classes for CCTV */
+.solution-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.service-applications {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.02) 0%, rgba(0, 0, 0, 0.05) 100%);
+}
+
+.applications-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.application-card {
+  background: var(--white);
+  padding: 1.5rem;
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.application-card:hover {
+  border-color: var(--primary-red);
+  transform: translateY(-5px);
+}

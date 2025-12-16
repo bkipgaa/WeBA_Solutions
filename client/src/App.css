@@ -1,0 +1,72 @@
+/* App.css - Global Styles for WeBA Solutions */
+
+/* ========== CSS VARIABLES ========== */
+:root {
+  /* Brand Colors */
+  --primary-green: #10B981;
+  --dark-green: #047857;
+  --light-green: #D1FAE5;
+  --primary-red: #DC2626;
+  --dark-red: #B91C1C;
+  --light-red: #FEE2E2;
+  
+  /* Neutral Colors */
+  --obsidian: #111827;
+  --slate: #374151;
+  --steel: #6B7280;
+  --light-gray: #F9FAFB;
+  --white: #FFFFFF;
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+  --gradient-secondary: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
+  --gradient-mixed: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-red) 100%);
+  
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 3rem;
+  --spacing-xl: 4rem;
+  
+  /* Typography */
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Poppins', sans-serif;
+}
+
+/* ========== RESET & BASE STYLES ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-main);
+  color: var(--slate);
+  line-height: 1.6;
+  background-color: var(--light-gray);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* ========== TYPOGRAPHY UTILITIES ========== */
+.text-gradient {
+  background: var(--gradient-mixed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+

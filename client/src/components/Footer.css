@@ -1,0 +1,259 @@
+/* ============================================
+   FOOTER STYLES
+   WeBA Solutions Ltd - Professional Footer
+   ============================================ */
+
+:root {
+  /* Footer specific colors */
+  --footer-bg: #111827;
+  --footer-text: #9CA3AF;
+  --footer-heading: #10B981;
+  --footer-link: #F3F4F6;
+  --footer-link-hover: #10B981;
+  --footer-border: #374151;
+  --footer-accent: #1F2937;
+}
+
+/* ========== FOOTER BASE ========== */
+footer {
+  background: var(--footer-bg);
+  color: var(--footer-text);
+  padding: 3rem 0 1.5rem;
+  border-top: 4px solid var(--footer-heading);
+  position: relative;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* ========== FOOTER CONTENT LAYOUT ========== */
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--footer-border);
+}
+
+/* ========== FOOTER COLUMNS ========== */
+.footer-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-column h3 {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--footer-heading);
+  margin-bottom: 1.25rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.footer-column h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 1.5rem;
+  height: 3px;
+  background: var(--footer-heading);
+  border-radius: 2px;
+}
+
+.footer-column p {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+  color: var(--footer-text);
+}
+
+/* ========== CONTACT INFO IN FOOTER ========== */
+.contactt-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.78rem;
+  margin-top: 0.5rem;
+}
+
+.contactt-info p {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0.5rem 0;
+  font-size: 0.9rem;
+  color: var(--footer-link);
+  transition: color 0.2s ease;
+}
+
+.contactt-info p:hover {
+  color: var(--footer-heading);
+}
+
+/* Email icon specific styling */
+.contactt-info p:first-child::before {
+  content: '📧';
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+/* Phone icon specific styling */
+.contactt-info p:last-child::before {
+  content: '📞';
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+/* ========== FOOTER LINKS ========== */
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.footer-column ul li {
+  margin: 0;
+}
+
+.footer-column ul li a {
+  color: var(--footer-link);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+  display: inline-block;
+  padding: 0.25rem 0;
+}
+
+.footer-column ul li a:hover {
+  color: var(--footer-link-hover);
+}
+
+/* ========== FOOTER BOTTOM ========== */
+.footer-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+  padding-top: 1.5rem;
+}
+
+.footer-bottom p {
+  font-size: 0.8rem;
+  color: var(--footer-text);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.footer-bottom p:first-child {
+  font-weight: 500;
+  color: var(--footer-link);
+}
+
+.footer-bottom p:last-child {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  max-width: 800px;
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+@media (max-width: 1024px) {
+  .footer-content {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  
+  .container {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  footer {
+    padding: 2rem 0 1rem;
+  }
+  
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+  
+  .footer-column {
+    text-align: center;
+  }
+  
+  .footer-column h3::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .contactt-info {
+    align-items: center;
+  }
+  
+  .contactt-info p {
+    justify-content: center;
+  }
+  
+  .footer-bottom {
+    gap: 1rem;
+  }
+  
+  .footer-bottom p:last-child {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  footer {
+    padding: 1.5rem 0 0.75rem;
+  }
+  
+  .container {
+    padding: 0 1rem;
+  }
+  
+  .footer-content {
+    gap: 1.25rem;
+  }
+  
+  .footer-column h3 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .footer-column p,
+  .footer-column ul li a {
+    font-size: 0.85rem;
+  }
+  
+  .contactt-info p {
+    font-size: 0.85rem;
+  }
+}
+
+/* ========== FOCUS STATES FOR ACCESSIBILITY ========== */
+.footer-column ul li a:focus,
+.contactt-info p:focus {
+  outline: 2px solid var(--footer-heading);
+  outline-offset: 1px;
+  border-radius: 1px;
+}
+
+/* ========== COPYRIGHT NOTICE ========== */
+.footer-bottom p:first-child::before {
+  content: '©';
+  margin-right: 0.25rem;
+  color: var(--footer-heading);
+}

@@ -1,0 +1,36 @@
+/* Additional classes for Electrical Works */
+.service-certifications {
+  /* Similar to service-solutions */
+}
+
+.certifications-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.cert-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border-left: 4px solid var(--primary-green);
+  border-right: 4px solid var(--primary-red);
+  box-shadow: var(--shadow-sm);
+}
+
+.service-safety {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(220, 38, 38, 0.05) 100%);
+}
+
+.safety-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.safety-item {
+  background: var(--white);
+  padding: 1.5rem;
+  border-radius: 10px;
+  border-top: 4px solid var(--primary-green);
+}
