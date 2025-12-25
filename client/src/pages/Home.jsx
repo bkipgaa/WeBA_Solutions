@@ -55,7 +55,7 @@ const Home = () => {
         <div className="container">
           <div className="hero-content">
             <div className="hero-badge">
-              <span className="badge-text">⚡ Trusted Since 2025</span>
+              <span className="badge-text">⚡ Trusted Since 2024</span>
             </div>
             <h1 className="hero-title">
               Powering Homes  &{' '}

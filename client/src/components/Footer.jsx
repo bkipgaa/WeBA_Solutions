@@ -8,7 +8,7 @@ const Footer = () => {
       <div className="container">
         <div className="footer-content">
           <div className="footer-column">
-            <h3>WeBA Solutions Ltd</h3>
+            <h3>WeBA Infinity Solutions</h3>
             <p>
               Providing integrated engineering and internet solutions 
               for homes and businesses across the region.

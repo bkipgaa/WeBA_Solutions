@@ -50,6 +50,7 @@ body {
   color: var(--slate);
   
   background-color: var(--light-gray);
+  cursor: pointer;
   
 }
 
