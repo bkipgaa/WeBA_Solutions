@@ -58,8 +58,8 @@ const Home = () => {
               <span className="badge-text">⚡ Trusted Since 2025</span>
             </div>
             <h1 className="hero-title">
-              Powering <span className="text-green">Homes</span> &{' '}
-              <span className="text-red">Businesses</span> with Excellence
+              Powering Homes  &{' '}
+              Businesses with Excellence
             </h1>
             <p className="hero-subtitle">
               WeBA Solutions delivers cutting-edge engineering and internet service 
@@ -67,10 +67,10 @@ const Home = () => {
               installations, we're your trusted partner in technology.
             </p>
             <div className="hero-buttons">
-              <Link to="/service" className="btnn btnn-green">
+              <Link to="/service" className="btn btn-green">
                 Explore Our service →
               </Link>
-              <Link to="/coverage" className="btnn btnn-red">
+              <Link to="/coverage" className="btn btn-red">
                 Check Coverage Areas
               </Link>
             </div>
@@ -78,12 +78,12 @@ const Home = () => {
             {/* Stats Row */}
             <div className="hero-stats">
               <div className="stat-item">
-                <div className="stat-number">2,500+</div>
+                <div className="stat-number">1,000+</div>
                 <div className="stat-label">Happy Clients</div>
               </div>
               <div className="stat-divider"></div>
               <div className="stat-item">
-                <div className="stat-number">15+</div>
+                <div className="stat-number">2+</div>
                 <div className="stat-label">Years Experience</div>
               </div>
               <div className="stat-divider"></div>
@@ -103,10 +103,9 @@ const Home = () => {
 
       {/* service Section */}
       <div className="container">
-        <div className="sectionn-header">
-          <h2 className="sectionn-title">
-            <span className="text-green">Our Core</span>{' '}
-            <span className="text-red">Services</span>
+        <div className="section-header">
+          <h2 className="section-title">
+            Our Core Services
           </h2>
           <p className="section-subtitle">
             Comprehensive engineering and technology solutions tailored to your needs
@@ -120,13 +119,12 @@ const Home = () => {
               to={`/service/${service.id}`}
               className={`service-card ${service.color}-card`}
             >
-              <div className="service-card-header">
-                <span className="service-badge">Service {index + 1}</span>
-              </div>
-              <div className="service1-card-content">
-                <h3>{service.name}</h3>
-                
-              </div>
+              
+            
+              <div className="service-card-content">
+  <h3>{service.name}</h3>
+  <p className="service-description">{service.description}</p>
+</div>
               <div className="service-card-footer">
                 <span className="learn-more">
                   Learn More 
@@ -147,10 +145,10 @@ const Home = () => {
               business or home requirements.
             </p>
             <div className="cta-buttons">
-              <Link to="/support" className="btnn btnn-red">
+              <Link to="/support" className="btn btn-red">
                 Get a Free Quote
               </Link>
-              <Link to="/support" className="btnn btnn-green">
+              <Link to="/support" className="btn btn-green">
                 Contact Our Experts
               </Link>
             </div>
@@ -158,32 +156,32 @@ const Home = () => {
         </div>
 
         {/* Why Choose Us Section */}
-        <div className="features1-section">
-          <div className="sectionn-header">
-            <h2 className="sectionn-title">
-              Why <span className="text-green">Choose</span>{' '}
-              <span className="text-red">WeBA Solutions</span>
+        <div className="feature-section">
+          <div className="section-header">
+            <h2 className="section-title">
+              Why Choose
+        WeBA Solutions
             </h2>
           </div>
           
-          <div className="features1-grid">
-            <div className="feature1-card">
-              <div className="feature1-icon green-bg">🏆</div>
+          <div className="feature-grid">
+            <div className="feature-card">
+              <div className="feature-icon green-bg">🏆</div>
               <h3>Expertise & Experience</h3>
               <p>15+ years of proven excellence in engineering and internet service</p>
             </div>
-            <div className="feature1-card">
-              <div className="feature1-icon red-bg">⚡</div>
+            <div className="feature-card">
+              <div className="feature-icon red-bg">⚡</div>
               <h3>Quick Response</h3>
               <p>24/7 support with average response time under 30 minutes</p>
             </div>
-            <div className="feature1-card">
-              <div className="feature1-icon green-bg">🛡️</div>
+            <div className="feature-card">
+              <div className="feature-icon green-bg">🛡️</div>
               <h3>Quality Guarantee</h3>
               <p>All installations come with a comprehensive warranty</p>
             </div>
-            <div className="feature1-card">
-              <div className="feature1-icon red-bg">💼</div>
+            <div className="feature-card">
+              <div className="feature-icon red-bg">💼</div>
               <h3>Professional Team</h3>
               <p>Certified engineers and technicians for all service</p>
             </div>
@@ -192,8 +190,8 @@ const Home = () => {
 
         {/* Quick Links */}
         <div className="quick-links-section">
-          <div className="sectionn-header">
-            <h2 className="sectionn-title">Quick Access</h2>
+          <div className="section-header">
+            <h2 className="section-title">Quick Access</h2>
           </div>
           
           <div className="links-grid">
@@ -236,13 +234,10 @@ const Home = () => {
         </div>
 
         {/* Call to Action */}
-<div className="final-cta-contact-section">
-  <div className="final-cta-contact-container">
-    <h1 className="final-cta-contact-title">
-      <span className="final-cta-contact-green">Ready To </span> 
-      <span className="final-cta-contact-red">Transform </span>  
-      <span className="final-cta-contact-green"> Your </span>  
-      <span className="final-cta-contact-red">Space </span>
+<div className="final-cta-section">
+  <div className="final-cta-container">
+    <h1 className="final-cta--title">
+      Ready To Transform  Your Space
     </h1>
     
     <p>
@@ -250,8 +245,8 @@ const Home = () => {
       for our service.
     </p>
     
-    <div className="final-cta-contact-info">
-      <div className="final-cta-contact-item">
+    <div className="final-cta-info">
+      <div className="final-cta-item">
         <span className="final-cta-icon">📞</span>
         <div>
           <div className="final-cta-label">Call Us</div>
@@ -259,7 +254,7 @@ const Home = () => {
         </div>
       </div>
       
-      <div className="final-cta-contact-item">
+      <div className="final-cta-item">
         <span className="final-cta-icon">✉️</span>
         <div>
           <div className="final-cta-label">Email Us</div>
@@ -267,7 +262,7 @@ const Home = () => {
         </div>
       </div>
       
-      <div className="final-cta-contact-item">
+      <div className="final-cta-item">
         <span className="final-cta-icon">💬</span>
         <div>
           <div className="final-cta-label">WhatsApp</div>

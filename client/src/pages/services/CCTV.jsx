@@ -25,21 +25,26 @@ const CCTVInstallation = () => {
     <div className="service-page">
       <div className="container">
         <div className="service-header">
-          <Link to="/" className="back-link">← Back to Home</Link>
-          <h1>CCTV Security Systems</h1>
-          <p className="service-tagline">Advanced surveillance solutions for complete peace of mind</p>
-          <div className="service-icon">📹</div>
-        </div>
+  <Link to="/" className="back-link">← Back to Home</Link>
+  <div className="header-content">
+    <div className="header-icon">
+      📹
+    </div>
+    <h1>CCTV Security Systems</h1>
+    <p className="service-tagline">Advanced surveillance solutions for complete peace of mind</p>
+  </div>
+</div>
 
-        <div className="service-content">
-          <div className="service-description">
-            <h2>Overview</h2>
-            <p>
-              Protect your property with our professional CCTV installation services. 
-              We provide custom-designed surveillance systems that offer real-time monitoring, 
-              remote access, and advanced security features for both residential and commercial clients.
-            </p>
-          </div>
+<div className="service-content">
+  <div className="intro-section">
+    <h2>Overview</h2>
+    <p className="intro-text">
+      Protect your property with our professional CCTV installation services. 
+      We provide custom-designed surveillance systems that offer real-time monitoring, 
+      remote access, and advanced security features for both residential and commercial clients.
+    </p>
+  </div>
+  
 
           <div className="service-solutions">
             <h2>Our CCTV Solutions</h2>

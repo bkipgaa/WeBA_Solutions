@@ -1,36 +1,472 @@
-/* Additional classes for Electrical Works */
-.service-certifications {
-  /* Similar to service-solutions */
+/* ========== ELECTRICAL WORKS PAGE STYLES ========== */
+
+/* 1. GLOBAL CONTAINER */
+.service-page .container {
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  width: 100% !important;
 }
 
-.certifications-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
+/* 2. PAGE HEADER SECTION */
+.service-page .service-header {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(239, 68, 68, 0.05)) !important;
+  border-radius: 0 0 20px 20px !important;
+  padding: 2.5rem 1.5rem !important;
+  margin-bottom: 2rem !important;
+  text-align: center !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border-bottom: 3px solid transparent !important;
+  border-image: linear-gradient(90deg, #ef4444, #10b981) 1 !important;
 }
 
-.cert-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
-  border-radius: 12px;
-  padding: 1.5rem;
-  border-left: 4px solid var(--primary-green);
-  border-right: 4px solid var(--primary-red);
-  box-shadow: var(--shadow-sm);
+.service-page .back-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.4rem !important;
+  color: #6b7280 !important;
+  text-decoration: none !important;
+  font-weight: 500 !important;
+  margin-bottom: 1.5rem !important;
+  transition: color 0.2s ease !important;
+  cursor: pointer !important;
 }
 
-.service-safety {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(220, 38, 38, 0.05) 100%);
+.service-page .back-link:hover {
+  color: #ef4444 !important;
 }
 
-.safety-features {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
+.service-page .service-header h1 {
+  font-size: 2.5rem !important;
+  font-weight: 800 !important;
+  line-height: 1.2 !important;
+  margin: 0 0 1rem !important;
+  color: #111827 !important;
+  cursor: pointer !important;
+  transition: color 0.2s ease !important;
 }
 
-.safety-item {
-  background: var(--white);
-  padding: 1.5rem;
-  border-radius: 10px;
-  border-top: 4px solid var(--primary-green);
+.service-page .service-header h1:hover {
+  color: #ef4444 !important;
+}
+
+.service-page .service-tagline {
+  font-size: 1.125rem !important;
+  color: #111827 !important;
+  font-weight: 400 !important;
+  max-width: 600px !important;
+  margin: 0 auto 2rem !important;
+  line-height: 1.7 !important;
+}
+
+.service-page .service-icon {
+  font-size: 3rem !important;
+  margin-top: 1rem !important;
+}
+
+/* 3. SERVICE CONTENT */
+.service-page .service-content {
+  padding: 0 1.5rem !important;
+}
+
+/* Service Description */
+.service-page .service-description {
+  margin: 3rem 0 !important;
+  text-align: center !important;
+}
+
+.service-page .service-description h2 {
+  font-size: 2.25rem !important;
+  font-weight: 800 !important;
+  margin-bottom: 1.5rem !important;
+  color: #111827 !important;
+  cursor: pointer !important;
+  transition: color 0.2s ease !important;
+}
+
+.service-page .service-description h2:hover {
+  color: #ef4444 !important;
+}
+
+.service-page .service-description p {
+  font-size: 1.125rem !important;
+  color: #111827 !important;
+  font-weight: 400 !important;
+  max-width: 800px !important;
+  margin: 0 auto !important;
+  line-height: 1.7 !important;
+}
+
+/* 4. SERVICE FEATURES */
+.service-page .service-features {
+  margin: 3rem 0 !important;
+}
+
+.service-page .service-features h2 {
+  font-size: 2.25rem !important;
+  font-weight: 800 !important;
+  text-align: center !important;
+  margin-bottom: 2.5rem !important;
+  color: #111827 !important;
+  cursor: pointer !important;
+  transition: color 0.2s ease !important;
+}
+
+.service-page .service-features h2:hover {
+  color: #ef4444 !important;
+}
+
+.service-page .features-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 1rem !important;
+  margin: 1rem 0 !important;
+}
+
+.service-page .feature-item {
+  background: white !important;
+  border-radius: 12px !important;
+  padding: 1.5rem !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 1rem !important;
+  border: 2px solid #e5e7eb !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+}
+
+.service-page .feature-item:hover {
+  border-color: #10b981 !important;
+  transform: translateY(-5px) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.service-page .feature-check {
+  color: #10b981 !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  flex-shrink: 0 !important;
+  margin-top: 0.125rem !important;
+}
+
+.service-page .feature-item span {
+  font-size: 1rem !important;
+  color: #111827 !important;
+  font-weight: 500 !important;
+  line-height: 1.5 !important;
+}
+
+/* 5. CERTIFICATIONS SECTION */
+.service-page .service-certifications {
+  margin: 3rem 0 !important;
+}
+
+.service-page .service-certifications h2 {
+  font-size: 2.25rem !important;
+  font-weight: 800 !important;
+  text-align: center !important;
+  margin-bottom: 2.5rem !important;
+  color: #111827 !important;
+  cursor: pointer !important;
+  transition: color 0.2s ease !important;
+}
+
+.service-page .service-certifications h2:hover {
+  color: #ef4444 !important;
+}
+
+.service-page .certifications-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 1.5rem !important;
+  margin: 1.5rem 0 !important;
+}
+
+.service-page .cert-card {
+  background: white !important;
+  border-radius: 12px !important;
+  padding: 2rem 1.5rem !important;
+  text-align: center !important;
+  border: 2px solid #e5e7eb !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  min-height: 180px !important;
+}
+
+.service-page .cert-card:hover {
+  border-color: #10b981 !important;
+  transform: translateY(-5px) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.service-page .cert-card h3 {
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 1rem !important;
+  color: #111827 !important;
+  transition: color 0.2s ease !important;
+}
+
+.service-page .cert-card:hover h3 {
+  color: #ef4444 !important;
+}
+
+.service-page .cert-card p {
+  font-size: 0.95rem !important;
+  color: #6b7280 !important;
+  font-weight: 400 !important;
+  line-height: 1.6 !important;
+  margin: 0 !important;
+  flex-grow: 1 !important;
+}
+
+/* 6. SAFETY SECTION */
+.service-page .service-safety {
+  margin: 3rem 0 !important;
+}
+
+.service-page .service-safety h2 {
+  font-size: 2.25rem !important;
+  font-weight: 800 !important;
+  text-align: center !important;
+  margin-bottom: 2.5rem !important;
+  color: #111827 !important;
+  cursor: pointer !important;
+  transition: color 0.2s ease !important;
+}
+
+.service-page .service-safety h2:hover {
+  color: #ef4444 !important;
+}
+
+.service-page .safety-features {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 1.5rem !important;
+  margin: 1.5rem 0 !important;
+}
+
+.service-page .safety-item {
+  background: white !important;
+  border-radius: 12px !important;
+  padding: 2rem 1.5rem !important;
+  text-align: center !important;
+  border: 2px solid #e5e7eb !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  min-height: 200px !important;
+}
+
+.service-page .safety-item:hover {
+  border-color: #10b981 !important;
+  transform: translateY(-5px) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.service-page .safety-item h3 {
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 1rem !important;
+  color: #111827 !important;
+  transition: color 0.2s ease !important;
+}
+
+.service-page .safety-item:hover h3 {
+  color: #ef4444 !important;
+}
+
+.service-page .safety-item p {
+  font-size: 0.95rem !important;
+  color: #6b7280 !important;
+  font-weight: 400 !important;
+  line-height: 1.6 !important;
+  margin: 0 !important;
+  flex-grow: 1 !important;
+}
+
+/* 7. CTA SECTION */
+.service-page .service-cta {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(239, 68, 68, 0.05)) !important;
+  border-radius: 20px !important;
+  padding: 3rem 2rem !important;
+  margin: 3rem 0 !important;
+  text-align: center !important;
+  border: 1px solid rgba(229, 231, 235, 0.5) !important;
+}
+
+.service-page .service-cta h2 {
+  font-size: 2rem !important;
+  font-weight: 800 !important;
+  margin-bottom: 1rem !important;
+  color: #111827 !important;
+  cursor: pointer !important;
+  transition: color 0.2s ease !important;
+}
+
+.service-page .service-cta h2:hover {
+  color: #ef4444 !important;
+}
+
+.service-page .service-cta p {
+  font-size: 1.125rem !important;
+  color: #111827 !important;
+  font-weight: 400 !important;
+  max-width: 600px !important;
+  margin: 0 auto 2rem auto !important;
+  line-height: 1.7 !important;
+}
+
+.service-page .cta-buttons {
+  display: flex !important;
+  gap: 1.5rem !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin-bottom: 1rem !important;
+  flex-wrap: wrap !important;
+}
+
+.service-page .btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+  padding: 0.875rem 2rem !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  border-radius: 10px !important;
+  border: 2px solid transparent !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  min-width: 180px !important;
+  text-align: center !important;
+}
+
+.service-page .btn-primary {
+  background: linear-gradient(90deg, #ef4444, #10b981) !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
+}
+
+.service-page .btn-primary:hover {
+  background: linear-gradient(135deg, #059669, #047857) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4) !important;
+}
+
+.service-page .btn:not(.btn-primary) {
+  background: linear-gradient(90deg, #10b981, #ef4444) !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3) !important;
+}
+
+.service-page .btn:not(.btn-primary):hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4) !important;
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+
+/* For tablets and smaller desktops */
+@media (max-width: 1024px) {
+  .service-page .service-header h1,
+  .service-page .service-description h2,
+  .service-page .service-features h2,
+  .service-page .service-certifications h2,
+  .service-page .service-safety h2,
+  .service-page .service-cta h2 {
+    font-size: 1.75rem !important;
+  }
+  
+  .service-page .features-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .service-page .certifications-grid,
+  .service-page .safety-features {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* For tablets */
+@media (max-width: 768px) {
+  .service-page .container {
+    padding: 0 !important;
+  }
+  
+  .service-page .service-header {
+    padding: 2rem 1rem !important;
+    border-radius: 0 0 16px 16px !important;
+  }
+  
+  .service-page .service-header h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  .service-page .service-tagline,
+  .service-page .service-description p,
+  .service-page .service-cta p {
+    font-size: 1rem !important;
+  }
+  
+  .service-page .service-content {
+    padding: 0 1rem !important;
+  }
+  
+  .service-page .certifications-grid,
+  .service-page .safety-features {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .service-page .cta-buttons {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  
+  .service-page .btn {
+    width: 100% !important;
+    max-width: 280px !important;
+  }
+}
+
+/* For mobile phones */
+@media (max-width: 480px) {
+  .service-page .service-header h1 {
+    font-size: 1.25rem !important;
+  }
+  
+  .service-page .service-icon {
+    font-size: 2.5rem !important;
+  }
+  
+  .service-page .service-description h2,
+  .service-page .service-features h2,
+  .service-page .service-certifications h2,
+  .service-page .service-safety h2 {
+    font-size: 1.5rem !important;
+  }
+  
+  .service-page .feature-item {
+    padding: 1.25rem !important;
+  }
+  
+  .service-page .cert-card,
+  .service-page .safety-item {
+    padding: 1.5rem 1rem !important;
+  }
+  
+  .service-page .service-cta {
+    padding: 2rem 1.5rem !important;
+  }
+  
+  .service-page .service-cta h2 {
+    font-size: 1.5rem !important;
+  }
 }

@@ -15,15 +15,18 @@ const Hotspot = () => {
 
   const hotspotPackages = [
     { 
+      name: 'Diamond Day', 
+      speed: '8Mbps',
+      price: 'Ksh 50.00', 
+      duration: '1 Day', 
+      popular: false,
+      tag: 'Full Day'
+    },
+    { 
       name: 'Bronze Pass', 
       speed: '4Mbps',
       price: 'Ksh 10.00', 
-      originalPrice: 'Ksh 15.00',
-      speedDetails: '5M/5M', 
       duration: '1 Hour', 
-      type: 'Hotspot', 
-      devices: '1', 
-      enabled: true,
       popular: false,
       tag: 'Quick Access'
     },
@@ -31,12 +34,7 @@ const Hotspot = () => {
       name: 'Silver Boost', 
       speed: '4Mbps',
       price: 'Ksh 20.00', 
-      originalPrice: 'Ksh 25.00',
-      speedDetails: '5M/4M', 
       duration: '3 Hours', 
-      type: 'Hotspot', 
-      devices: '1', 
-      enabled: true,
       popular: false,
       tag: 'Best Seller'
     },
@@ -44,12 +42,7 @@ const Hotspot = () => {
       name: 'Gold Access', 
       speed: '5Mbps',
       price: 'Ksh 30.00', 
-      originalPrice: 'Ksh 35.00',
-      speedDetails: '5M/4M', 
       duration: '6 Hours', 
-      type: 'Hotspot', 
-      devices: '1', 
-      enabled: true,
       popular: true,
       tag: 'Most Popular'
     },
@@ -57,38 +50,15 @@ const Hotspot = () => {
       name: 'Platinum Surf', 
       speed: '5Mbps',
       price: 'Ksh 40.00', 
-      originalPrice: 'Ksh 45.00',
-      speedDetails: '5M/4M', 
       duration: '12 Hours', 
-      type: 'Hotspot', 
-      devices: '1', 
-      enabled: true,
       popular: false,
       tag: 'Extended Use'
-    },
-    { 
-      name: 'Diamond Day', 
-      speed: '8Mbps',
-      price: 'Ksh 50.00', 
-      originalPrice: 'Ksh 60.00',
-      speedDetails: '4M/4M', 
-      duration: '1 Day', 
-      type: 'Hotspot', 
-      devices: '1', 
-      enabled: true,
-      popular: false,
-      tag: 'Full Day'
     },
     { 
       name: 'Triple Ruby', 
       speed: '8Mbps',
       price: 'Ksh 100.00', 
-      originalPrice: 'Ksh 120.00',
-      speedDetails: '5M/5M', 
       duration: '3 Days', 
-      type: 'Hotspot', 
-      devices: '1', 
-      enabled: true,
       popular: true,
       tag: 'Value Pack'
     },
@@ -96,12 +66,7 @@ const Hotspot = () => {
       name: 'Seven Days', 
       speed: '10Mbps',
       price: 'Ksh 150.00', 
-      originalPrice: 'Ksh 180.00',
-      speedDetails: '6M/6M', 
       duration: '7 Days', 
-      type: 'Hotspot', 
-      devices: '1', 
-      enabled: true,
       popular: false,
       tag: 'Weekly Plan'
     },
@@ -109,12 +74,7 @@ const Hotspot = () => {
       name: '14 Days - 2 Devices', 
       speed: '10Mbps',
       price: 'Ksh 300.00', 
-      originalPrice: 'Ksh 350.00',
-      speedDetails: '5M/5M', 
       duration: '14 Days', 
-      type: 'Hotspot', 
-      devices: '2', 
-      enabled: true,
       popular: true,
       tag: 'Multi-Device'
     },
@@ -122,12 +82,7 @@ const Hotspot = () => {
       name: '21 Days Package', 
       speed: '10Mbps',
       price: 'Ksh 250.00', 
-      originalPrice: 'Ksh 300.00',
-      speedDetails: '5M/5M', 
       duration: '21 Days', 
-      type: 'Hotspot', 
-      devices: '1', 
-      enabled: true,
       popular: false,
       tag: 'Long Term'
     },
@@ -135,12 +90,7 @@ const Hotspot = () => {
       name: 'One Month - 2 Users', 
       speed: '10Mbps',
       price: 'Ksh 500.00', 
-      originalPrice: 'Ksh 600.00',
-      speedDetails: '5M/5M', 
       duration: '1 Month', 
-      type: 'Hotspot', 
-      devices: '2', 
-      enabled: true,
       popular: true,
       tag: 'Premium'
     }
@@ -208,41 +158,30 @@ const Hotspot = () => {
               {hotspotPackages.map((pkg, index) => (
                 <div 
                   key={index} 
-                  className={`package-card ${pkg.popular ? 'popular' : ''} ${index === 2 ? 'featured' : ''}`}
+                  className={`package-card ${pkg.popular ? 'popular' : ''}`}
                 >
                   {pkg.popular && <div className="popular-badge">🔥 Popular</div>}
                   
-                  
-                  <div className="package-header">
+                  <div className="package-content">
                     <h3 className="package-name">{pkg.name}</h3>
-                    <div className="package-speed">
-                      <Zap size={10} />
-                      <span>{pkg.speed}</span>
-                    </div>
-                  </div>
-                  <div className="package-price">
-                    <span className="current-price">{pkg.price}</span>
-                    {pkg.originalPrice && (
-                      <span className="original-price">{pkg.originalPrice}</span>
-                    )}
-                  </div>
-
-                  <div className="package-features">
-                    <div className="feature-item">
-                      <Clock size={18} />
-                      <span>Duration: <strong>{pkg.duration}</strong></span>
+                    
+                    <div className="package-details">
+                      <div className="package-speed">
+                        <Zap size={14} />
+                        <span>{pkg.speed}</span>
+                      </div>
+                      
+                      <div className="package-duration">
+                        <Clock size={14} />
+                        <span>{pkg.duration}</span>
+                      </div>
                     </div>
                     
-                   
-                  </div>
-
-                  <div className="package-cta">
-                    <button className="subscribee-btn">
-                      Get Started
-                    </button>
-                    <button className="detailss-btn">
-                      View Details
-                    </button>
+                    <div className="package-price">
+                      <span className="current-price">{pkg.price}</span>
+                    </div>
+                    
+                    {/* REMOVED Get Started button */}
                   </div>
                 </div>
               ))}
@@ -255,7 +194,7 @@ const Hotspot = () => {
             <div className="features-grid">
               {features.map((feature, index) => (
                 <div key={index} className="feature-card">
-                  <CheckCircle size={24} className="feature-icon" />
+                  <CheckCircle size={20} className="feature-icon" />
                   <span>{feature}</span>
                 </div>
               ))}
@@ -287,7 +226,7 @@ const Hotspot = () => {
               
               <div className="cta-buttons">
                 <button className="btn btn-primary">
-                  <Wifi size={20} />
+                  <Wifi size={18} />
                   <span>Browse All Packages</span>
                 </button>
                 <button className="btn btn-secondary">

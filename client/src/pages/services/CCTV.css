@@ -1,28 +1,500 @@
-/* Additional classes for CCTV */
-.solution-icon {
-  font-size: 2rem;
-  margin-bottom: 1rem;
+/* ========== CCTV PAGE STYLES ========== */
+
+/* 1. GLOBAL CONTAINER */
+.service-page .container {
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  width: 100% !important;
 }
 
-.service-applications {
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.02) 0%, rgba(0, 0, 0, 0.05) 100%);
+/* 2. PAGE HEADER SECTION - Fixed structure */
+.service-page .service-header {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(239, 68, 68, 0.05)) !important;
+  border-radius: 0 0 20px 20px !important;
+  padding: 2.5rem 1.5rem !important;
+  margin-bottom: 2rem !important;
+  text-align: center !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border-bottom: 3px solid transparent !important;
+  border-image: linear-gradient(90deg, #ef4444, #10b981) 1 !important;
 }
 
-.applications-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
+.service-page .back-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.4rem !important;
+  color: #6b7280 !important;
+  text-decoration: none !important;
+  font-weight: 500 !important;
+  margin-bottom: 1.5rem !important;
+  transition: color 0.2s ease !important;
+  cursor: pointer !important;
 }
 
-.application-card {
-  background: var(--white);
-  padding: 1.5rem;
-  border-radius: 10px;
-  border: 2px solid rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+.service-page .back-link:hover {
+  color: #ef4444 !important;
 }
 
-.application-card:hover {
-  border-color: var(--primary-red);
-  transform: translateY(-5px);
+/* Header icon - Consistent with other pages */
+.service-page .header-content .header-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 80px !important;
+  height: 80px !important;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(239, 68, 68, 0.1)) !important;
+  border-radius: 20px !important;
+  margin: 0 auto 1.5rem !important;
+  border: 2px solid rgba(16, 185, 129, 0.2) !important;
+  font-size: 2rem !important;
+}
+
+.service-page .header-content h1 {
+  font-size: 2.5rem !important;
+  font-weight: 800 !important;
+  line-height: 1.2 !important;
+  margin: 0 0 1rem !important;
+  color: #111827 !important;
+  cursor: pointer !important;
+  transition: color 0.2s ease !important;
+}
+
+.service-page .header-content h1:hover {
+  color: #ef4444 !important;
+}
+
+.service-page .service-tagline {
+  font-size: 1.125rem !important;
+  color: #111827 !important;
+  font-weight: 400 !important;
+  max-width: 600px !important;
+  margin: 0 auto 2rem !important;
+  line-height: 1.7 !important;
+}
+
+/* 3. INTRODUCTION SECTION - Consistent with other pages */
+.service-page .intro-section {
+  text-align: center !important;
+  margin: 3rem 0 !important;
+  padding: 0 1.5rem !important;
+}
+
+.service-page .intro-section h2 {
+  font-size: 2.25rem !important;
+  font-weight: 800 !important;
+  margin-bottom: 1.5rem !important;
+  color: #111827 !important;
+  cursor: pointer !important;
+  transition: color 0.2s ease !important;
+}
+
+.service-page .intro-section h2:hover {
+  color: #ef4444 !important;
+}
+
+.service-page .intro-text {
+  font-size: 1.125rem !important;
+  color: #111827 !important;
+  font-weight: 400 !important;
+  max-width: 800px !important;
+  margin: 0 auto !important;
+  line-height: 1.7 !important;
+}
+
+/* 4. SOLUTIONS SECTION */
+.service-page .service-solutions {
+  margin: 3rem 0 !important;
+}
+
+.service-page .service-solutions h2 {
+  font-size: 2.25rem !important;
+  font-weight: 800 !important;
+  text-align: center !important;
+  margin-bottom: 2.5rem !important;
+  color: #111827 !important;
+  cursor: pointer !important;
+  transition: color 0.2s ease !important;
+}
+
+.service-page .service-solutions h2:hover {
+  color: #ef4444 !important;
+}
+
+.service-page .solutions-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 1.5rem !important;
+  margin: 1.5rem 0 !important;
+}
+
+.service-page .solution-card {
+  background: white !important;
+  border-radius: 12px !important;
+  padding: 2rem 1.5rem !important;
+  text-align: center !important;
+  border: 2px solid #e5e7eb !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  min-height: 200px !important;
+}
+
+.service-page .solution-card:hover {
+  border-color: #10b981 !important;
+  transform: translateY(-5px) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.service-page .solution-card .solution-icon {
+  font-size: 2.5rem !important;
+  margin-bottom: 1.5rem !important;
+  display: inline-block !important;
+  transition: transform 0.3s ease !important;
+}
+
+.service-page .solution-card:hover .solution-icon {
+  transform: scale(1.1) !important;
+}
+
+.service-page .solution-card h3 {
+  font-size: 1.125rem !important;
+  font-weight: 700 !important;
+  margin: 0 !important;
+  color: #111827 !important;
+  line-height: 1.4 !important;
+  transition: color 0.2s ease !important;
+}
+
+.service-page .solution-card:hover h3 {
+  color: #ef4444 !important;
+}
+
+/* 5. APPLICATIONS SECTION */
+.service-page .service-applications {
+  margin: 3rem 0 !important;
+}
+
+.service-page .service-applications h2 {
+  font-size: 2.25rem !important;
+  font-weight: 800 !important;
+  text-align: center !important;
+  margin-bottom: 2.5rem !important;
+  color: #111827 !important;
+  cursor: pointer !important;
+  transition: color 0.2s ease !important;
+}
+
+.service-page .service-applications h2:hover {
+  color: #ef4444 !important;
+}
+
+.service-page .applications-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 1.5rem !important;
+  margin: 1.5rem 0 !important;
+}
+
+.service-page .application-card {
+  background: white !important;
+  border-radius: 12px !important;
+  padding: 2rem 1.5rem !important;
+  text-align: center !important;
+  border: 2px solid #e5e7eb !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  min-height: 200px !important;
+}
+
+.service-page .application-card:hover {
+  border-color: #10b981 !important;
+  transform: translateY(-5px) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.service-page .application-card h3 {
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 1rem !important;
+  color: #111827 !important;
+  transition: color 0.2s ease !important;
+}
+
+.service-page .application-card:hover h3 {
+  color: #ef4444 !important;
+}
+
+.service-page .application-card p {
+  font-size: 0.95rem !important;
+  color: #6b7280 !important;
+  font-weight: 400 !important;
+  line-height: 1.6 !important;
+  margin: 0 !important;
+  flex-grow: 1 !important;
+}
+
+/* 6. BENEFITS SECTION */
+.service-page .service-benefits {
+  margin: 3rem 0 !important;
+}
+
+.service-page .service-benefits h2 {
+  font-size: 2.25rem !important;
+  font-weight: 800 !important;
+  text-align: center !important;
+  margin-bottom: 2.5rem !important;
+  color: #111827 !important;
+  cursor: pointer !important;
+  transition: color 0.2s ease !important;
+}
+
+.service-page .service-benefits h2:hover {
+  color: #ef4444 !important;
+}
+
+.service-page .benefits-list {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 1.5rem !important;
+  margin: 1.5rem 0 !important;
+}
+
+.service-page .benefit {
+  background: white !important;
+  border-radius: 12px !important;
+  padding: 2rem 1.5rem !important;
+  text-align: center !important;
+  border: 2px solid #e5e7eb !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  min-height: 200px !important;
+}
+
+.service-page .benefit:hover {
+  border-color: #10b981 !important;
+  transform: translateY(-5px) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.service-page .benefit h3 {
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 1rem !important;
+  color: #111827 !important;
+  transition: color 0.2s ease !important;
+}
+
+.service-page .benefit:hover h3 {
+  color: #ef4444 !important;
+}
+
+.service-page .benefit p {
+  font-size: 0.95rem !important;
+  color: #6b7280 !important;
+  font-weight: 400 !important;
+  line-height: 1.6 !important;
+  margin: 0 !important;
+  flex-grow: 1 !important;
+}
+
+/* 7. CTA SECTION */
+.service-page .service-cta {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(239, 68, 68, 0.05)) !important;
+  border-radius: 20px !important;
+  padding: 3rem 2rem !important;
+  margin: 3rem 0 !important;
+  text-align: center !important;
+  border: 1px solid rgba(229, 231, 235, 0.5) !important;
+}
+
+.service-page .service-cta h2 {
+  font-size: 2rem !important;
+  font-weight: 800 !important;
+  margin-bottom: 1rem !important;
+  color: #111827 !important;
+  cursor: pointer !important;
+  transition: color 0.2s ease !important;
+}
+
+.service-page .service-cta h2:hover {
+  color: #ef4444 !important;
+}
+
+.service-page .service-cta p {
+  font-size: 1.125rem !important;
+  color: #111827 !important;
+  font-weight: 400 !important;
+  max-width: 600px !important;
+  margin: 0 auto 2rem auto !important;
+  line-height: 1.7 !important;
+}
+
+.service-page .cta-buttons {
+  display: flex !important;
+  gap: 1.5rem !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin-bottom: 1rem !important;
+  flex-wrap: wrap !important;
+}
+
+.service-page .btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+  padding: 0.875rem 2rem !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  border-radius: 10px !important;
+  border: 2px solid transparent !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  min-width: 180px !important;
+  text-align: center !important;
+}
+
+.service-page .btn-primary {
+  background: linear-gradient(90deg, #ef4444, #10b981) !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
+}
+
+.service-page .btn-primary:hover {
+  background: linear-gradient(135deg, #059669, #047857) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4) !important;
+}
+
+.service-page .btn:not(.btn-primary) {
+  background: linear-gradient(90deg, #10b981, #ef4444) !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3) !important;
+}
+
+.service-page .btn:not(.btn-primary):hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4) !important;
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+
+/* For tablets and smaller desktops */
+@media (max-width: 1024px) {
+  .service-page .header-content h1,
+  .service-page .intro-section h2,
+  .service-page .service-solutions h2,
+  .service-page .service-applications h2,
+  .service-page .service-benefits h2,
+  .service-page .service-cta h2 {
+    font-size: 1.75rem !important;
+  }
+  
+  .service-page .solutions-grid,
+  .service-page .applications-grid,
+  .service-page .benefits-list {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* For tablets */
+@media (max-width: 768px) {
+  .service-page .container {
+    padding: 0 !important;
+  }
+  
+  .service-page .service-header {
+    padding: 2rem 1rem !important;
+    border-radius: 0 0 16px 16px !important;
+  }
+  
+  .service-page .header-content h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  .service-page .service-tagline,
+  .service-page .intro-text,
+  .service-page .service-cta p {
+    font-size: 1rem !important;
+  }
+  
+  .service-page .service-content {
+    padding: 0 1rem !important;
+  }
+  
+  .service-page .solutions-grid,
+  .service-page .applications-grid,
+  .service-page .benefits-list {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .service-page .cta-buttons {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  
+  .service-page .btn {
+    width: 100% !important;
+    max-width: 280px !important;
+  }
+}
+
+/* For mobile phones */
+@media (max-width: 480px) {
+  .service-page .header-content h1 {
+    font-size: 1.25rem !important;
+  }
+  
+  .service-page .header-content .header-icon {
+    width: 60px !important;
+    height: 60px !important;
+    font-size: 1.5rem !important;
+  }
+  
+  .service-page .intro-section h2,
+  .service-page .service-solutions h2,
+  .service-page .service-applications h2,
+  .service-page .service-benefits h2 {
+    font-size: 1.5rem !important;
+  }
+  
+  .service-page .solution-card,
+  .service-page .application-card,
+  .service-page .benefit {
+    padding: 1.5rem 1rem !important;
+    min-height: 180px !important;
+  }
+  
+  .service-page .solution-card .solution-icon {
+    font-size: 2rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .service-page .solution-card h3 {
+    font-size: 1rem !important;
+  }
+  
+  .service-page .application-card h3,
+  .service-page .benefit h3 {
+    font-size: 1.125rem !important;
+  }
+  
+  .service-page .service-cta {
+    padding: 2rem 1.5rem !important;
+  }
+  
+  .service-page .service-cta h2 {
+    font-size: 1.5rem !important;
+  }
 }

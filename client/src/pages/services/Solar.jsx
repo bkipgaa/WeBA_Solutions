@@ -45,16 +45,20 @@ const SolarPower = () => {
     <div className="service-page">
       <div className="container">
         <div className="service-header">
-          <Link to="/" className="back-link">← Back to Home</Link>
-          <h1>Solar Power Solutions</h1>
-          <p className="service-tagline">Clean, reliable energy for homes and businesses</p>
-          <div className="service-icon">☀️</div>
-        </div>
+  <Link to="/" className="back-link">← Back to Home</Link>
+  <div className="header-content">
+    <div className="header-icon">
+      ☀️
+    </div>
+    <h1>Solar Power Solutions</h1>
+    <p className="service-tagline">Clean, reliable energy for homes and businesses</p>
+  </div>
+</div>
 
         <div className="service-content">
-          <div className="service-description">
-            <h2>Overview</h2>
-            <p>
+          <div className="intro-section">
+  <h2>Overview</h2>
+  <p className="intro-text">
               Harness the power of the sun with our professional solar installation services. 
               We provide complete solar energy solutions that reduce electricity costs, 
               increase energy independence, and contribute to environmental sustainability.

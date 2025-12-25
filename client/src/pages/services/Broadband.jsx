@@ -159,7 +159,6 @@ const Broadband = () => {
                   key={index} 
                   className={`package-card ${pkg.popular ? 'popular' : ''}`}
                 >
-                  {pkg.popular && <div className="popular-badge">🔥 Most Popular</div>}
                   
                   
                   <div className="package-header">
@@ -169,7 +168,6 @@ const Broadband = () => {
                       <span>{pkg.speed}</span>
                     </div>
                   </div>
-                  
 
                   <div className="package-price">
                     <span className="current-price">{pkg.price}</span>
@@ -189,7 +187,7 @@ const Broadband = () => {
             </div>
           </div>
 
-          {/* Main Service Plans */}
+          {/* Main Service Plans 
           <div className="plans-section">
             <div className="sectionn-header">
               <h2>Fiber Broadband Plans</h2>
@@ -242,7 +240,7 @@ const Broadband = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </div>  */}
 
           {/* Features Grid */}
           <div className="features-section">
