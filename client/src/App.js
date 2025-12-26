@@ -16,6 +16,7 @@ import CCTV from './pages/services/CCTV';
 import Solar from './pages/services/Solar';
 import PLC from './pages/services/PLC';
 import Privacy from './pages/Privacy';
+import Terms from './pages/terms';
 import ServiceOverview from './pages/ServiceOverview/ServiceOverview';
 import './App.css';
 
@@ -44,6 +45,7 @@ function App() {
             <Route path="/support" element={<Support />} />
             <Route path="/selfcare" element={<SelfCare />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms/>} />
           </Routes>
         </main>
         <Footer />

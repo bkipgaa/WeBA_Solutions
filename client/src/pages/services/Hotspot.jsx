@@ -13,7 +13,7 @@ const Hotspot = () => {
     { type: 'Campus WiFi', desc: 'High-speed internet for educational institutions', icon: '🏫' }
   ];
 
-  const hotspotPackages = [
+  const hotspotpackages = [
     { 
       name: 'Diamond Day', 
       speed: '8Mbps',
@@ -79,7 +79,7 @@ const Hotspot = () => {
       tag: 'Multi-Device'
     },
     { 
-      name: '21 Days Package', 
+      name: '21 Days packages', 
       speed: '10Mbps',
       price: 'Ksh 250.00', 
       duration: '21 Days', 
@@ -122,7 +122,7 @@ const Hotspot = () => {
             <div className="header-stats">
               <div className="stat-item">
                 <span className="stat-number">10+</span>
-                <span className="stat-label">Package Options</span>
+                <span className="stat-label">packages Options</span>
               </div>
               <div className="stat-item">
                 <span className="stat-number">24/7</span>
@@ -147,46 +147,42 @@ const Hotspot = () => {
             </p>
           </div>
 
-          {/* Hotspot Packages in Card Layout */}
-          <div className="packages-section">
-            <div className="section-header">
-              <h2>Student Hotspot Packages</h2>
-              <p className="section-subtitle">Select the perfect plan for your internet needs</p>
-            </div>
-
-            <div className="packages-grid">
-              {hotspotPackages.map((pkg, index) => (
-                <div 
-                  key={index} 
-                  className={`package-card ${pkg.popular ? 'popular' : ''}`}
-                >
-                  {pkg.popular && <div className="popular-badge">🔥 Popular</div>}
-                  
-                  <div className="package-content">
-                    <h3 className="package-name">{pkg.name}</h3>
-                    
-                    <div className="package-details">
-                      <div className="package-speed">
-                        <Zap size={14} />
-                        <span>{pkg.speed}</span>
-                      </div>
-                      
-                      <div className="package-duration">
-                        <Clock size={14} />
-                        <span>{pkg.duration}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="package-price">
-                      <span className="current-price">{pkg.price}</span>
-                    </div>
-                    
-                    {/* REMOVED Get Started button */}
-                  </div>
-                </div>
-              ))}
-            </div>
+          {/* Hotspot packages in Card Layout */}
+          
+<div className="packages-grid">
+  {hotspotpackages.map((pkg, index) => (
+    <div 
+      key={index} 
+      className={`packages-card ${pkg.popular ? 'popular' : ''}`}
+    >
+      {pkg.popular && <div className="popular-badge">🔥 Popular</div>}
+      
+      <div className="packages-content">
+        
+        <h3 className="packages-name">{pkg.name}</h3>
+        
+        <div className="packages-details">
+          <div className="packages-speed">
+            <Zap size={16} />
+            <span>{pkg.speed}</span>
           </div>
+          
+          <div className="packages-duration">
+            <Clock size={16} />
+            <span>{pkg.duration}</span>
+          </div>
+        </div>
+        
+        <div className="packages-price">
+          <span className="current-price">{pkg.price}</span>
+        </div>
+        
+        
+      </div>
+    </div>
+  ))}
+</div>
+          
 
           {/* Features Section */}
           <div className="features-section">
@@ -221,13 +217,13 @@ const Hotspot = () => {
           {/* CTA Section */}
           <div className="cta-section">
             <div className="cta-content">
-              <h2>Need Help Choosing a Package?</h2>
+              <h2>Need Help Choosing a packages?</h2>
               <p>Our student support team is here to help you select the perfect WiFi plan for your needs.</p>
               
               <div className="cta-buttons">
                 <button className="btn btn-primary">
                   <Wifi size={18} />
-                  <span>Browse All Packages</span>
+                  <span>Browse All packages</span>
                 </button>
                 <button className="btn btn-secondary">
                   <span>Contact Support</span>

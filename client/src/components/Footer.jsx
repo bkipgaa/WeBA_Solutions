@@ -40,7 +40,7 @@ const Footer = () => {
             <h3>Legal</h3>
             <ul>
               <li><Link to="/privacy">Data Privacy Statement</Link></li>
-              <li><Link to="/terms">Terms of Service</Link></li>
+              <li><Link to="/terms">Terms & Conditions</Link></li>
               <li><Link to="/acceptable-use">Acceptable Use Policy</Link></li>
               <li><Link to="/whistleblowing">Whistleblowing Policy</Link></li>
             </ul>

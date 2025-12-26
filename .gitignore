@@ -1,26 +1,166 @@
-# For client (React/Angular/Vue)
+# ================================
+# ROOT .gitignore - Enhanced Version
+# ================================
+
+# ========== CLIENT (React) ==========
 client/node_modules/
-client/build/
-client/dist/
+client/.env*
 client/.env.local
 client/.env.development.local
 client/.env.test.local
 client/.env.production.local
+client/build/
+client/dist/
 client/.next/
+client/.cache/
+client/.parcel-cache/
+client/.eslintcache
+client/coverage/
+client/.DS_Store
 
-# For server (Node.js/Express)
+# ========== SERVER (if you add later) ==========
 server/node_modules/
-server/.env
+server/.env*
 server/logs/
 server/.npm
+server/.cache/
+server/coverage/
+server/uploads/
+server/temp/
 
-# General
-.DS_Store
+# ========== GENERAL ==========
 .env
+.env.*
+!.env.example
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+lerna-debug.log*
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variable files
+.env
+.env.test
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Vuepress build output
+.vuepress/dist
+
+# Serverless directories
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# ========== SECRETS ==========
+# NEVER commit these
+secrets/
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.cer
+
+# Local Development Environment
+REACT_APP_API_URL=http://localhost:5000/api
+REACT_APP_SUPPORT_EMAIL=webasolution@gmail.com
+REACT_APP_SALES_EMAIL=webasolution@gmail.com
+REACT_APP_INFO_EMAIL=info@webasolutions.net
+REACT_APP_SUPPORT_PHONE=0712200198
+REACT_APP_EMERGENCY_PHONE=0712200198
+REACT_APP_COMPANY_NAME=Weba Solutions
+REACT_APP_MAINTENANCE_MODE=false
+NODE_ENV=development
+
+# Production Environment
+REACT_APP_API_URL=https://api.webasolutions.net
+REACT_APP_SUPPORT_EMAIL=support@webasolutions.net
+REACT_APP_SALES_EMAIL=sales@webasolutions.net
+REACT_APP_INFO_EMAIL=info@webasolutions.net
+REACT_APP_SUPPORT_PHONE=+254712200198
+REACT_APP_EMERGENCY_PHONE=+254712200198
+REACT_APP_COMPANY_NAME=Weba Solutions
+REACT_APP_GOOGLE_ANALYTICS_ID=UA-XXXXXXXXX-X
+REACT_APP_MAINTENANCE_MODE=false
+NODE_ENV=production
+GENERATE_SOURCEMAP=false

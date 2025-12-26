@@ -1,0 +1,715 @@
+/* ========== TERMS & CONDITIONS PAGE ========== */
+
+.terms-page {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+/* Universal heading hover effect for entire page */
+.hotspot-page h1,
+.hotspot-page h2,
+.hotspot-page h3,
+.hotspot-page h4,
+.hotspot-page h5,
+.hotspot-page h6 {
+  transition: color 0.2s ease !important;
+  cursor: pointer !important;
+}
+
+.hotspot-page h1:hover,
+.hotspot-page h2:hover,
+.hotspot-page h3:hover,
+.hotspot-page h4:hover,
+.hotspot-page h5:hover,
+.hotspot-page h6:hover {
+  color: #ef4444 !important;
+  -webkit-text-fill-color: #ef4444 !important;
+  background: none !important;
+}
+
+/* Specific override for gradient headings */
+.hotspot-page .header-content h1:hover,
+.hotspot-page .intro-section h2:hover,
+.hotspot-page .packages-section h2:hover,
+.hotspot-page .features-section h2:hover,
+.hotspot-page .solutions-section h2:hover,
+.hotspot-page .cta-content h2:hover {
+  -webkit-text-fill-color: #ef4444 !important;
+}
+
+/* 1. GLOBAL CONTAINER */
+.terms-page .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* 2. PAGE HEADER */
+.terms-page .terms-header {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(239, 68, 68, 0.08));
+  border-radius: 0 0 24px 24px;
+  padding: 40px 20px 60px;
+  margin-bottom: 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.terms-page .terms-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ef4444, #10b981);
+}
+
+.terms-page .back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #6b7280;
+  text-decoration: none;
+  font-weight: 500;
+  margin-bottom: 24px;
+  transition: color 0.2s ease;
+}
+
+.terms-page .back-link:hover {
+  color: #ef4444;
+}
+
+.terms-page .header-content {
+  text-align: center;
+}
+
+.terms-page .header-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(239, 68, 68, 0.1));
+  border-radius: 20px;
+  margin: 0 auto 24px;
+  border: 2px solid rgba(16, 185, 129, 0.2);
+}
+
+.terms-page .header-icon svg {
+  color: #10b981;
+}
+
+.terms-page .header-content h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0 0 16px;
+  color: #111827;
+}
+
+.terms-page .terms-tagline {
+  font-size: 1.125rem;
+  color: #4b5563;
+  font-weight: 400;
+  max-width: 600px;
+  margin: 0 auto 32px;
+  line-height: 1.7;
+}
+
+.terms-page .header-stats {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+
+.terms-page .stat-item {
+  text-align: center;
+  padding: 16px 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  min-width: 120px;
+  transition: transform 0.2s ease;
+}
+
+.terms-page .stat-item:hover {
+  transform: translateY(-2px);
+}
+
+.terms-page .stat-number {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #ef4444, #10b981);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.terms-page .stat-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* 3. INTRODUCTION SECTION */
+.terms-page .intro-section {
+  text-align: center;
+  margin: 60px 0 40px;
+}
+
+.terms-page .intro-section h2 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+  color: #111827;
+}
+
+.terms-page .intro-text {
+  font-size: 1.125rem;
+  color: #4b5563;
+  font-weight: 400;
+  max-width: 800px;
+  margin: 0 auto 32px;
+  line-height: 1.7;
+}
+
+.terms-page .contact-info {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+
+.terms-page .contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+}
+
+.terms-page .contact-item svg {
+  color: #10b981;
+}
+
+.terms-page .contact-item span {
+  font-size: 0.95rem;
+  color: #4b5563;
+}
+
+/* 4. SECTION TITLES */
+.terms-page .section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+  color: #111827;
+}
+
+.terms-page .section-title svg {
+  color: #10b981;
+}
+
+.terms-page .section-subtitle {
+  font-size: 1.125rem;
+  color: #4b5563;
+  font-weight: 400;
+  max-width: 600px;
+  margin-bottom: 40px;
+  line-height: 1.7;
+}
+
+/* 5. GENERAL TERMS SECTION */
+.terms-page .general-terms-section {
+  margin: 60px 0;
+}
+
+.terms-page .general-terms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+  margin-top: 32px;
+}
+
+.terms-page .general-term-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  border: 2px solid #e5e7eb;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  transition: all 0.3s ease;
+}
+
+.terms-page .general-term-card:hover {
+  border-color: #10b981;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.terms-page .term-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #ef4444, #10b981);
+  color: white;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.terms-page .term-text {
+  font-size: 0.95rem;
+  color: #4b5563;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* 6. SERVICE TERMS SECTION */
+.terms-page .service-terms-section {
+  margin: 60px 0;
+}
+
+.terms-page .service-terms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.terms-page .service-term-card {
+  background: white;
+  border-radius: 16px;
+  padding: 28px 24px;
+  border: 2px solid #e5e7eb;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.terms-page .service-term-card:hover {
+  border-color: #10b981;
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+}
+
+.terms-page .service-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.terms-page .service-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(239, 68, 68, 0.1));
+  border-radius: 14px;
+  border: 2px solid rgba(16, 185, 129, 0.2);
+}
+
+.terms-page .service-icon svg {
+  color: #10b981;
+}
+
+.terms-page .service-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  flex: 1;
+}
+
+.terms-page .service-points {
+  flex: 1;
+  margin-bottom: 24px;
+}
+
+.terms-page .service-point {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.terms-page .service-point:last-child {
+  margin-bottom: 0;
+}
+
+.terms-page .point-icon {
+  color: #10b981;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.terms-page .service-point span {
+  font-size: 0.9rem;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.terms-page .service-footer {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.terms-page .warranty-badge,
+.terms-page .support-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 6px;
+}
+
+.terms-page .warranty-badge {
+  background: rgba(16, 185, 129, 0.1);
+  color: #065f46;
+}
+
+.terms-page .support-badge {
+  background: rgba(239, 68, 68, 0.1);
+  color: #991b1b;
+}
+
+/* 7. LEGAL SECTION */
+.terms-page .legal-section {
+  margin: 60px 0;
+}
+
+.terms-page .legal-card {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  border: 2px solid #e5e7eb;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+.terms-page .legal-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.terms-page .legal-header svg {
+  color: #ef4444;
+}
+
+.terms-page .legal-header h3 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+}
+
+.terms-page .legal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 32px;
+  margin-bottom: 40px;
+}
+
+.terms-page .legal-item h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.terms-page .legal-item ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.terms-page .legal-item li {
+  font-size: 0.9rem;
+  color: #4b5563;
+  margin-bottom: 10px;
+  padding-left: 20px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.terms-page .legal-item li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #10b981;
+  font-weight: bold;
+}
+
+.terms-page .legal-notice {
+  display: flex;
+  gap: 16px;
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(239, 68, 68, 0.05));
+  border-radius: 12px;
+  border-left: 4px solid #10b981;
+}
+
+.terms-page .legal-notice svg {
+  color: #ef4444;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.terms-page .legal-notice p {
+  font-size: 0.95rem;
+  color: #4b5563;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* 8. CTA SECTION */
+.terms-page .terms-cta-section {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(239, 68, 68, 0.08));
+  border-radius: 24px;
+  padding: 60px 40px;
+  margin: 60px 0;
+  text-align: center;
+  border: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+.terms-page .cta-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.terms-page .cta-content h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+  color: #111827;
+}
+
+.terms-page .cta-content p {
+  font-size: 1.25rem;
+  color: #4b5563;
+  font-weight: 400;
+  max-width: 600px;
+  margin: 0 auto 32px;
+  line-height: 1.7;
+}
+
+.terms-page .cta-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.terms-page .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 180px;
+}
+
+.terms-page .btn-primary {
+  background: linear-gradient(90deg, #ef4444, #10b981);
+  color: white;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.terms-page .btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
+.terms-page .btn-outline {
+  background: transparent;
+  color: #6b7280;
+  border-color: #d1d5db;
+}
+
+.terms-page .btn-outline:hover {
+  border-color: #10b981;
+  color: #065f46;
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.terms-page .cta-notes {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.terms-page .note-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.terms-page .note-item svg {
+  color: #10b981;
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+
+/* Tablets and smaller desktops */
+@media (max-width: 1024px) {
+  .terms-page .general-terms-grid,
+  .terms-page .service-terms-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .terms-page .header-content h1,
+  .terms-page .intro-section h2,
+  .terms-page .section-title {
+    font-size: 2rem;
+  }
+  
+  .terms-page .legal-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Tablets */
+@media (max-width: 768px) {
+  .terms-page .container {
+    padding: 0 16px;
+  }
+  
+  .terms-page .terms-header {
+    padding: 32px 16px 48px;
+    border-radius: 0 0 20px 20px;
+  }
+  
+  .terms-page .header-content h1 {
+    font-size: 2rem;
+  }
+  
+  .terms-page .terms-tagline,
+  .terms-page .intro-text,
+  .terms-page .section-subtitle,
+  .terms-page .cta-content p {
+    font-size: 1rem;
+  }
+  
+  .terms-page .header-stats {
+    gap: 16px;
+  }
+  
+  .terms-page .stat-item {
+    min-width: 100px;
+    padding: 12px 16px;
+  }
+  
+  .terms-page .stat-number {
+    font-size: 1.5rem;
+  }
+  
+  .terms-page .general-terms-grid,
+  .terms-page .service-terms-grid,
+  .terms-page .legal-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .terms-page .contact-info {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .terms-page .cta-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .terms-page .btn {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .terms-page .cta-notes {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+/* Mobile phones */
+@media (max-width: 480px) {
+  .terms-page .header-content h1 {
+    font-size: 1.75rem;
+  }
+  
+  .terms-page .header-icon {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .terms-page .stat-number {
+    font-size: 1.25rem;
+  }
+  
+  .terms-page .intro-section h2,
+  .terms-page .section-title,
+  .terms-page .cta-content h2 {
+    font-size: 1.5rem;
+  }
+  
+  .terms-page .legal-card {
+    padding: 24px;
+  }
+  
+  .terms-page .service-term-card {
+    padding: 20px;
+  }
+  
+  .terms-page .terms-cta-section {
+    padding: 40px 24px;
+  }
+  
+  .terms-page .cta-content h2 {
+    font-size: 1.75rem;
+  }
+  
+  .terms-page .legal-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+}

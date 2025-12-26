@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import ContactModal from './ContactModel/contactmodel'; // Import the modal
+
 import './Home.css'
 
 const Home = () => {
+  const [showContactModal, setShowContactModal] = useState(false);
+
   const service = [
     {
       id: 'broadband',
@@ -58,8 +62,7 @@ const Home = () => {
               <span className="badge-text">⚡ Trusted Since 2024</span>
             </div>
             <h1 className="hero-title">
-              Powering Homes  &{' '}
-              Businesses with Excellence
+              Powering Homes & Businesses with Excellence
             </h1>
             <p className="hero-subtitle">
               WeBA Solutions delivers cutting-edge engineering and internet service 
@@ -94,14 +97,14 @@ const Home = () => {
               <div className="stat-divider"></div>
               <div className="stat-item">
                 <div className="stat-number">6</div>
-                <div className="stat-label">Core service</div>
+                <div className="stat-label">Core Services</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* service Section */}
+      {/* Services Section */}
       <div className="container">
         <div className="section-header">
           <h2 className="section-title">
@@ -113,18 +116,16 @@ const Home = () => {
         </div>
 
         <div className="service-grid">
-          {service.map((service, index) => (
+          {service.map((service) => (
             <Link 
               key={service.id} 
-              to={`/service/${service.id}`}
+              to={`/services/${service.id}`}
               className={`service-card ${service.color}-card`}
             >
-              
-            
               <div className="service-card-content">
-  <h3>{service.name}</h3>
-  <p className="service-description">{service.description}</p>
-</div>
+                <h3>{service.name}</h3>
+                <p className="service-description">{service.description}</p>
+              </div>
               <div className="service-card-footer">
                 <span className="learn-more">
                   Learn More 
@@ -145,12 +146,10 @@ const Home = () => {
               business or home requirements.
             </p>
             <div className="cta-buttons">
-              <Link to="/support" className="btn btn-red">
-                Get a Free Quote
-              </Link>
-              <Link to="/support" className="btn btn-green">
-                Contact Our Experts
-              </Link>
+              
+              <button onClick={() => setShowContactModal(true)} className="btn btn-green">
+                For a Quote Contact Our Experts 
+              </button>
             </div>
           </div>
         </div>
@@ -159,8 +158,7 @@ const Home = () => {
         <div className="feature-section">
           <div className="section-header">
             <h2 className="section-title">
-              Why Choose
-        WeBA Solutions
+              Why Choose WeBA Solutions
             </h2>
           </div>
           
@@ -183,7 +181,7 @@ const Home = () => {
             <div className="feature-card">
               <div className="feature-icon red-bg">💼</div>
               <h3>Professional Team</h3>
-              <p>Certified engineers and technicians for all service</p>
+              <p>Certified engineers and technicians for all services</p>
             </div>
           </div>
         </div>
@@ -234,45 +232,54 @@ const Home = () => {
         </div>
 
         {/* Call to Action */}
-<div className="final-cta-section">
-  <div className="final-cta-container">
-    <h1 className="final-cta--title">
-      Ready To Transform  Your Space
-    </h1>
-    
-    <p>
-      Get in touch with us today for a consultation or request a quote 
-      for our service.
-    </p>
-    
-    <div className="final-cta-info">
-      <div className="final-cta-item">
-        <span className="final-cta-icon">📞</span>
-        <div>
-          <div className="final-cta-label">Call Us</div>
-          <div className="final-cta-value">0730 862 862</div>
+        <div className="final-cta-section">
+          <div className="final-cta-container">
+            <h1 className="final-cta--title">
+              Ready To Transform Your Space
+            </h1>
+            
+            <p>
+              Get in touch with us today for a consultation or request a quote 
+              for our service.
+            </p>
+            
+            <div className="final-cta-info">
+              {/* Email click opens the modal */}
+              <div className="final-cta-item" onClick={() => setShowContactModal(true)}>
+                <span className="final-cta-icon">📞</span>
+                <div>
+                  <div className="final-cta-label">Call Us</div>
+                  <div className="final-cta-value">0730 862 862</div>
+                </div>
+              </div>
+              
+              {/* Email click opens the modal */}
+              <div className="final-cta-item" onClick={() => setShowContactModal(true)}>
+                <span className="final-cta-icon">✉️</span>
+                <div>
+                  <div className="final-cta-label">Email Us</div>
+                  <div className="final-cta-value">webasolutions@gmail.com</div>
+                </div>
+              </div>
+              
+              {/* WhatsApp click opens the modal */}
+              <div className="final-cta-item" onClick={() => setShowContactModal(true)}>
+                <span className="final-cta-icon">💬</span>
+                <div>
+                  <div className="final-cta-label">WhatsApp</div>
+                  <div className="final-cta-value">0730762762</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      
-      <div className="final-cta-item">
-        <span className="final-cta-icon">✉️</span>
-        <div>
-          <div className="final-cta-label">Email Us</div>
-          <div className="final-cta-value">webasolutions@gmail.com</div>
-        </div>
-      </div>
-      
-      <div className="final-cta-item">
-        <span className="final-cta-icon">💬</span>
-        <div>
-          <div className="final-cta-label">WhatsApp</div>
-          <div className="final-cta-value">0730762762</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-      </div>
+
+      {/* Contact Modal */}
+      <ContactModal 
+        isOpen={showContactModal}
+        onClose={() => setShowContactModal(false)}
+      />
     </div>
   );
 };

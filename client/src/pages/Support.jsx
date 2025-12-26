@@ -1,31 +1,39 @@
 import React from 'react';
 import './support.css'
+import config from '../config';
 
 const Support = () => {
-  const supportOptions = [
+
+  // Use environment variables with fallbacks
+  const supportEmail = process.env.REACT_APP_SUPPORT_EMAIL || 'webasolution@gmail.com';
+  const salesEmail = process.env.REACT_APP_SALES_EMAIL || 'webasolution@gmail.com';
+  const infoEmail = process.env.REACT_APP_INFO_EMAIL || 'info@webasolutions.net';
+  const supportPhone = process.env.REACT_APP_SUPPORT_PHONE || '0712200198';
+  const emergencyPhone = process.env.REACT_APP_EMERGENCY_PHONE || '0712200198';
+  const companyName = process.env.REACT_APP_COMPANY_NAME || 'Weba Solutions';
+   const supportOptions = [
     {
       title: 'Technical Support',
-      contact: 'webasolution@gmail.com',
-      phone: '0712200198',
+      contact: supportEmail,
+      phone: supportPhone,
       hours: '24/7'
     },
     {
       title: 'Sales Inquiries',
-      contact: 'webasolution@gmail.com',
-      phone: '0712200198',
+      contact: salesEmail,
+      phone: supportPhone,
       hours: 'Mon-Fri, 8AM-6PM'
     },
     {
       title: 'Billing & Accounts',
-      contact: 'webasolution@gmail.com',
-
-      phone: '0712200198',
+      contact: supportEmail,
+      phone: supportPhone,
       hours: 'Mon-Fri, 9AM-5PM'
     },
     {
       title: 'General Inquiries',
-      contact: 'info@webasolutions.net',
-      phone: '0712200198',
+      contact: infoEmail,
+      phone: supportPhone,
       hours: 'Mon-Fri, 8AM-6PM'
     }
   ];

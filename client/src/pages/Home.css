@@ -101,7 +101,7 @@ body #root .page-content * {
 }
 
 /* 7. BUTTON SYSTEM */
-.page-content .hero-buttons {
+.page-content .hero-buttons .cta-buttons {
   display: flex !important;
   gap: 1.25rem !important;
   justify-content: center !important;
@@ -110,7 +110,7 @@ body #root .page-content * {
   flex-wrap: wrap !important;
 }
 
-.page-content a.btn {
+.page-content .btn {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -129,26 +129,26 @@ body #root .page-content * {
 }
 
 /* BUTTON COLORS - UPDATED GRADIENT */
-.page-content a.btn-green {
+.page-content .btn-green {
   background: linear-gradient(90deg, #ef4444, #10b981) !important; /* Updated gradient */
   color: white !important;
   box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
 }
 
-.page-content a.btn-red {
+.page-content .btn-red {
   background: linear-gradient(90deg, #ef4444, #10b981) !important; /* Updated gradient */
   color: white !important;
   box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3) !important;
 }
 
 /* Button Hover Effects - REMAIN THE SAME */
-.page-content a.btn-green:hover {
+.page-content .btn-green:hover {
   background: linear-gradient(135deg, #059669, #047857) !important;
   transform: translateY(-1px) !important;
   box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4) !important;
 }
 
-.page-content a.btn-red:hover {
+.page-content .btn-red:hover {
   background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
   transform: translateY(-1px) !important;
   box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4) !important;
@@ -383,6 +383,7 @@ body #root .page-content * {
   gap: 1.5rem !important;
   justify-content: center !important;
   flex-wrap: wrap !important;
+  
 }
 
 /* 12. FEATURES SECTION */
@@ -717,7 +718,7 @@ body #root .page-content * {
     margin: 1rem 0 !important;
   }
   
-  .page-content .hero-buttons a.btn {
+  .page-content .hero-buttons .btn {
     width: 100% !important;
     max-width: 280px !important;
   }
@@ -787,4 +788,139 @@ body #root .page-content * {
   .page-content .final-cta-section {
     padding: 1.5rem !important;
   }
+}
+
+
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.close-btn:hover {
+  background-color: #f3f4f6;
+  color: #1f2937;
+}
+
+/* Form Styles */
+.contact-form {
+  padding: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #374151;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Make contact items clickable */
+.final-cta-item {
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.final-cta-item:hover {
+  transform: translateY(-2px);
+  background-color: rgba(0, 0, 0, 0.02);
 }
