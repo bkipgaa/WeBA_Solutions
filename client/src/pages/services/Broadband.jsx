@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Wifi, Zap, Users, Clock, Shield, CheckCircle, Globe, X, ArrowLeft } from 'lucide-react';
+import { Zap, CheckCircle, Globe, X, ArrowLeft } from 'lucide-react';
 import './Broadband.css';
 
 const Broadband = () => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, FileText, CheckCircle, AlertCircle, Clock, Users, Globe, Home, Wifi, Zap, Camera, Sun, Cpu, Network } from 'lucide-react';
+import { Shield, FileText, CheckCircle, AlertCircle, Clock, Users, Globe, Wifi, Zap, Camera, Sun, Cpu, Network } from 'lucide-react';
 import './terms.css';
 
 const Terms = () => {

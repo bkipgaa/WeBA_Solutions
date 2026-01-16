@@ -1,6 +1,6 @@
 import React from 'react';
 import './support.css'
-import config from '../config';
+
 
 const Support = () => {
 
@@ -9,8 +9,7 @@ const Support = () => {
   const salesEmail = process.env.REACT_APP_SALES_EMAIL || 'webasolution@gmail.com';
   const infoEmail = process.env.REACT_APP_INFO_EMAIL || 'info@webasolutions.net';
   const supportPhone = process.env.REACT_APP_SUPPORT_PHONE || '0712200198';
-  const emergencyPhone = process.env.REACT_APP_EMERGENCY_PHONE || '0712200198';
-  const companyName = process.env.REACT_APP_COMPANY_NAME || 'Weba Solutions';
+  
    const supportOptions = [
     {
       title: 'Technical Support',

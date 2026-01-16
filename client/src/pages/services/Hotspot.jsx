@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Wifi, Clock, Users, Zap, CheckCircle } from 'lucide-react';
+import { Wifi, Clock,  Zap, CheckCircle } from 'lucide-react';
 import './Hotspot.css';
 
 const Hotspot = () => {
