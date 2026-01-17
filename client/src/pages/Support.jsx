@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import config from '../config';
 
 const Support = () => {
-  const { contact, whatsapp, company } = config;
+  const { contact, whatsapp } = config;
 
   const supportOptions = [
     {
