@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import ContactModal from './ContactModel/contactmodel'; // Import the modal
+import ContactModal from './ContactModel/contactmodel';
+import config from '../config'; // Import the config file
 
-import './Home.css'
+import './Home.css';
 
 const Home = () => {
   const [showContactModal, setShowContactModal] = useState(false);
+
+  // Get contact info from config
+  const { company, contact, whatsapp } = config;
+
+  // Generate WhatsApp link using config utility
+  const whatsappLink = whatsapp.getWhatsAppLink();
 
   const service = [
     {
@@ -65,7 +72,7 @@ const Home = () => {
               Powering Homes & Businesses with Excellence
             </h1>
             <p className="hero-subtitle">
-              WeBA Solutions delivers cutting-edge engineering and internet service 
+              {company.name} delivers cutting-edge engineering and internet service 
               with unmatched reliability. From high-speed connectivity to professional 
               installations, we're your trusted partner in technology.
             </p>
@@ -146,7 +153,6 @@ const Home = () => {
               business or home requirements.
             </p>
             <div className="cta-buttons">
-              
               <button onClick={() => setShowContactModal(true)} className="btn btn-green">
                 For a Quote Contact Our Experts 
               </button>
@@ -158,7 +164,7 @@ const Home = () => {
         <div className="feature-section">
           <div className="section-header">
             <h2 className="section-title">
-              Why Choose WeBA Solutions
+              Why Choose {company.name}
             </h2>
           </div>
           
@@ -244,32 +250,42 @@ const Home = () => {
             </p>
             
             <div className="final-cta-info">
-              {/* Email click opens the modal */}
+              {/* Call Us */}
               <div className="final-cta-item" onClick={() => setShowContactModal(true)}>
                 <span className="final-cta-icon">📞</span>
                 <div>
                   <div className="final-cta-label">Call Us</div>
-                  <div className="final-cta-value">0730 862 862</div>
+                  <div className="final-cta-value">
+                    {whatsapp.formatPhoneDisplay(contact.supportPhone)}
+                  </div>
                 </div>
               </div>
               
-              {/* Email click opens the modal */}
+              {/* Email Us */}
               <div className="final-cta-item" onClick={() => setShowContactModal(true)}>
                 <span className="final-cta-icon">✉️</span>
                 <div>
                   <div className="final-cta-label">Email Us</div>
-                  <div className="final-cta-value">webasolutions@gmail.com</div>
+                  <div className="final-cta-value">{contact.supportEmail}</div>
                 </div>
               </div>
               
-              {/* WhatsApp click opens the modal */}
-              <div className="final-cta-item" onClick={() => setShowContactModal(true)}>
+              {/* WhatsApp - Direct link */}
+              <a 
+                href={whatsappLink} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="final-cta-item"
+                style={{ textDecoration: 'none', color: 'inherit' }}
+              >
                 <span className="final-cta-icon">💬</span>
                 <div>
                   <div className="final-cta-label">WhatsApp</div>
-                  <div className="final-cta-value">0730762762</div>
+                  <div className="final-cta-value">
+                    {whatsapp.formatPhoneDisplay(contact.whatsappNumber)}
+                  </div>
                 </div>
-              </div>
+              </a>
             </div>
           </div>
         </div>
@@ -279,6 +295,8 @@ const Home = () => {
       <ContactModal 
         isOpen={showContactModal}
         onClose={() => setShowContactModal(false)}
+        contactInfo={contact}
+        companyInfo={company}
       />
     </div>
   );

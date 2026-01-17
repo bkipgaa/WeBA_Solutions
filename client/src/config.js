@@ -24,8 +24,10 @@ const config = {
     supportEmail: process.env.REACT_APP_SUPPORT_EMAIL || 'webasolution@gmail.com',
     salesEmail: process.env.REACT_APP_SALES_EMAIL || 'webasolution@gmail.com',
     infoEmail: process.env.REACT_APP_INFO_EMAIL || 'info@webasolutions.net',
-    supportPhone: process.env.REACT_APP_SUPPORT_PHONE || '0712200198',
-    emergencyPhone: process.env.REACT_APP_EMERGENCY_PHONE || '0712200198'
+    supportPhone: process.env.REACT_APP_SUPPORT_PHONE || '+254730762762',
+    emergencyPhone: process.env.REACT_APP_EMERGENCY_PHONE || '+254730762762',
+    whatsappNumber: process.env.REACT_APP_WHATSAPP_NUMBER || '0730762762', // Added WhatsApp number
+    whatsappMessage: process.env.REACT_APP_WHATSAPP_MESSAGE || 'Hello%20Weba%20Solutions%2C%20I%20need%20assistance%20with%20your%20services.' // Optional: Pre-filled message
   },
   
   // API Configuration - For Vercel (static site)
@@ -70,6 +72,70 @@ const config = {
     vercelAnalytics: process.env.REACT_APP_VERCEL_ANALYTICS_ID || null,
     googleAnalyticsId: process.env.REACT_APP_GOOGLE_ANALYTICS_ID || null
   },
+
+  // WhatsApp utility functions
+  whatsapp: {
+    // Generate WhatsApp link
+    getWhatsAppLink(number = null, message = null) {
+      const phone = this.formatWhatsAppNumber(number || config.contact.whatsappNumber);
+      const msg = message || config.contact.whatsappMessage;
+      return `https://wa.me/${phone}${msg ? `?text=${msg}` : ''}`;
+    },
+
+    // Format phone number for WhatsApp (international format)
+    formatWhatsAppNumber(phone) {
+      if (!phone) return '';
+      
+      // Remove all non-digit characters except plus sign
+      const cleaned = phone.toString().replace(/[^\d+]/g, '');
+      
+      // If starts with 0, convert to +254
+      if (cleaned.startsWith('0')) {
+        return `+254${cleaned.substring(1)}`;
+      }
+      
+      // If starts with +254, keep as is
+      if (cleaned.startsWith('+254')) {
+        return cleaned;
+      }
+      
+      // If starts with 254, add plus
+      if (cleaned.startsWith('254')) {
+        return `+${cleaned}`;
+      }
+      
+      // Default - just return cleaned
+      return cleaned;
+    },
+
+    // Format phone number for display
+    formatPhoneDisplay(phone) {
+      if (!phone) return '';
+      
+      const num = phone.toString();
+      
+      // Remove +254 prefix and replace with 0
+      if (num.startsWith('+254')) {
+        return `0${num.substring(4)}`;
+      }
+      
+      // If starts with 254, replace with 0
+      if (num.startsWith('254')) {
+        return `0${num.substring(3)}`;
+      }
+      
+      // For local numbers, ensure they have spaces for readability
+      if (num.length === 9) {
+        return `${num.substring(0, 3)} ${num.substring(3, 6)} ${num.substring(6)}`;
+      }
+      
+      if (num.length === 10) {
+        return `${num.substring(0, 4)} ${num.substring(4, 7)} ${num.substring(7)}`;
+      }
+      
+      return num;
+    }
+  },
   
   // Debug info
   getDebugInfo() {
@@ -78,7 +144,8 @@ const config = {
       vercelEnv: process.env.VERCEL_ENV,
       vercelUrl: process.env.VERCEL_URL,
       buildTime: new Date().toISOString(),
-      apiAvailable: this.api.isAvailable()
+      apiAvailable: this.api.isAvailable(),
+      whatsappConfigured: !!this.contact.whatsappNumber
     };
   }
 };
