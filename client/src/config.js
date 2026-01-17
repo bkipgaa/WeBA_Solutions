@@ -26,7 +26,7 @@ const config = {
     infoEmail: process.env.REACT_APP_INFO_EMAIL || 'info@webasolutions.net',
     supportPhone: process.env.REACT_APP_SUPPORT_PHONE || '+254730762762',
     emergencyPhone: process.env.REACT_APP_EMERGENCY_PHONE || '+254730762762',
-    whatsappNumber: process.env.REACT_APP_WHATSAPP_NUMBER || '0730762762', // Added WhatsApp number
+    whatsappNumber: process.env.REACT_APP_WHATSAPP_NUMBER || '+254730762762', // Added WhatsApp number
     whatsappMessage: process.env.REACT_APP_WHATSAPP_MESSAGE || 'Hello%20Weba%20Solutions%2C%20I%20need%20assistance%20with%20your%20services.' // Optional: Pre-filled message
   },
   
