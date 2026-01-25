@@ -14,7 +14,7 @@ import Hotspot from './pages/services/Hotspot';
 import Electrical from './pages/services/Electrical';
 import CCTV from './pages/services/CCTV';
 import Solar from './pages/services/Solar';
-import PLC from './pages/services/PLC';
+import Networking from './pages/services/Networking';
 import Privacy from './pages/Privacy';
 import Terms from './pages/terms';
 import ServiceOverview from './pages/ServiceOverview/ServiceOverview';
@@ -35,7 +35,7 @@ function App() {
             <Route path="/services/electrical" element={<Electrical />} />
             <Route path="/services/cctv" element={<CCTV />} />
             <Route path="/services/solar" element={<Solar />} />
-            <Route path="/services/plc" element={<PLC />} />
+            <Route path="/services/plc" element={<Networking />} />
             <Route path="/services" element={<ServiceOverview />} />
         <Route path="/services/:serviceId" element={<ServiceOverview />} />
             
