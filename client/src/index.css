@@ -1,39 +1,146 @@
-
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Custom styles */
+/* ==========================================================================
+   CRITICAL FIXES FOR HORIZONTAL SCROLLING
+   ========================================================================== */
+
+/* Prevent horizontal scrolling at the root level */
+html {
+  max-width: 100vw;
+  overflow-x: hidden;
+  position: relative;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  @apply text-gray-800;
+}
+
+/* Ensure all elements stay within viewport */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+/* Prevent images and media from causing overflow */
+img,
+video,
+iframe,
+canvas,
+svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Fix for tables on mobile */
+table {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Fix for code blocks and pre elements */
+pre,
+code {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Prevent long words from breaking layout */
+p, h1, h2, h3, h4, h5, h6, li, span, a {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+/* ==========================================================================
+   Base Layer Styles
+   ========================================================================== */
 @layer base {
   body {
-    @apply antialiased text-gray-800;
+    @apply antialiased;
+  }
+  
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Remove default button styles */
+  button {
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500;
+  }
+  
+  /* Style links */
+  a {
+    @apply transition-colors duration-200;
   }
 }
 
+/* ==========================================================================
+   Component Layer Styles
+   ========================================================================== */
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-medium transition-all duration-300;
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-medium transition-all duration-300 
+           focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-opacity-50;
   }
   
   .btn-green {
-    @apply bg-green-600 hover:bg-green-700 text-white;
+    @apply bg-emerald-600 hover:bg-emerald-700 text-white focus:ring-emerald-500;
   }
   
   .btn-red {
-    @apply bg-red-600 hover:bg-red-700 text-white;
+    @apply bg-red-600 hover:bg-red-700 text-white focus:ring-red-500;
   }
   
   .card {
-    @apply bg-white rounded-xl shadow-lg p-6;
+    @apply bg-white rounded-xl shadow-lg p-6 overflow-hidden;
   }
   
   .container {
-    @apply max-w-7xl mx-auto;
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full;
+  }
+  
+  /* Responsive container for mobile */
+  .container-mobile {
+    @apply w-full px-4 sm:px-6;
+  }
+  
+  /* Section padding */
+  .section {
+    @apply py-12 sm:py-16 lg:py-20;
+  }
+  
+  /* Form elements */
+  .input {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 
+           focus:ring-emerald-500 focus:border-emerald-500 transition-colors;
   }
 }
 
-/* Custom animations */
+/* ==========================================================================
+   Custom Animations
+   ========================================================================== */
 .animate-fade-in {
   animation: fadeIn 0.5s ease-in-out;
 }
@@ -42,16 +149,123 @@
   animation: slideUp 0.5s ease-out;
 }
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.animate-slide-in-right {
+  animation: slideInRight 0.3s ease-out;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* ==========================================================================
+   Custom Scrollbar
+   ========================================================================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-emerald-500 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-emerald-600;
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: theme('colors.emerald.500') theme('colors.gray.100');
+}
+
+/* ==========================================================================
+   Mobile-Specific Fixes
+   ========================================================================== */
+@media (max-width: 640px) {
+  /* Remove horizontal padding on mobile if needed */
+  .mobile-no-padding {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  /* Prevent text input zoom on iOS */
+  input,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+.no-scroll {
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.truncate-multiline {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   Code Styling
+   ========================================================================== */
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+  @apply bg-gray-100 px-1 py-0.5 rounded text-sm;
+}
+
+pre {
+  @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto;
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+@media print {
+  html, body {
+    overflow: visible !important;
+    width: auto !important;
+    height: auto !important;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
 }

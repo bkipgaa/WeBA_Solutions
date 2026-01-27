@@ -172,7 +172,7 @@ const Home = () => {
             <div className="feature-card">
               <div className="feature-icon green-bg">🏆</div>
               <h3>Expertise & Experience</h3>
-              <p>15+ years of proven excellence in engineering and internet service</p>
+              <p>4+ years of proven excellence in engineering and internet service</p>
             </div>
             <div className="feature-card">
               <div className="feature-icon red-bg">⚡</div>
