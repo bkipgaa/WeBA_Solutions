@@ -177,7 +177,7 @@ const Terms = () => {
               </div>
               <div className="contact-item">
                 <Users size={20} />
-                <span><strong>Contact:</strong> 0730 862 862 | info@webainfinity.co.ke</span>
+                <span><strong>Contact:</strong> 0718831298 | webasolutions@gmail.com</span>
               </div>
             </div>
           </div>

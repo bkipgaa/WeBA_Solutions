@@ -115,8 +115,8 @@ const Coverage = () => {
             Request Coverage Expansion
           </button>
           <div className="contact-info">
-            <p>📞 Mombasa Office: 020 123 4567</p>
-            <p>📧 coverage@yourcompany.com</p>
+            <p>📞 Mombasa Office: 0718831298</p>
+            <p>📧 webasolutions@gmail.com</p>
           </div>
         </div>
       </div>

@@ -51,8 +51,8 @@ const Footer = () => {
           <p>&copy; {new Date().getFullYear()} WeBA Solutions Ltd. All rights reserved.</p>
           <p>
             Registered Office: Nairobi, Kenya | 
-            Email: support@poainternet.net | 
-            Phone: 0730762762
+            Email: webasolutions@gmail.com | 
+            Phone: 0718831298
           </p>
         </div>
       </div>
