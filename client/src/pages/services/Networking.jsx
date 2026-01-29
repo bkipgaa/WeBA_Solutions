@@ -22,11 +22,12 @@ const NetworkSupport = () => {
       category: 'Network Support'
     },
     {
-      title: 'BGP & OSPF Configurations',
+      title: 'BGP, ISIS & OSPF Configurations',
       description: 'Dynamic routing protocols setup',
       features: [
         'BGP peering',
         'OSPF setup',
+        'ISIS setup',
         'Route redistribution',
         'Routing policy',
         'Troubleshooting'

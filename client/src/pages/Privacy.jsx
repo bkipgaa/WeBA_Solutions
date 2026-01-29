@@ -305,7 +305,7 @@ const Privacy = () => {
             
             <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
               <p className="text-sm text-yellow-800">
-                <strong>Exercise Your Rights:</strong> To exercise any of these rights, please contact our Data Protection Officer at dpo@webanet.co.ke. 
+                <strong>Exercise Your Rights:</strong> To exercise any of these rights, please contact our Data Protection Officer at webasolutions@gmail.com. 
                 We will respond within 30 days as required by GDPR.
               </p>
             </div>
@@ -317,7 +317,7 @@ const Privacy = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">Weba Infinity Solutions Ltd</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">WeBA Infinity Solutions Ltd</h3>
                 <div className="space-y-2">
                   <div className="flex items-start">
                     <svg className="w-5 h-5 text-gray-400 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">

@@ -155,7 +155,7 @@ const ContactModal = ({ isOpen, onClose }) => {
                 value={formData.phone}
                 onChange={(e) => setFormData({...formData, phone: e.target.value})}
                 required
-                placeholder="e.g., 0730 862 862"
+                placeholder="e.g., 0718831298"
               />
             </div>
             

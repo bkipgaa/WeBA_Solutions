@@ -161,7 +161,7 @@ const Terms = () => {
         <div className="terms-content">
           {/* Introduction */}
           <div className="intro-section">
-            <h2>WEBAL INFINITY SOLUTIONS LIMITED</h2>
+            <h2>WeBA INFINITY SOLUTIONS</h2>
             <p className="intro-text">
               These Terms and Conditions govern all services provided by WeBA Infinity Solutions Limited. 
               By using our services, you agree to be bound by these terms. Please read them carefully.

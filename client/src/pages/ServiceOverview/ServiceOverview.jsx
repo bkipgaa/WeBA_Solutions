@@ -282,7 +282,7 @@ const ServiceOverview = () => {
                   Contact Sales
                 </Link>
                 <a href="tel:+254730862862" className="btn btn-outline">
-                  Call Now: 0730 862 862
+                  Call Now: 0718831298
                 </a>
               </div>
             </div>

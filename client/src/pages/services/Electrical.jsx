@@ -93,7 +93,7 @@ const ElectricalWorks = () => {
             <p>Contact our certified electricians for a free site survey and quotation.</p>
             <div className="cta-buttons">
               <button className="btn btn-primary">Request Free Quote</button>
-              <button className="btn">Call Now: 0730 862 862</button>
+              <button className="btn">Call Now: 0718831298</button>
             </div>
           </div>
         </div>
