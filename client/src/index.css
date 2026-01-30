@@ -269,3 +269,32 @@ pre {
     display: none !important;
   }
 }
+
+/* ==========================================================================
+   Dropdown and Popover Fixes
+   ========================================================================== */
+
+/* Override max-width for positioned elements (dropdowns, popovers, tooltips) */
+.absolute,
+.fixed,
+[class*="dropdown"],
+[class*="popover"],
+[class*="tooltip"],
+.select__menu,
+.react-select__menu {
+  max-width: none !important;
+}
+
+/* Specific fix for Header dropdowns */
+header .absolute,
+header .fixed,
+header nav .relative > div {
+  max-width: none !important;
+}
+
+/* Ensure dropdowns can be as wide as needed */
+[role="menu"],
+[role="listbox"],
+[aria-haspopup="true"] + div {
+  max-width: none !important;
+}

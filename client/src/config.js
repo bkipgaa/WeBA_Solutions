@@ -14,7 +14,7 @@ const config = {
   
   // Company Info
   company: {
-    name: process.env.REACT_APP_COMPANY_NAME || 'Weba Solutions',
+    name: process.env.REACT_APP_COMPANY_NAME || 'WeBA Infinity Solutions',
     slogan: process.env.REACT_APP_COMPANY_SLOGAN || 'Your Technology Partner',
     website: process.env.REACT_APP_WEBSITE_URL || 'https://webasolutions.vercel.app'
   },
