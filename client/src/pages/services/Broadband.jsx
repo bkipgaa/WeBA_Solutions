@@ -1,13 +1,30 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Zap, CheckCircle, Globe, X, ArrowLeft } from 'lucide-react';
+import { 
+  Zap, 
+  CheckCircle, 
+  Globe, 
+  X, 
+  ArrowLeft, 
+  CreditCard, 
+  Wallet,  // Use Wallet icon for PayPal
+  Shield, 
+  Lock 
+} from 'lucide-react';
 import './Broadband.css';
 
 const Broadband = () => {
+  // State management for modals and forms
   const [showPackageForm, setShowPackageForm] = useState(false);
   const [showPackageSelection, setShowPackageSelection] = useState(false);
+  const [showPaymentGateway, setShowPaymentGateway] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('card');
+  
+  // Form data state
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -15,9 +32,11 @@ const Broadband = () => {
     email: '',
     location: '',
     package: '',
-    description: ''
+    description: '',
+    agreeTerms: false
   });
 
+  // Features data
   const features = [
     { icon: '⚡', title: 'High-Speed Fiber', desc: 'Fiber optic connections for maximum speed' },
     { icon: '📊', title: 'Unlimited Data', desc: 'No throttling or data caps' },
@@ -29,13 +48,18 @@ const Broadband = () => {
     { icon: '🔄', title: 'Dual WAN', desc: 'Failover options for reliability' }
   ];
 
+  // Broadband packages
   const broadbandPackages = [
     { 
       id: 'wifi-swift',
       name: 'WiFi Swift', 
-      speed: '5Mbps',
+      speed: '5 Mbps',
       details: '5M/5M',
-      price: 'Ksh 1,500.00', 
+      priceKES: 1500,
+      priceUSD: 12,
+      priceEUR: 11,
+      priceGBP: 9,
+      priceFormatted: 'Ksh 1,500.00',
       duration: '1 Month', 
       type: 'PPPoE', 
       devices: '1', 
@@ -48,7 +72,11 @@ const Broadband = () => {
       name: 'WiFi Plus', 
       speed: '10 Mbps',
       details: '10M/10M',
-      price: 'Ksh 2,000.00', 
+      priceKES: 2000,
+      priceUSD: 16,
+      priceEUR: 15,
+      priceGBP: 13,
+      priceFormatted: 'Ksh 2,000.00',
       duration: '1 Month', 
       type: 'PPPoE', 
       devices: '1', 
@@ -59,9 +87,13 @@ const Broadband = () => {
     { 
       id: 'wifi-turbo',
       name: 'WiFi Turbo', 
-      speed: '15Mbps',
+      speed: '15 Mbps',
       details: '15M/15M',
-      price: 'Ksh 3,000.00', 
+      priceKES: 3000,
+      priceUSD: 24,
+      priceEUR: 22,
+      priceGBP: 19,
+      priceFormatted: 'Ksh 3,000.00',
       duration: '1 Month', 
       type: 'PPPoE', 
       devices: '1', 
@@ -77,6 +109,51 @@ const Broadband = () => {
     { title: 'Reliable Uptime', desc: '99.9% uptime guarantee', icon: '⏱️' },
     { title: 'Secure Network', desc: 'Advanced security features included', icon: '🔒' }
   ];
+
+  const getUserCurrency = () => {
+    const savedCurrency = localStorage.getItem('preferredCurrency');
+    if (savedCurrency) return savedCurrency;
+    
+    const browserLang = navigator.language || navigator.userLanguage;
+    if (browserLang.includes('en-US')) return 'USD';
+    if (browserLang.includes('en-GB')) return 'GBP';
+    if (browserLang.includes('de') || browserLang.includes('fr') || browserLang.includes('es')) return 'EUR';
+    return 'KES';
+  };
+
+  const getFormattedPrice = (pkg) => {
+    const currency = getUserCurrency();
+    
+    switch(currency) {
+      case 'USD':
+        return `$${pkg.priceUSD}`;
+      case 'EUR':
+        return `€${pkg.priceEUR}`;
+      case 'GBP':
+        return `£${pkg.priceGBP}`;
+      default:
+        return pkg.priceFormatted;
+    }
+  };
+
+  const getNumericPrice = (pkg) => {
+    const currency = getUserCurrency();
+    
+    switch(currency) {
+      case 'USD':
+        return pkg.priceUSD;
+      case 'EUR':
+        return pkg.priceEUR;
+      case 'GBP':
+        return pkg.priceGBP;
+      default:
+        return pkg.priceKES;
+    }
+  };
+
+  const getCurrencyCode = () => {
+    return getUserCurrency();
+  };
 
   const handlePackageClick = (pkg) => {
     setSelectedPackage(pkg);
@@ -107,53 +184,146 @@ const Broadband = () => {
     setSelectedPackage(null);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const validateForm = () => {
+    if (!formData.firstName.trim()) {
+      alert('Please enter your first name');
+      return false;
+    }
+    if (!formData.lastName.trim()) {
+      alert('Please enter your last name');
+      return false;
+    }
+    if (!formData.phone.trim()) {
+      alert('Please enter your phone number');
+      return false;
+    }
+    if (!formData.email.trim()) {
+      alert('Please enter your email address');
+      return false;
+    }
+    if (!formData.email.includes('@')) {
+      alert('Please enter a valid email address');
+      return false;
+    }
+    if (!formData.location.trim()) {
+      alert('Please enter your location/address');
+      return false;
+    }
+    if (!formData.agreeTerms) {
+      alert('Please agree to the terms and conditions');
+      return false;
+    }
+    return true;
+  };
+
+  const handlePayStackPayment = async (paymentData) => {
+    setIsProcessingPayment(true);
+    setPaymentError('');
     
     try {
-      const response = await fetch('https://formspree.io/f/xlgergee', {
+      const response = await fetch('http://localhost:5000/api/initialize-paystack-payment', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...formData,
-          fullName: `${formData.firstName} ${formData.lastName}`,
-          _subject: `WiFi Package Subscription: ${formData.package}`,
-          _replyto: formData.email,
-          selectedPackage: selectedPackage
+          email: paymentData.email,
+          amount: paymentData.amount,
+          packageName: paymentData.packageName,
+          customerName: paymentData.customerName,
+          phone: paymentData.phone,
+          location: paymentData.location,
+          currency: paymentData.currency
         })
       });
       
-      if (response.ok) {
-        setShowPackageForm(false);
-        setFormData({
-          firstName: '',
-          lastName: '',
-          phone: '',
-          email: '',
-          location: '',
-          package: '',
-          description: ''
-        });
-        setSelectedPackage(null);
-        alert('Thank you! Your subscription request has been submitted. We will contact you within 24 hours.');
+      const data = await response.json();
+      
+      if (data.success) {
+        window.location.href = data.authorization_url;
       } else {
-        throw new Error('Form submission failed');
+        setPaymentError(data.message || 'Failed to initialize payment');
+        setIsProcessingPayment(false);
       }
     } catch (error) {
-      console.error('Error:', error);
-      alert('There was an error submitting your request. Please try again.');
-    } finally {
-      setIsSubmitting(false);
+      console.error('PayStack payment error:', error);
+      setPaymentError('An error occurred. Please try again.');
+      setIsProcessingPayment(false);
     }
   };
 
-  const handleCloseForm = () => {
+  const handlePayPalPayment = async (paymentData) => {
+    setIsProcessingPayment(true);
+    setPaymentError('');
+    
+    try {
+      const response = await fetch('/api/initialize-paypal-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: paymentData.email,
+          amount: paymentData.amount,
+          packageName: paymentData.packageName,
+          customerName: paymentData.customerName,
+          phone: paymentData.phone,
+          location: paymentData.location,
+          currency: 'USD'
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        window.location.href = data.approval_url;
+      } else {
+        setPaymentError(data.message || 'Failed to initialize PayPal payment');
+        setIsProcessingPayment(false);
+      }
+    } catch (error) {
+      console.error('PayPal payment error:', error);
+      setPaymentError('An error occurred. Please try again.');
+      setIsProcessingPayment(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
+    setShowPaymentGateway(true);
+    setShowPackageForm(false);
+  };
+
+  const processPayment = () => {
+    const paymentData = {
+      email: formData.email,
+      amount: getNumericPrice(selectedPackage),
+      packageName: selectedPackage.name,
+      customerName: `${formData.firstName} ${formData.lastName}`,
+      phone: formData.phone,
+      location: formData.location,
+      currency: getCurrencyCode()
+    };
+    
+    if (selectedPaymentMethod === 'card') {
+      handlePayStackPayment(paymentData);
+    } else {
+      handlePayPalPayment(paymentData);
+    }
+  };
+
+  const handleCloseAll = () => {
     setShowPackageForm(false);
     setShowPackageSelection(false);
+    setShowPaymentGateway(false);
     setSelectedPackage(null);
+    setPaymentError('');
+    setSelectedPaymentMethod('card');
     setFormData({
       firstName: '',
       lastName: '',
@@ -161,7 +331,8 @@ const Broadband = () => {
       email: '',
       location: '',
       package: '',
-      description: ''
+      description: '',
+      agreeTerms: false
     });
   };
 
@@ -178,7 +349,11 @@ const Broadband = () => {
               <Globe size={48} />
             </div>
             <h1>Fixed Broadband Internet</h1>
-            <p className="service-tagline">High-speed, reliable fiber internet for homes and businesses</p>
+            <p className="service-tagline">High-speed, reliable fiber internet for homes and businesses worldwide</p>
+            <div className="international-badge">
+              <Globe size={16} />
+              <span>🌍 International Payments Accepted - Visa, Mastercard, PayPal</span>
+            </div>
             <div className="header-stats">
               <div className="stat-item">
                 <span className="stat-number">99.9%</span>
@@ -221,6 +396,7 @@ const Broadband = () => {
                   className={`packages-card ${pkg.popular ? 'popular' : ''}`}
                   onClick={() => handlePackageClick(pkg)}
                 >
+                  {pkg.popular && <div className="popular-badge">Most Popular</div>}
                   <div className="packages-header">
                     <h3 className="packages-name">{pkg.name}</h3>
                     <div className="packages-speed">
@@ -230,18 +406,44 @@ const Broadband = () => {
                   </div>
 
                   <div className="packages-price">
-                    <span className="current-price">{pkg.price}</span>
+                    <span className="current-price">{getFormattedPrice(pkg)}</span>
                     <span className="price-period">per month</span>
                   </div>
 
                   <div className="packages-cta">
                     <button className="subscribee-btn">
-                      Subscribe
+                      Subscribe Now
                     </button>
                   </div>
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Payment Methods Showcase */}
+          <div className="payment-methods-showcase">
+            <h3>Secure Payments Accepted Worldwide</h3>
+            <div className="payment-icons-container">
+              <div className="payment-icon-card">
+                <CreditCard size={32} />
+                <span>Visa</span>
+              </div>
+              <div className="payment-icon-card">
+                <CreditCard size={32} />
+                <span>Mastercard</span>
+              </div>
+              <div className="payment-icon-card">
+                <Wallet size={32} /> {/* Using Wallet icon for PayPal */}
+                <span>PayPal</span>
+              </div>
+              <div className="payment-icon-card">
+                <Shield size={32} />
+                <span>Secure</span>
+              </div>
+            </div>
+            <p className="settlement-note">
+              💰 All payments securely processed and settled to <strong>Equity Bank Kenya</strong>
+            </p>
           </div>
 
           {/* Features Grid */}
@@ -287,7 +489,7 @@ const Broadband = () => {
                 </button>
                 
                 <button className="btn btn-outline">
-                  <span>Call:0730862862</span>
+                  <span>Call: 0730862862</span>
                 </button>
               </div>
               
@@ -319,7 +521,7 @@ const Broadband = () => {
                 <h2 className="modal-title">Choose Your WiFi Package</h2>
                 <p className="modal-subtitle">Select one of our affordable monthly plans</p>
               </div>
-              <button className="modal-close-btn" onClick={handleCloseForm} aria-label="Close modal">
+              <button className="modal-close-btn" onClick={handleCloseAll} aria-label="Close modal">
                 <X size={24} />
               </button>
             </div>
@@ -342,7 +544,7 @@ const Broadband = () => {
                   </div>
 
                   <div className="package-selection-price">
-                    <span className="current-price">{pkg.price}</span>
+                    <span className="current-price">{getFormattedPrice(pkg)}</span>
                     <span className="price-period">per month</span>
                   </div>
 
@@ -389,7 +591,7 @@ const Broadband = () => {
               
               <button 
                 className="back-to-packages-btn"
-                onClick={handleCloseForm}
+                onClick={handleCloseAll}
               >
                 Cancel
               </button>
@@ -407,12 +609,11 @@ const Broadband = () => {
                 <h2 className="modal-title">Complete Your Subscription</h2>
                 <p className="modal-subtitle">Fill out your details for {selectedPackage.name} package</p>
               </div>
-              <button className="modal-close-btn" onClick={handleCloseForm} aria-label="Close modal">
+              <button className="modal-close-btn" onClick={handleCloseAll} aria-label="Close modal">
                 <X size={24} />
               </button>
             </div>
 
-            {/* Back to Package Selection */}
             <div className="back-to-selection">
               <button className="back-btn" onClick={handleBackToSelection}>
                 <ArrowLeft size={18} />
@@ -420,7 +621,6 @@ const Broadband = () => {
               </button>
             </div>
 
-            {/* Selected Package Summary */}
             <div className="selected-package-summary">
               <div className="summary-header">
                 <h3>Selected Package</h3>
@@ -436,12 +636,11 @@ const Broadband = () => {
                 </div>
                 <div className="summary-row">
                   <span className="summary-label">Price:</span>
-                  <span className="summary-value">{selectedPackage.price} per month</span>
+                  <span className="summary-value">{getFormattedPrice(selectedPackage)} per month</span>
                 </div>
               </div>
             </div>
 
-            {/* Subscription Form */}
             <form className="package-form" onSubmit={handleSubmit}>
               <div className="form-row">
                 <div className="form-group">
@@ -487,7 +686,7 @@ const Broadband = () => {
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
                     required
-                    placeholder="e.g., 0730 862 862"
+                    placeholder="e.g., +254730862862"
                   />
                 </div>
                 
@@ -523,34 +722,6 @@ const Broadband = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="package" className="form-label">
-                  Selected Package <span className="required">*</span>
-                </label>
-                <select
-                  id="package"
-                  className="form-select"
-                  value={formData.package}
-                  onChange={(e) => setFormData({...formData, package: e.target.value})}
-                  required
-                  disabled
-                >
-                  <option value="">Select a package</option>
-                  {broadbandPackages.map((pkg) => (
-                    <option 
-                      key={pkg.id} 
-                      value={pkg.name}
-                      selected={pkg.name === selectedPackage.name}
-                    >
-                      {pkg.name} - {pkg.speed} - {pkg.price}
-                    </option>
-                  ))}
-                </select>
-                <p className="form-hint">
-                  Package automatically selected: <strong>{selectedPackage.name}</strong>
-                </p>
-              </div>
-
-              <div className="form-group">
                 <label htmlFor="description" className="form-label">
                   Additional Notes (Optional)
                 </label>
@@ -569,6 +740,8 @@ const Broadband = () => {
                   <input
                     type="checkbox"
                     id="terms"
+                    checked={formData.agreeTerms}
+                    onChange={(e) => setFormData({...formData, agreeTerms: e.target.checked})}
                     required
                     className="terms-checkbox"
                   />
@@ -582,21 +755,127 @@ const Broadband = () => {
                   className="submit-btn"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? (
-                    <>
-                      <span className="spinner"></span>
-                      Submitting...
-                    </>
-                  ) : (
-                    'Complete Subscription'
-                  )}
+                  Proceed to Payment
                 </button>
                 
                 <p className="form-note">
-                  By submitting this form, you agree to our privacy policy and consent to be contacted by WeBA Solutions.
+                  You will be redirected to our secure payment page. We accept Visa, Mastercard, and PayPal.
                 </p>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Gateway Modal */}
+      {showPaymentGateway && selectedPackage && (
+        <div className="payment-modal-overlay">
+          <div className="payment-modal-container">
+            <div className="payment-modal-header">
+              <h2 className="payment-modal-title">Secure Payment</h2>
+              <button className="close-btn" onClick={handleCloseAll}>×</button>
+            </div>
+
+            <div className="payment-order-summary">
+              <h3>Order Summary</h3>
+              <div className="summary-card">
+                <div className="summary-row">
+                  <span>Package:</span>
+                  <strong>{selectedPackage.name}</strong>
+                </div>
+                <div className="summary-row">
+                  <span>Customer:</span>
+                  <span>{formData.firstName} {formData.lastName}</span>
+                </div>
+                <div className="summary-row">
+                  <span>Email:</span>
+                  <span>{formData.email}</span>
+                </div>
+                <div className="summary-row total">
+                  <span>Amount:</span>
+                  <strong>{getFormattedPrice(selectedPackage)}</strong>
+                </div>
+              </div>
+            </div>
+
+            <div className="payment-method-selection">
+              <h3>Select Payment Method</h3>
+              <div className="payment-methods-grid">
+                <div 
+                  className={`payment-method-card ${selectedPaymentMethod === 'card' ? 'selected' : ''}`}
+                  onClick={() => setSelectedPaymentMethod('card')}
+                >
+                  <CreditCard size={28} />
+                  <div className="method-info">
+                    <h4>Credit/Debit Card</h4>
+                    <p>Visa, Mastercard, American Express</p>
+                    <div className="card-icons">
+                      <span>Visa</span>
+                      <span>Mastercard</span>
+                      <span>Amex</span>
+                    </div>
+                  </div>
+                  {selectedPaymentMethod === 'card' && <div className="selected-check">✓</div>}
+                </div>
+
+                <div 
+                  className={`payment-method-card ${selectedPaymentMethod === 'paypal' ? 'selected' : ''}`}
+                  onClick={() => setSelectedPaymentMethod('paypal')}
+                >
+                  <Wallet size={28} /> {/* Using Wallet icon for PayPal */}
+                  <div className="method-info">
+                    <h4>PayPal</h4>
+                    <p>PayPal balance, Credit/Debit Cards</p>
+                    <div className="card-icons">
+                      <span>PayPal</span>
+                      <span>Visa</span>
+                      <span>MC</span>
+                    </div>
+                  </div>
+                  {selectedPaymentMethod === 'paypal' && <div className="selected-check">✓</div>}
+                </div>
+              </div>
+            </div>
+
+            {paymentError && (
+              <div className="payment-error">
+                <span>⚠️</span>
+                <p>{paymentError}</p>
+              </div>
+            )}
+
+            <div className="payment-security-info">
+              <Lock size={16} />
+              <span>256-bit SSL Encrypted Payment</span>
+              <Shield size={16} />
+              <span>PCI DSS Compliant</span>
+            </div>
+
+            <div className="payment-actions">
+              <button 
+                onClick={processPayment} 
+                disabled={isProcessingPayment}
+                className="pay-now-btn"
+              >
+                {isProcessingPayment ? (
+                  <>
+                    <span className="spinner"></span>
+                    Processing...
+                  </>
+                ) : (
+                  `Pay ${getFormattedPrice(selectedPackage)}`
+                )}
+              </button>
+              
+              <button onClick={handleCloseAll} className="cancel-payment-btn">
+                Cancel
+              </button>
+            </div>
+
+            <p className="payment-footer-note">
+              By proceeding, you agree to our terms and conditions. All payments are securely processed 
+              and settled to Equity Bank Kenya.
+            </p>
           </div>
         </div>
       )}
