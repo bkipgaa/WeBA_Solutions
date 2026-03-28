@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import config from './config';
 import './PaymentCallback.css';
+
+// Hardcoded API URL
+const API_BASE_URL = 'https://weba-payment.vercel.app/api';
 
 const PaymentCallback = () => {
   const location = useLocation();
@@ -23,7 +25,7 @@ const PaymentCallback = () => {
         // Verify PayPal payment
         try {
           const response = await axios.post(
-            `${config.api.baseUrl}${config.payments.paypal.captureEndpoint}`,
+            `${API_BASE_URL}/capture-paypal-payment`,
             {
               orderId: token,
               reference: reference
@@ -57,7 +59,7 @@ const PaymentCallback = () => {
         // Verify PayStack payment
         try {
           const response = await axios.get(
-            `${config.api.baseUrl}${config.payments.paystack.verifyEndpoint(reference)}`
+            `${API_BASE_URL}/verify-paystack-payment/${reference}`
           );
           
           if (response.data.success) {

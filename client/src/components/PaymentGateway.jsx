@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import config from './config'; // Import config
 import { 
   Loader, 
   CreditCard, 
@@ -11,6 +10,9 @@ import {
   CheckCircle
 } from 'lucide-react';
 import './PaymentGateway.css';
+
+// Hardcoded API URL
+const API_BASE_URL = 'https://weba-payment.vercel.app/api';
 
 const PaymentGateway = ({ 
   email,           
@@ -33,7 +35,7 @@ const PaymentGateway = ({
 
     try {
       const response = await axios.post(
-        `${config.api.baseUrl}${config.payments.paystack.initializeEndpoint}`,
+        `${API_BASE_URL}/initialize-paystack-payment`,
         {
           email,
           amount,
@@ -64,7 +66,7 @@ const PaymentGateway = ({
 
     try {
       const response = await axios.post(
-        `${config.api.baseUrl}${config.payments.paypal.initializeEndpoint}`,
+        `${API_BASE_URL}/initialize-paypal-payment`,
         {
           email,
           amount,
@@ -227,7 +229,7 @@ const PaymentGateway = ({
             and settled to <strong>Equity Bank Kenya</strong>.
           </p>
           <p className="help-note">
-            Need help? Contact us at {config.contact.supportEmail} or call {config.contact.supportPhone}
+            Need help? Contact us at support@webasolutions.net or call 0718831298
           </p>
         </div>
       </div>
