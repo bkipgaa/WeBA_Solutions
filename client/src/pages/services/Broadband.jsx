@@ -7,11 +7,14 @@ import {
   X, 
   ArrowLeft, 
   CreditCard, 
-  Wallet,  // Use Wallet icon for PayPal
+  Wallet,
   Shield, 
   Lock 
 } from 'lucide-react';
 import './Broadband.css';
+
+// Hardcoded API URL
+const API_BASE_URL = 'https://weba-payment.vercel.app/api';
 
 const Broadband = () => {
   // State management for modals and forms
@@ -216,81 +219,77 @@ const Broadband = () => {
     return true;
   };
 
-  // Update these functions in your Broadband component:
-
-const handlePayStackPayment = async (paymentData) => {
-  setIsProcessingPayment(true);
-  setPaymentError('');
-  
-  try {
-    const response = await fetch(`${config.api.baseUrl}/initialize-paystack-payment`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: paymentData.email,
-        amount: paymentData.amount,
-        packageName: paymentData.packageName,
-        customerName: paymentData.customerName,
-        phone: paymentData.phone,
-        location: paymentData.location,
-        currency: paymentData.currency
-      })
-    });
+  const handlePayStackPayment = async (paymentData) => {
+    setIsProcessingPayment(true);
+    setPaymentError('');
     
-    const data = await response.json();
-    
-    if (data.success) {
-      window.location.href = data.data.authorization_url;
-    } else {
-      setPaymentError(data.message || 'Failed to initialize payment');
+    try {
+      const response = await fetch(`${API_BASE_URL}/initialize-paystack-payment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: paymentData.email,
+          amount: paymentData.amount,
+          packageName: paymentData.packageName,
+          customerName: paymentData.customerName,
+          phone: paymentData.phone,
+          location: paymentData.location,
+          currency: paymentData.currency
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        window.location.href = data.data.authorization_url;
+      } else {
+        setPaymentError(data.message || 'Failed to initialize payment');
+        setIsProcessingPayment(false);
+      }
+    } catch (error) {
+      console.error('PayStack payment error:', error);
+      setPaymentError('An error occurred. Please try again.');
       setIsProcessingPayment(false);
     }
-  } catch (error) {
-    console.error('PayStack payment error:', error);
-    setPaymentError('An error occurred. Please try again.');
-    setIsProcessingPayment(false);
-  }
-};
+  };
 
-const handlePayPalPayment = async (paymentData) => {
-  setIsProcessingPayment(true);
-  setPaymentError('');
-  
-  try {
-    const response = await fetch(`${config.api.baseUrl}/initialize-paypal-payment`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: paymentData.email,
-        amount: paymentData.amount,
-        packageName: paymentData.packageName,
-        customerName: paymentData.customerName,
-        phone: paymentData.phone,
-        location: paymentData.location,
-        currency: 'USD'
-      })
-    });
+  const handlePayPalPayment = async (paymentData) => {
+    setIsProcessingPayment(true);
+    setPaymentError('');
     
-    const data = await response.json();
-    
-    if (data.success) {
-      window.location.href = data.data.approval_url;
-    } else {
-      setPaymentError(data.message || 'Failed to initialize PayPal payment');
+    try {
+      const response = await fetch(`${API_BASE_URL}/initialize-paypal-payment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: paymentData.email,
+          amount: paymentData.amount,
+          packageName: paymentData.packageName,
+          customerName: paymentData.customerName,
+          phone: paymentData.phone,
+          location: paymentData.location,
+          currency: 'USD'
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        window.location.href = data.data.approval_url;
+      } else {
+        setPaymentError(data.message || 'Failed to initialize PayPal payment');
+        setIsProcessingPayment(false);
+      }
+    } catch (error) {
+      console.error('PayPal payment error:', error);
+      setPaymentError('An error occurred. Please try again.');
       setIsProcessingPayment(false);
     }
-  } catch (error) {
-    console.error('PayPal payment error:', error);
-    setPaymentError('An error occurred. Please try again.');
-    setIsProcessingPayment(false);
-  }
-};
-
- 
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -437,7 +436,7 @@ const handlePayPalPayment = async (paymentData) => {
                 <span>Mastercard</span>
               </div>
               <div className="payment-icon-card">
-                <Wallet size={32} /> {/* Using Wallet icon for PayPal */}
+                <Wallet size={32} />
                 <span>PayPal</span>
               </div>
               <div className="payment-icon-card">
@@ -826,7 +825,7 @@ const handlePayPalPayment = async (paymentData) => {
                   className={`payment-method-card ${selectedPaymentMethod === 'paypal' ? 'selected' : ''}`}
                   onClick={() => setSelectedPaymentMethod('paypal')}
                 >
-                  <Wallet size={28} /> {/* Using Wallet icon for PayPal */}
+                  <Wallet size={28} />
                   <div className="method-info">
                     <h4>PayPal</h4>
                     <p>PayPal balance, Credit/Debit Cards</p>
