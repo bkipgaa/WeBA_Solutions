@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import config from './config';
 import './PaymentCallback.css';
 
 const PaymentCallback = () => {
@@ -15,16 +16,19 @@ const PaymentCallback = () => {
       const params = new URLSearchParams(location.search);
       const reference = params.get('reference');
       const gateway = params.get('gateway');
-      const token = params.get('token'); // PayPal token
-      const payerId = params.get('PayerID'); // PayPal payer ID
+      const token = params.get('token');
+      const payerId = params.get('PayerID');
       
-      if (gateway === 'paypal' && token && payerId) {
+      if (gateway === 'paypal' && token && reference) {
         // Verify PayPal payment
         try {
-          const response = await axios.post('/api/capture-paypal-payment', {
-            orderId: token,
-            reference: reference
-          });
+          const response = await axios.post(
+            `${config.api.baseUrl}${config.payments.paypal.captureEndpoint}`,
+            {
+              orderId: token,
+              reference: reference
+            }
+          );
           
           if (response.data.success) {
             setStatus('success');
@@ -52,7 +56,9 @@ const PaymentCallback = () => {
       } else if (reference) {
         // Verify PayStack payment
         try {
-          const response = await axios.get(`/api/verify-paystack-payment/${reference}`);
+          const response = await axios.get(
+            `${config.api.baseUrl}${config.payments.paystack.verifyEndpoint(reference)}`
+          );
           
           if (response.data.success) {
             setStatus('success');
@@ -94,7 +100,6 @@ const PaymentCallback = () => {
             <div className="spinner-large"></div>
             <h2>Verifying Payment...</h2>
             <p>Please wait while we confirm your transaction.</p>
-            <p className="note">Do not close this window.</p>
           </div>
         )}
         
@@ -117,11 +122,9 @@ const PaymentCallback = () => {
                 </div>
                 <div className="detail-row">
                   <span>Amount:</span>
-                  <strong>{paymentDetails.currency === 'KES' ? 'Ksh' : '$'} {paymentDetails.amount.toLocaleString()}</strong>
-                </div>
-                <div className="detail-row">
-                  <span>Payment Method:</span>
-                  <strong>{paymentDetails.paymentMethod === 'card' ? 'Visa/Mastercard' : 'PayPal'}</strong>
+                  <strong>
+                    {paymentDetails.currency === 'KES' ? 'Ksh' : '$'} {paymentDetails.amount}
+                  </strong>
                 </div>
                 <div className="detail-row">
                   <span>Status:</span>
@@ -129,10 +132,6 @@ const PaymentCallback = () => {
                 </div>
               </div>
             )}
-            
-            <p className="redirect-message">
-              Redirecting to broadband page in 5 seconds...
-            </p>
             
             <button onClick={() => navigate('/broadband')} className="continue-btn">
               Continue to Dashboard
@@ -154,10 +153,6 @@ const PaymentCallback = () => {
                 Contact Support
               </button>
             </div>
-            
-            <p className="help-text">
-              If you have already made payment, please contact our support team with your transaction details.
-            </p>
           </div>
         )}
       </div>

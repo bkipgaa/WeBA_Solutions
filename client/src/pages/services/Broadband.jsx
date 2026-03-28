@@ -216,77 +216,81 @@ const Broadband = () => {
     return true;
   };
 
-  const handlePayStackPayment = async (paymentData) => {
-    setIsProcessingPayment(true);
-    setPaymentError('');
-    
-    try {
-      const response = await fetch('http://localhost:5000/api/initialize-paystack-payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: paymentData.email,
-          amount: paymentData.amount,
-          packageName: paymentData.packageName,
-          customerName: paymentData.customerName,
-          phone: paymentData.phone,
-          location: paymentData.location,
-          currency: paymentData.currency
-        })
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        window.location.href = data.authorization_url;
-      } else {
-        setPaymentError(data.message || 'Failed to initialize payment');
-        setIsProcessingPayment(false);
-      }
-    } catch (error) {
-      console.error('PayStack payment error:', error);
-      setPaymentError('An error occurred. Please try again.');
-      setIsProcessingPayment(false);
-    }
-  };
+  // Update these functions in your Broadband component:
 
-  const handlePayPalPayment = async (paymentData) => {
-    setIsProcessingPayment(true);
-    setPaymentError('');
+const handlePayStackPayment = async (paymentData) => {
+  setIsProcessingPayment(true);
+  setPaymentError('');
+  
+  try {
+    const response = await fetch(`${config.api.baseUrl}/initialize-paystack-payment`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: paymentData.email,
+        amount: paymentData.amount,
+        packageName: paymentData.packageName,
+        customerName: paymentData.customerName,
+        phone: paymentData.phone,
+        location: paymentData.location,
+        currency: paymentData.currency
+      })
+    });
     
-    try {
-      const response = await fetch('/api/initialize-paypal-payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: paymentData.email,
-          amount: paymentData.amount,
-          packageName: paymentData.packageName,
-          customerName: paymentData.customerName,
-          phone: paymentData.phone,
-          location: paymentData.location,
-          currency: 'USD'
-        })
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        window.location.href = data.approval_url;
-      } else {
-        setPaymentError(data.message || 'Failed to initialize PayPal payment');
-        setIsProcessingPayment(false);
-      }
-    } catch (error) {
-      console.error('PayPal payment error:', error);
-      setPaymentError('An error occurred. Please try again.');
+    const data = await response.json();
+    
+    if (data.success) {
+      window.location.href = data.data.authorization_url;
+    } else {
+      setPaymentError(data.message || 'Failed to initialize payment');
       setIsProcessingPayment(false);
     }
-  };
+  } catch (error) {
+    console.error('PayStack payment error:', error);
+    setPaymentError('An error occurred. Please try again.');
+    setIsProcessingPayment(false);
+  }
+};
+
+const handlePayPalPayment = async (paymentData) => {
+  setIsProcessingPayment(true);
+  setPaymentError('');
+  
+  try {
+    const response = await fetch(`${config.api.baseUrl}/initialize-paypal-payment`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: paymentData.email,
+        amount: paymentData.amount,
+        packageName: paymentData.packageName,
+        customerName: paymentData.customerName,
+        phone: paymentData.phone,
+        location: paymentData.location,
+        currency: 'USD'
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      window.location.href = data.data.approval_url;
+    } else {
+      setPaymentError(data.message || 'Failed to initialize PayPal payment');
+      setIsProcessingPayment(false);
+    }
+  } catch (error) {
+    console.error('PayPal payment error:', error);
+    setPaymentError('An error occurred. Please try again.');
+    setIsProcessingPayment(false);
+  }
+};
+
+ 
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -7,14 +7,17 @@
  * - Data validation and formatting
  */
 
+// In-memory storage for pending transactions
+const pendingTransactions = new Map();
+
 /**
  * Generate a unique transaction reference ID
  * @param {string} gateway - Payment gateway name (PAYSTACK, PAYPAL, etc.)
  * @returns {string} Unique reference ID
  * 
- * Example output: "PAYSTACK-1701234567890-ABC12345"
+ * Example output: "PAYSTACK_1701234567890_ABC12345"
  */
-export const generateReference = (gateway = 'PAY') => {
+const generateReference = (gateway = 'PAY') => {
   // Get current timestamp in milliseconds
   const timestamp = Date.now();
   
@@ -22,7 +25,7 @@ export const generateReference = (gateway = 'PAY') => {
   const random = Math.random().toString(36).substring(2, 10).toUpperCase();
   
   // Combine gateway, timestamp, and random string
-  return `${gateway}-${timestamp}-${random}`;
+  return `${gateway}_${timestamp}_${random}`;
 };
 
 /**
@@ -33,7 +36,7 @@ export const generateReference = (gateway = 'PAY') => {
  * @param {string} currency - Currency code (KES, USD, EUR, etc.)
  * @returns {number} Amount in smallest currency unit
  */
-export const convertToSmallestUnit = (amount, currency = 'KES') => {
+const convertToSmallestUnit = (amount, currency = 'KES') => {
   // Define decimal places for different currencies
   const decimalPlaces = {
     'KES': 2,    // Kenyan Shilling - 2 decimal places
@@ -56,7 +59,7 @@ export const convertToSmallestUnit = (amount, currency = 'KES') => {
  * @param {string} currency - Currency code
  * @returns {number} Amount in main currency unit
  */
-export const convertFromSmallestUnit = (amount, currency = 'KES') => {
+const convertFromSmallestUnit = (amount, currency = 'KES') => {
   const decimalPlaces = {
     'KES': 2,
     'USD': 2,
@@ -77,7 +80,7 @@ export const convertFromSmallestUnit = (amount, currency = 'KES') => {
  * @param {string} currency - Currency code
  * @returns {string} Formatted amount with currency symbol
  */
-export const formatCurrency = (amount, currency = 'KES') => {
+const formatCurrency = (amount, currency = 'KES') => {
   const symbols = {
     'KES': 'KSh',
     'USD': '$',
@@ -100,7 +103,7 @@ export const formatCurrency = (amount, currency = 'KES') => {
  * @param {string} email - Email address to validate
  * @returns {boolean} True if valid, false otherwise
  */
-export const isValidEmail = (email) => {
+const isValidEmail = (email) => {
   const emailRegex = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/;
   return emailRegex.test(email);
 };
@@ -110,7 +113,7 @@ export const isValidEmail = (email) => {
  * @param {string} phone - Phone number to validate
  * @returns {boolean} True if valid, false otherwise
  */
-export const isValidPhone = (phone) => {
+const isValidPhone = (phone) => {
   // Kenyan phone number formats: 0712345678, +254712345678, 254712345678
   const phoneRegex = /^(?:\+254|0|254)?[17]\d{8}$/;
   return phoneRegex.test(phone.replace(/\s/g, ''));
@@ -121,7 +124,7 @@ export const isValidPhone = (phone) => {
  * @param {string} phone - Phone number to sanitize
  * @returns {string} Phone number in international format (+254...)
  */
-export const sanitizePhone = (phone) => {
+const sanitizePhone = (phone) => {
   // Remove all non-digit characters
   let cleaned = phone.replace(/\D/g, '');
   
@@ -141,7 +144,7 @@ export const sanitizePhone = (phone) => {
  * Generate random order ID
  * @returns {string} Random order ID
  */
-export const generateOrderId = () => {
+const generateOrderId = () => {
   const prefix = 'ORD';
   const timestamp = Date.now().toString(36).toUpperCase();
   const random = Math.random().toString(36).substring(2, 6).toUpperCase();
@@ -154,7 +157,7 @@ export const generateOrderId = () => {
  * @param {number} months - Subscription duration in months
  * @returns {number} Total price
  */
-export const calculatePackagePrice = (speed, months = 1) => {
+const calculatePackagePrice = (speed, months = 1) => {
   const prices = {
     '10Mbps': 1500,
     '20Mbps': 2500,
@@ -171,7 +174,7 @@ export const calculatePackagePrice = (speed, months = 1) => {
  * @param {string} speed - Internet speed
  * @returns {string} Package name
  */
-export const getPackageName = (speed) => {
+const getPackageName = (speed) => {
   const packages = {
     '10Mbps': 'Basic Broadband',
     '20Mbps': 'Standard Broadband',
@@ -180,4 +183,84 @@ export const getPackageName = (speed) => {
   };
   
   return packages[speed] || 'Custom Package';
+};
+
+/**
+ * Clear expired pending transactions (older than 1 hour)
+ * @returns {number} Number of transactions cleared
+ */
+const clearExpiredTransactions = () => {
+  const oneHourAgo = Date.now() - (60 * 60 * 1000);
+  let cleared = 0;
+  
+  for (const [reference, transaction] of pendingTransactions.entries()) {
+    if (new Date(transaction.createdAt).getTime() < oneHourAgo) {
+      pendingTransactions.delete(reference);
+      cleared++;
+    }
+  }
+  
+  return cleared;
+};
+
+/**
+ * Get transaction by reference
+ * @param {string} reference - Transaction reference
+ * @returns {object|null} Transaction object or null
+ */
+const getTransaction = (reference) => {
+  return pendingTransactions.get(reference) || null;
+};
+
+/**
+ * Update transaction status
+ * @param {string} reference - Transaction reference
+ * @param {string} status - New status (pending, completed, failed)
+ * @param {object} paymentData - Payment response data
+ * @returns {boolean} Success status
+ */
+const updateTransaction = (reference, status, paymentData = null) => {
+  const transaction = pendingTransactions.get(reference);
+  
+  if (transaction) {
+    transaction.status = status;
+    if (paymentData) {
+      transaction.paymentData = paymentData;
+      transaction.completedAt = new Date();
+    }
+    transaction.updatedAt = new Date();
+    pendingTransactions.set(reference, transaction);
+    return true;
+  }
+  
+  return false;
+};
+
+// Export all functions
+module.exports = {
+  // Storage
+  pendingTransactions,
+  
+  // Generation functions
+  generateReference,
+  generateOrderId,
+  
+  // Currency functions
+  convertToSmallestUnit,
+  convertFromSmallestUnit,
+  formatCurrency,
+  
+  // Validation functions
+  isValidEmail,
+  isValidPhone,
+  sanitizePhone,
+  
+  // Package functions
+  calculatePackagePrice,
+  getPackageName,
+  
+  // Transaction management
+  clearExpiredTransactions,
+  getTransaction,
+  updateTransaction
 };
