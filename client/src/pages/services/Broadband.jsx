@@ -22,7 +22,6 @@ const Broadband = () => {
   const [showPackageSelection, setShowPackageSelection] = useState(false);
   const [showPaymentGateway, setShowPaymentGateway] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [paymentError, setPaymentError] = useState('');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('card');
