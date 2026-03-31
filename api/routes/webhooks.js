@@ -49,28 +49,30 @@ router.post('/paypal-webhook', async (req, res) => {
   }
 });
 
-// PayStack webhook handler
 router.post('/paystack-webhook', async (req, res) => {
-  // Verify signature
-  const hash = crypto
-    .createHmac('sha512', process.env.PAYSTACK_SECRET_KEY)
-    .update(JSON.stringify(req.body))
-    .digest('hex');
-    
-  if (hash !== req.headers['x-paystack-signature']) {
-    console.log('❌ Invalid PayStack webhook signature');
-    return res.status(401).json({ success: false, message: 'Invalid signature' });
-  }
-  
-  const event = req.body;
-  console.log('📢 PayStack webhook received:', event.event);
-  
   try {
+    // ✅ Verify signature using RAW body
+    const hash = crypto
+      .createHmac('sha512', process.env.PAYSTACK_SECRET_KEY)
+      .update(req.body)
+      .digest('hex');
+
+    if (hash !== req.headers['x-paystack-signature']) {
+      console.log('❌ Invalid PayStack webhook signature');
+      return res.status(401).json({ success: false, message: 'Invalid signature' });
+    }
+
+    // ✅ Convert raw buffer → JSON
+    const event = JSON.parse(req.body.toString());
+
+    console.log('📢 PayStack webhook received:', event.event);
+
     switch (event.event) {
       case 'charge.success':
         console.log('💰 PayStack charge.success event received');
+
         const paymentData = event.data;
-        
+
         await saveSubscriptionToDatabase({
           reference: paymentData.reference,
           customerName: paymentData.metadata.customer_name,
@@ -86,20 +88,21 @@ router.post('/paystack-webhook', async (req, res) => {
           paymentGateway: 'paystack',
           status: 'active'
         });
-        
+
         await sendConfirmationEmail(paymentData);
         await sendAdminNotification(paymentData);
         break;
-        
+
       case 'charge.failed':
-        console.log('❌ PayStack charge.failed event:', event.data.reference);
+        console.log('❌ PayStack charge.failed:', event.data.reference);
         break;
-        
+
       default:
         console.log('📢 Unhandled PayStack webhook event:', event.event);
     }
-    
+
     return res.status(200).json({ success: true, message: 'Webhook processed' });
+
   } catch (error) {
     console.error('❌ Webhook processing error:', error);
     return res.status(500).json({ success: false, message: 'Webhook processing failed' });

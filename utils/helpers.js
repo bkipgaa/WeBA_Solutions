@@ -125,21 +125,21 @@ const isValidPhone = (phone) => {
  * @returns {string} Phone number in international format (+254...)
  */
 const sanitizePhone = (phone) => {
-  // Remove all non-digit characters
-  let cleaned = phone.replace(/\D/g, '');
-  
-  // Convert to international format
-  if (cleaned.startsWith('0')) {
-    cleaned = '254' + cleaned.substring(1);
-  } else if (cleaned.startsWith('254')) {
-    cleaned = '254' + cleaned.substring(3);
-  } else if (!cleaned.startsWith('254')) {
-    cleaned = '254' + cleaned;
-  }
-  
-  return '+' + cleaned;
-};
+  // Remove everything except numbers
+  phone = phone.replace(/\D/g, '');
 
+  // Remove Kenyan country code if present
+  if (phone.startsWith('254')) {
+    phone = phone.substring(3);
+  }
+
+  // Remove leading 0 if present
+  if (phone.startsWith('0')) {
+    phone = phone.substring(1);
+  }
+
+  return phone;
+};
 /**
  * Generate random order ID
  * @returns {string} Random order ID

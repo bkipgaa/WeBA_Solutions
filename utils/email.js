@@ -1,5 +1,16 @@
 const nodemailer = require('nodemailer');
-const { Subscription, Transaction } = require('../models');
+const { Subscription, Transaction } = require('../models/Index');
+
+// ✅ CREATE REUSABLE TRANSPORTER (BEST PRACTICE)
+const transporter = nodemailer.createTransport({
+  host: process.env.EMAIL_HOST,
+  port: Number(process.env.EMAIL_PORT),
+  secure: false, // true for 465, false for 587
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
 
 async function saveSubscriptionToDatabase(data) {
   try {
@@ -8,11 +19,9 @@ async function saveSubscriptionToDatabase(data) {
       return null;
     }
 
-    // Check if subscription already exists
     let subscription = await Subscription.findOne({ reference: data.reference });
     
     if (subscription) {
-      // Update existing subscription
       subscription.status = data.status;
       subscription.paymentDate = data.paymentDate;
       subscription.transactionId = data.transactionId;
@@ -21,7 +30,6 @@ async function saveSubscriptionToDatabase(data) {
       await subscription.save();
       console.log(`✅ Subscription updated: ${data.reference}`);
     } else {
-      // Create new subscription
       subscription = new Subscription({
         reference: data.reference,
         customerName: data.customerName,
@@ -41,7 +49,6 @@ async function saveSubscriptionToDatabase(data) {
       console.log(`✅ Subscription saved: ${data.reference}`);
     }
 
-    // Save transaction record
     const transaction = new Transaction({
       reference: data.reference,
       subscriptionId: subscription._id,
@@ -58,6 +65,7 @@ async function saveSubscriptionToDatabase(data) {
       paymentMethod: data.paymentMethod,
       completedAt: data.status === 'active' ? new Date() : null
     });
+
     await transaction.save();
     console.log(`✅ Transaction saved: ${data.reference}`);
 
@@ -75,18 +83,15 @@ async function sendConfirmationEmail(paymentData) {
       return;
     }
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
-    });
-
     const customerEmail = paymentData.customer?.email || paymentData.email;
     const customerName = paymentData.metadata?.customer_name || paymentData.customerName;
     const packageName = paymentData.metadata?.package_name || paymentData.packageName;
-    const amount = paymentData.amount / 100 || paymentData.amount;
+
+    // ✅ FIX amount handling (avoid divide by 100 issue)
+    const amount = paymentData.amount > 1000 
+      ? paymentData.amount / 100 
+      : paymentData.amount;
+
     const currency = paymentData.currency || 'USD';
 
     const mailOptions = {
@@ -104,7 +109,7 @@ async function sendConfirmationEmail(paymentData) {
             <p>Thank you for your payment. Your subscription has been successfully activated.</p>
             
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-              <h3 style="margin-top: 0;">Payment Details:</h3>
+              <h3>Payment Details:</h3>
               <ul style="list-style: none; padding: 0;">
                 <li><strong>Package:</strong> ${packageName}</li>
                 <li><strong>Amount:</strong> ${currency} ${amount}</li>
@@ -115,22 +120,29 @@ async function sendConfirmationEmail(paymentData) {
             </div>
             
             <div style="background-color: #e8f5e9; padding: 15px; border-radius: 5px;">
-              <h3 style="margin-top: 0;">Next Steps:</h3>
-              <p>Your WiFi service will be activated within 24 hours. You'll receive a separate email with your login credentials and setup instructions.</p>
+              <h3>Next Steps:</h3>
+              <p>Your WiFi service will be activated within 24 hours.</p>
             </div>
             
             <p style="margin-top: 30px;">
               Best regards,<br>
-              <strong>WeBA Solutions Team</strong><br>
-              <small>support@webasolutions.com | +254 712 345 678</small>
+              <strong>WeBA Solutions Team</strong>
             </p>
           </div>
         </div>
       `
     };
 
-    await transporter.sendMail(mailOptions);
+    const info = await transporter.sendMail(mailOptions);
+
     console.log(`📧 Confirmation email sent to ${customerEmail}`);
+
+    // ✅ ETHEREAL PREVIEW LINK (VERY USEFUL)
+    const previewUrl = nodemailer.getTestMessageUrl(info);
+    if (previewUrl) {
+      console.log('🔗 Preview Email:', previewUrl);
+    }
+
   } catch (error) {
     console.error('❌ Failed to send email:', error);
   }
@@ -143,14 +155,6 @@ async function sendAdminNotification(paymentData) {
       return;
     }
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
-    });
-
     const mailOptions = {
       from: `"WeBA Solutions" <${process.env.EMAIL_USER}>`,
       to: process.env.ADMIN_EMAIL,
@@ -158,31 +162,26 @@ async function sendAdminNotification(paymentData) {
       html: `
         <div style="font-family: Arial, sans-serif;">
           <h2>New Payment Received</h2>
-          <p>A new payment has been successfully processed.</p>
           
-          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px;">
-            <h3>Payment Details:</h3>
-            <ul>
-              <li><strong>Customer:</strong> ${paymentData.metadata?.customer_name}</li>
-              <li><strong>Email:</strong> ${paymentData.customer?.email}</li>
-              <li><strong>Phone:</strong> ${paymentData.metadata?.phone}</li>
-              <li><strong>Location:</strong> ${paymentData.metadata?.location}</li>
-              <li><strong>Package:</strong> ${paymentData.metadata?.package_name}</li>
-              <li><strong>Amount:</strong> ${paymentData.currency} ${paymentData.amount / 100}</li>
-              <li><strong>Reference:</strong> ${paymentData.reference}</li>
-              <li><strong>Transaction ID:</strong> ${paymentData.id}</li>
-              <li><strong>Payment Method:</strong> ${paymentData.channel}</li>
-              <li><strong>Date:</strong> ${new Date(paymentData.paid_at).toLocaleString()}</li>
-            </ul>
-          </div>
-          
-          <p><a href="${process.env.ADMIN_DASHBOARD_URL}/subscriptions">View in Admin Dashboard</a></p>
+          <ul>
+            <li><strong>Customer:</strong> ${paymentData.metadata?.customer_name}</li>
+            <li><strong>Email:</strong> ${paymentData.customer?.email}</li>
+            <li><strong>Phone:</strong> ${paymentData.metadata?.phone}</li>
+            <li><strong>Location:</strong> ${paymentData.metadata?.location}</li>
+            <li><strong>Package:</strong> ${paymentData.metadata?.package_name}</li>
+            <li><strong>Amount:</strong> ${paymentData.currency} ${paymentData.amount}</li>
+            <li><strong>Reference:</strong> ${paymentData.reference}</li>
+            <li><strong>Transaction ID:</strong> ${paymentData.id}</li>
+            <li><strong>Payment Method:</strong> ${paymentData.channel}</li>
+            <li><strong>Date:</strong> ${new Date(paymentData.paid_at).toLocaleString()}</li>
+          </ul>
         </div>
       `
     };
 
     await transporter.sendMail(mailOptions);
     console.log(`📧 Admin notification sent to ${process.env.ADMIN_EMAIL}`);
+
   } catch (error) {
     console.error('❌ Failed to send admin email:', error);
   }

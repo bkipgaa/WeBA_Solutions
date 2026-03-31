@@ -61,35 +61,41 @@ const PaymentGateway = ({
   };
 
   const handlePayPalPayment = async () => {
-    setLoading(true);
-    setError('');
+  setLoading(true);
+  setError('');
 
-    try {
-      const response = await axios.post(
-        `${API_BASE_URL}/initialize-paypal-payment`,
-        {
-          email,
-          amount,
-          packageName,
-          customerName,
-          phone,
-          location,
-          currency: 'USD'
-        }
-      );
-
-      if (response.data.success) {
-        window.location.href = response.data.data.approval_url;
-      } else {
-        setError(response.data.message || 'Failed to initialize PayPal payment');
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/initialize-paypal-payment`,
+      {
+        email,
+        amount,
+        packageName,
+        customerName,
+        phone,
+        location,
+        currency: 'USD'
       }
-    } catch (error) {
-      console.error('PayPal payment error:', error);
-      setError(error.response?.data?.message || 'An error occurred. Please try again.');
-    } finally {
-      setLoading(false);
+    );
+
+    if (response.data.success) {
+      const { approval_url, reference } = response.data.data;
+
+      // ✅ Save reference for callback use
+      localStorage.setItem('paypal_reference', reference);
+
+      // ✅ Redirect to PayPal
+      window.location.href = approval_url;
+    } else {
+      setError(response.data.message || 'Failed to initialize PayPal payment');
     }
-  };
+  } catch (error) {
+    console.error('PayPal payment error:', error);
+    setError(error.response?.data?.message || 'An error occurred. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handlePayment = () => {
     if (selectedGateway === 'paystack') {

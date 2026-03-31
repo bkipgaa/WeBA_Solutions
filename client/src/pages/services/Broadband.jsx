@@ -255,40 +255,45 @@ const Broadband = () => {
   };
 
   const handlePayPalPayment = async (paymentData) => {
-    setIsProcessingPayment(true);
-    setPaymentError('');
+  setIsProcessingPayment(true);
+  setPaymentError('');
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/initialize-paypal-payment`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: paymentData.email,
+        amount: paymentData.amount,
+        packageName: paymentData.packageName,
+        customerName: paymentData.customerName,
+        phone: paymentData.phone,
+        location: paymentData.location,
+        currency: 'USD'
+      })
+    });
     
-    try {
-      const response = await fetch(`${API_BASE_URL}/initialize-paypal-payment`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: paymentData.email,
-          amount: paymentData.amount,
-          packageName: paymentData.packageName,
-          customerName: paymentData.customerName,
-          phone: paymentData.phone,
-          location: paymentData.location,
-          currency: 'USD'
-        })
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        window.location.href = data.data.approval_url;
-      } else {
-        setPaymentError(data.message || 'Failed to initialize PayPal payment');
-        setIsProcessingPayment(false);
-      }
-    } catch (error) {
-      console.error('PayPal payment error:', error);
-      setPaymentError('An error occurred. Please try again.');
+    const data = await response.json();
+    
+    if (data.success) {
+      const { approval_url, reference } = data.data;
+
+      // ✅ Save reference before redirect
+      localStorage.setItem('paypal_reference', reference);
+
+      window.location.href = approval_url;
+    } else {
+      setPaymentError(data.message || 'Failed to initialize PayPal payment');
       setIsProcessingPayment(false);
     }
-  };
+  } catch (error) {
+    console.error('PayPal payment error:', error);
+    setPaymentError('An error occurred. Please try again.');
+    setIsProcessingPayment(false);
+  }
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -21,40 +21,50 @@ const PaymentCallback = () => {
       const token = params.get('token');
       const payerId = params.get('PayerID');
       
-      if (gateway === 'paypal' && token && reference) {
-        // Verify PayPal payment
-        try {
-          const response = await axios.post(
-            `${API_BASE_URL}/capture-paypal-payment`,
-            {
-              orderId: token,
-              reference: reference
-            }
-          );
-          
-          if (response.data.success) {
-            setStatus('success');
-            setMessage('Payment successful! Your subscription is now active.');
-            setPaymentDetails(response.data.data);
-            
-            // Notify parent component
-            if (window.opener) {
-              window.opener.postMessage({ type: 'PAYMENT_SUCCESS', data: response.data.data }, '*');
-            }
-            
-            // Redirect after 5 seconds
-            setTimeout(() => {
-              navigate('/broadband');
-            }, 5000);
-          } else {
-            setStatus('error');
-            setMessage('Payment verification failed. Please contact support.');
-          }
-        } catch (error) {
-          console.error('PayPal verification error:', error);
-          setStatus('error');
-          setMessage('An error occurred while verifying payment.');
-        }
+      if (gateway === 'paypal' && token) {
+  // ✅ Get reference from URL OR localStorage
+  const reference = params.get('reference') || localStorage.getItem('paypal_reference');
+
+  if (!reference) {
+    setStatus('error');
+    setMessage('Missing payment reference.');
+    return;
+  }
+
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/capture-paypal-payment`,
+      {
+        orderId: token,
+        reference: reference
+      }
+    );
+    
+    if (response.data.success) {
+      setStatus('success');
+      setMessage('Payment successful! Your subscription is now active.');
+      setPaymentDetails(response.data.data);
+
+      // ✅ Clean up stored reference
+      localStorage.removeItem('paypal_reference');
+      
+      if (window.opener) {
+        window.opener.postMessage({ type: 'PAYMENT_SUCCESS', data: response.data.data }, '*');
+      }
+      
+      setTimeout(() => {
+        navigate('/broadband');
+      }, 5000);
+    } else {
+      setStatus('error');
+      setMessage('Payment verification failed. Please contact support.');
+    }
+  } catch (error) {
+    console.error('PayPal verification error:', error);
+    setStatus('error');
+    setMessage('An error occurred while verifying payment.');
+  }
+
       } else if (reference) {
         // Verify PayStack payment
         try {
