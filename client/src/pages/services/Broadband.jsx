@@ -12,6 +12,7 @@ import {
   Lock 
 } from 'lucide-react';
 import './Broadband.css';
+import PaymentGateway from '../../components/PaymentGateway';
 
 // Hardcoded API URL
 const API_BASE_URL = 'https://weba-payment.vercel.app/api';
@@ -24,7 +25,8 @@ const Broadband = () => {
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [paymentError, setPaymentError] = useState('');
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('card');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('paystack');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Form data state
   const [formData, setFormData] = useState({
@@ -218,83 +220,6 @@ const Broadband = () => {
     return true;
   };
 
-  const handlePayStackPayment = async (paymentData) => {
-    setIsProcessingPayment(true);
-    setPaymentError('');
-    
-    try {
-      const response = await fetch(`${API_BASE_URL}/initialize-paystack-payment`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: paymentData.email,
-          amount: paymentData.amount,
-          packageName: paymentData.packageName,
-          customerName: paymentData.customerName,
-          phone: paymentData.phone,
-          location: paymentData.location,
-          currency: paymentData.currency
-        })
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        window.location.href = data.data.authorization_url;
-      } else {
-        setPaymentError(data.message || 'Failed to initialize payment');
-        setIsProcessingPayment(false);
-      }
-    } catch (error) {
-      console.error('PayStack payment error:', error);
-      setPaymentError('An error occurred. Please try again.');
-      setIsProcessingPayment(false);
-    }
-  };
-
-  const handlePayPalPayment = async (paymentData) => {
-  setIsProcessingPayment(true);
-  setPaymentError('');
-  
-  try {
-    const response = await fetch(`${API_BASE_URL}/initialize-paypal-payment`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: paymentData.email,
-        amount: paymentData.amount,
-        packageName: paymentData.packageName,
-        customerName: paymentData.customerName,
-        phone: paymentData.phone,
-        location: paymentData.location,
-        currency: 'USD'
-      })
-    });
-    
-    const data = await response.json();
-    
-    if (data.success) {
-      const { approval_url, reference } = data.data;
-
-      // ✅ Save reference before redirect
-      localStorage.setItem('paypal_reference', reference);
-
-      window.location.href = approval_url;
-    } else {
-      setPaymentError(data.message || 'Failed to initialize PayPal payment');
-      setIsProcessingPayment(false);
-    }
-  } catch (error) {
-    console.error('PayPal payment error:', error);
-    setPaymentError('An error occurred. Please try again.');
-    setIsProcessingPayment(false);
-  }
-};
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -306,31 +231,13 @@ const Broadband = () => {
     setShowPackageForm(false);
   };
 
-  const processPayment = () => {
-    const paymentData = {
-      email: formData.email,
-      amount: getNumericPrice(selectedPackage),
-      packageName: selectedPackage.name,
-      customerName: `${formData.firstName} ${formData.lastName}`,
-      phone: formData.phone,
-      location: formData.location,
-      currency: getCurrencyCode()
-    };
-    
-    if (selectedPaymentMethod === 'card') {
-      handlePayStackPayment(paymentData);
-    } else {
-      handlePayPalPayment(paymentData);
-    }
-  };
-
   const handleCloseAll = () => {
     setShowPackageForm(false);
     setShowPackageSelection(false);
     setShowPaymentGateway(false);
     setSelectedPackage(null);
     setPaymentError('');
-    setSelectedPaymentMethod('card');
+    setSelectedPaymentMethod('paystack');
     setFormData({
       firstName: '',
       lastName: '',
@@ -341,6 +248,12 @@ const Broadband = () => {
       description: '',
       agreeTerms: false
     });
+  };
+
+  const handlePaymentSuccess = (paymentData) => {
+    console.log('Payment successful:', paymentData);
+    handleCloseAll();
+    // Optionally redirect to success page or show success message
   };
 
   return (
@@ -774,117 +687,19 @@ const Broadband = () => {
         </div>
       )}
 
-      {/* Payment Gateway Modal */}
+      {/* Payment Gateway Modal - Using Unified PaymentGateway Component */}
       {showPaymentGateway && selectedPackage && (
-        <div className="payment-modal-overlay">
-          <div className="payment-modal-container">
-            <div className="payment-modal-header">
-              <h2 className="payment-modal-title">Secure Payment</h2>
-              <button className="close-btn" onClick={handleCloseAll}>×</button>
-            </div>
-
-            <div className="payment-order-summary">
-              <h3>Order Summary</h3>
-              <div className="summary-card">
-                <div className="summary-row">
-                  <span>Package:</span>
-                  <strong>{selectedPackage.name}</strong>
-                </div>
-                <div className="summary-row">
-                  <span>Customer:</span>
-                  <span>{formData.firstName} {formData.lastName}</span>
-                </div>
-                <div className="summary-row">
-                  <span>Email:</span>
-                  <span>{formData.email}</span>
-                </div>
-                <div className="summary-row total">
-                  <span>Amount:</span>
-                  <strong>{getFormattedPrice(selectedPackage)}</strong>
-                </div>
-              </div>
-            </div>
-
-            <div className="payment-method-selection">
-              <h3>Select Payment Method</h3>
-              <div className="payment-methods-grid">
-                <div 
-                  className={`payment-method-card ${selectedPaymentMethod === 'card' ? 'selected' : ''}`}
-                  onClick={() => setSelectedPaymentMethod('card')}
-                >
-                  <CreditCard size={28} />
-                  <div className="method-info">
-                    <h4>Credit/Debit Card</h4>
-                    <p>Visa, Mastercard, American Express</p>
-                    <div className="card-icons">
-                      <span>Visa</span>
-                      <span>Mastercard</span>
-                      <span>Amex</span>
-                    </div>
-                  </div>
-                  {selectedPaymentMethod === 'card' && <div className="selected-check">✓</div>}
-                </div>
-
-                <div 
-                  className={`payment-method-card ${selectedPaymentMethod === 'paypal' ? 'selected' : ''}`}
-                  onClick={() => setSelectedPaymentMethod('paypal')}
-                >
-                  <Wallet size={28} />
-                  <div className="method-info">
-                    <h4>PayPal</h4>
-                    <p>PayPal balance, Credit/Debit Cards</p>
-                    <div className="card-icons">
-                      <span>PayPal</span>
-                      <span>Visa</span>
-                      <span>MC</span>
-                    </div>
-                  </div>
-                  {selectedPaymentMethod === 'paypal' && <div className="selected-check">✓</div>}
-                </div>
-              </div>
-            </div>
-
-            {paymentError && (
-              <div className="payment-error">
-                <span>⚠️</span>
-                <p>{paymentError}</p>
-              </div>
-            )}
-
-            <div className="payment-security-info">
-              <Lock size={16} />
-              <span>256-bit SSL Encrypted Payment</span>
-              <Shield size={16} />
-              <span>PCI DSS Compliant</span>
-            </div>
-
-            <div className="payment-actions">
-              <button 
-                onClick={processPayment} 
-                disabled={isProcessingPayment}
-                className="pay-now-btn"
-              >
-                {isProcessingPayment ? (
-                  <>
-                    <span className="spinner"></span>
-                    Processing...
-                  </>
-                ) : (
-                  `Pay ${getFormattedPrice(selectedPackage)}`
-                )}
-              </button>
-              
-              <button onClick={handleCloseAll} className="cancel-payment-btn">
-                Cancel
-              </button>
-            </div>
-
-            <p className="payment-footer-note">
-              By proceeding, you agree to our terms and conditions. All payments are securely processed 
-              and settled to Equity Bank Kenya.
-            </p>
-          </div>
-        </div>
+        <PaymentGateway
+          email={formData.email}
+          amount={getNumericPrice(selectedPackage)}
+          packageName={selectedPackage.name}
+          customerName={`${formData.firstName} ${formData.lastName}`}
+          phone={formData.phone}
+          location={formData.location}
+          currency={getCurrencyCode()}
+          onSuccess={handlePaymentSuccess}
+          onClose={handleCloseAll}
+        />
       )}
     </div>
   );

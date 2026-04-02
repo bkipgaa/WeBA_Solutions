@@ -73,21 +73,7 @@ router.post('/paystack-webhook', async (req, res) => {
 
         const paymentData = event.data;
 
-        await saveSubscriptionToDatabase({
-          reference: paymentData.reference,
-          customerName: paymentData.metadata.customer_name,
-          email: paymentData.customer.email,
-          phone: paymentData.metadata.phone,
-          location: paymentData.metadata.location,
-          packageName: paymentData.metadata.package_name,
-          amount: paymentData.amount / 100,
-          currency: paymentData.currency,
-          paymentDate: new Date(paymentData.paid_at),
-          transactionId: paymentData.id,
-          paymentMethod: paymentData.channel,
-          paymentGateway: 'paystack',
-          status: 'active'
-        });
+       
 
         await sendConfirmationEmail(paymentData);
         await sendAdminNotification(paymentData);

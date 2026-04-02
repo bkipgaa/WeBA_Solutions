@@ -29,13 +29,14 @@ const PaymentGateway = ({
   const [error, setError] = useState('');
   const [selectedGateway, setSelectedGateway] = useState('paystack');
 
-  const handlePayStackPayment = async () => {
+  // ✅ UNIFIED PAYMENT INITIALIZATION
+  const handleUnifiedPayment = async () => {
     setLoading(true);
     setError('');
 
     try {
       const response = await axios.post(
-        `${API_BASE_URL}/initialize-paystack-payment`,
+        `${API_BASE_URL}/payment/initialize`,
         {
           email,
           amount,
@@ -43,66 +44,43 @@ const PaymentGateway = ({
           customerName,
           phone,
           location,
-          currency: currency
+          currency: selectedGateway === 'paystack' ? (currency === 'USD' ? 'KES' : currency) : 'USD',
+          gateway: selectedGateway
         }
       );
 
       if (response.data.success) {
-        window.location.href = response.data.data.authorization_url;
+        // Store transaction reference for callback
+        const reference = response.data.data?.reference;
+        if (reference) {
+          localStorage.setItem('pendingPayment', JSON.stringify({
+            reference,
+            gateway: selectedGateway,
+            amount,
+            packageName,
+            timestamp: Date.now()
+          }));
+        }
+
+        // Redirect to payment gateway
+        if (selectedGateway === 'paystack') {
+          window.location.href = response.data.data.authorization_url;
+        } else if (selectedGateway === 'paypal') {
+          window.location.href = response.data.data.approval_url;
+        }
       } else {
         setError(response.data.message || 'Failed to initialize payment');
       }
     } catch (error) {
-      console.error('PayStack payment error:', error);
+      console.error(`${selectedGateway} payment error:`, error);
       setError(error.response?.data?.message || 'An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handlePayPalPayment = async () => {
-  setLoading(true);
-  setError('');
-
-  try {
-    const response = await axios.post(
-      `${API_BASE_URL}/initialize-paypal-payment`,
-      {
-        email,
-        amount,
-        packageName,
-        customerName,
-        phone,
-        location,
-        currency: 'USD'
-      }
-    );
-
-    if (response.data.success) {
-      const { approval_url, reference } = response.data.data;
-
-      // ✅ Save reference for callback use
-      localStorage.setItem('paypal_reference', reference);
-
-      // ✅ Redirect to PayPal
-      window.location.href = approval_url;
-    } else {
-      setError(response.data.message || 'Failed to initialize PayPal payment');
-    }
-  } catch (error) {
-    console.error('PayPal payment error:', error);
-    setError(error.response?.data?.message || 'An error occurred. Please try again.');
-  } finally {
-    setLoading(false);
-  }
-};
-
   const handlePayment = () => {
-    if (selectedGateway === 'paystack') {
-      handlePayStackPayment();
-    } else if (selectedGateway === 'paypal') {
-      handlePayPalPayment();
-    }
+    handleUnifiedPayment();
   };
 
   return (
@@ -136,9 +114,11 @@ const PaymentGateway = ({
             <div className="summary-row total">
               <span>Amount to Pay:</span>
               <strong>
-                {currency === 'KES' ? 'Ksh' : 
-                 currency === 'EUR' ? '€' : 
-                 currency === 'GBP' ? '£' : '$'} 
+                {selectedGateway === 'paystack' && currency !== 'KES' ? 'KSh ' : 
+                 selectedGateway === 'paypal' ? '$ ' : 
+                 currency === 'KES' ? 'KSh ' :
+                 currency === 'EUR' ? '€ ' : 
+                 currency === 'GBP' ? '£ ' : '$ '}
                 {amount.toLocaleString()}
               </strong>
             </div>

@@ -21,83 +21,62 @@ const PaymentCallback = () => {
       const token = params.get('token');
       const payerId = params.get('PayerID');
       
-      if (gateway === 'paypal' && token) {
-  // ✅ Get reference from URL OR localStorage
-  const reference = params.get('reference') || localStorage.getItem('paypal_reference');
-
-  if (!reference) {
-    setStatus('error');
-    setMessage('Missing payment reference.');
-    return;
-  }
-
-  try {
-    const response = await axios.post(
-      `${API_BASE_URL}/capture-paypal-payment`,
-      {
-        orderId: token,
-        reference: reference
-      }
-    );
-    
-    if (response.data.success) {
-      setStatus('success');
-      setMessage('Payment successful! Your subscription is now active.');
-      setPaymentDetails(response.data.data);
-
-      // ✅ Clean up stored reference
-      localStorage.removeItem('paypal_reference');
+      // Try to get reference from localStorage if not in URL
+      let actualReference = reference;
+      let actualGateway = gateway;
       
-      if (window.opener) {
-        window.opener.postMessage({ type: 'PAYMENT_SUCCESS', data: response.data.data }, '*');
-      }
-      
-      setTimeout(() => {
-        navigate('/broadband');
-      }, 5000);
-    } else {
-      setStatus('error');
-      setMessage('Payment verification failed. Please contact support.');
-    }
-  } catch (error) {
-    console.error('PayPal verification error:', error);
-    setStatus('error');
-    setMessage('An error occurred while verifying payment.');
-  }
-
-      } else if (reference) {
-        // Verify PayStack payment
-        try {
-          const response = await axios.get(
-            `${API_BASE_URL}/verify-paystack-payment/${reference}`
-          );
-          
-          if (response.data.success) {
-            setStatus('success');
-            setMessage('Payment successful! Your subscription is now active.');
-            setPaymentDetails(response.data.data);
-            
-            // Notify parent component
-            if (window.opener) {
-              window.opener.postMessage({ type: 'PAYMENT_SUCCESS', data: response.data.data }, '*');
-            }
-            
-            // Redirect after 5 seconds
-            setTimeout(() => {
-              navigate('/broadband');
-            }, 5000);
-          } else {
-            setStatus('error');
-            setMessage('Payment verification failed. Please contact support.');
-          }
-        } catch (error) {
-          console.error('PayStack verification error:', error);
-          setStatus('error');
-          setMessage('An error occurred while verifying payment.');
+      if (!actualReference) {
+        const pendingPayment = localStorage.getItem('pendingPayment');
+        if (pendingPayment) {
+          const payment = JSON.parse(pendingPayment);
+          actualReference = payment.reference;
+          actualGateway = payment.gateway;
         }
-      } else {
+      }
+      
+      if (!actualReference) {
         setStatus('error');
-        setMessage('Invalid payment reference.');
+        setMessage('Missing payment reference.');
+        return;
+      }
+      
+      try {
+        // ✅ USE UNIFIED VERIFICATION ENDPOINT
+        const response = await axios.post(
+          `${API_BASE_URL}/payment/verify`,
+          {
+            reference: actualReference,
+            gateway: actualGateway || (token ? 'paypal' : 'paystack'),
+            orderId: token || null
+          }
+        );
+        
+        if (response.data.success) {
+          setStatus('success');
+          setMessage('Payment successful! Your subscription is now active.');
+          setPaymentDetails(response.data.data);
+          
+          // Clear stored payment data
+          localStorage.removeItem('pendingPayment');
+          localStorage.removeItem('paypal_reference');
+          
+          // Notify parent component
+          if (window.opener) {
+            window.opener.postMessage({ type: 'PAYMENT_SUCCESS', data: response.data.data }, '*');
+          }
+          
+          // Redirect after 5 seconds
+          setTimeout(() => {
+            navigate('/broadband');
+          }, 5000);
+        } else {
+          setStatus('error');
+          setMessage(response.data.message || 'Payment verification failed. Please contact support.');
+        }
+      } catch (error) {
+        console.error('Payment verification error:', error);
+        setStatus('error');
+        setMessage(error.response?.data?.message || 'An error occurred while verifying payment.');
       }
     };
     
@@ -135,12 +114,19 @@ const PaymentCallback = () => {
                 <div className="detail-row">
                   <span>Amount:</span>
                   <strong>
-                    {paymentDetails.currency === 'KES' ? 'Ksh' : '$'} {paymentDetails.amount}
+                    {paymentDetails.currency === 'KES' ? 'KSh ' : 
+                     paymentDetails.currency === 'EUR' ? '€ ' : 
+                     paymentDetails.currency === 'GBP' ? '£ ' : '$ '}
+                    {paymentDetails.amount}
                   </strong>
                 </div>
                 <div className="detail-row">
+                  <span>Payment Method:</span>
+                  <strong className="status-badge">{paymentDetails.paymentMethod || paymentDetails.gateway}</strong>
+                </div>
+                <div className="detail-row">
                   <span>Status:</span>
-                  <strong className="status-badge">Completed</strong>
+                  <strong className="status-badge success">Completed</strong>
                 </div>
               </div>
             )}
