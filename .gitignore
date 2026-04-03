@@ -1,34 +1,17 @@
 # ================================
-# ROOT .gitignore - Enhanced Version
+# ROOT .gitignore - Enhanced for Payment Backend
 # ================================
 
-# ========== CLIENT (React) ==========
-client/node_modules/
-client/.env*
-client/.env.local
-client/.env.development.local
-client/.env.test.local
-client/.env.production.local
-client/build/
-client/dist/
-client/.next/
-client/.cache/
-client/.parcel-cache/
-client/.eslintcache
-client/coverage/
-client/.DS_Store
+# ========== NODE MODULES ==========
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
 
-# ========== SERVER (if you add later) ==========
-server/node_modules/
-server/.env*
-server/logs/
-server/.npm
-server/.cache/
-server/coverage/
-server/uploads/
-server/temp/
-
-# ========== GENERAL ==========
+# ========== ENVIRONMENT VARIABLES ==========
+# NEVER commit .env files with real credentials!
 .env
 .env.*
 !.env.example
@@ -36,29 +19,27 @@ server/temp/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.production
 
-# IDE & Editor files
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+# ========== PAYMENT BACKEND (Vercel Serverless) ==========
+# Vercel
+.vercel
+.vercel_cache
+.vercel/output
+.vercel/project.json
 
-# OS files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+# Build outputs
+dist/
+build/
+.next/
+out/
 
 # Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
+logs/
 *.log
+*.pid
+*.seed
+*.pid.lock
 
 # Runtime data
 pids
@@ -66,72 +47,54 @@ pids
 *.seed
 *.pid.lock
 
-# Dependency directories
-node_modules/
-jspm_packages/
+# ========== DATABASE ==========
+# MongoDB local data
+/data/
+/dump/
+*.dump
+*.bson
+*.json.gz
 
-# Optional npm cache directory
-.npm
+# SQLite (if you ever use)
+*.db
+*.sqlite
+*.sqlite3
 
-# Optional eslint cache
-.eslintcache
+# ========== EMAIL & TEMPLATES ==========
+# Email attachments
+email-attachments/
+email-templates/cache/
 
-# Optional stylelint cache
-.stylelintcache
-
-# Microbundle cache
-.rpt2_cache/
-.rts2_cache_cjs/
-.rts2_cache_es/
-.rts2_cache_umd/
-
-# Optional REPL history
-.node_repl_history
-
-# Output of 'npm pack'
-*.tgz
-
-# Yarn Integrity file
-.yarn-integrity
-
-# dotenv environment variable files
-.env
-.env.test
-
-# parcel-bundler cache (https://parceljs.org/)
+# ========== TEMPORARY FILES ==========
+temp/
+tmp/
+uploads/
+*.tmp
+*.temp
 .cache
 .parcel-cache
+.eslintcache
+.stylelintcache
 
-# Next.js build output
-.next
+# ========== IDE & EDITOR ==========
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.sublime-*
+.project
+.classpath
+.settings/
 
-# Nuxt.js build / generate output
-.nuxt
-dist
-
-# Gatsby files
-.cache/
-public
-
-# Vuepress build output
-.vuepress/dist
-
-# Serverless directories
-.serverless/
-
-# FuseBox cache
-.fusebox/
-
-# DynamoDB Local files
-.dynamodb/
-
-# TernJS port file
-.tern-port
-
-# Stores VSCode versions used for testing VSCode extensions
-.vscode-test
-
-# ========== SECRETS ==========
+# ========== SECURITY & SECRETS ==========
 # NEVER commit these
 secrets/
 *.pem
@@ -140,8 +103,137 @@ secrets/
 *.p12
 *.pfx
 *.cer
+*.p8
+*.private
+*.secret
+credentials.json
+service-account.json
 
-# Local Development Environment
+# ========== PAYMENT GATEWAY TEST FILES ==========
+paypal-sandbox/
+paystack-test/
+test-payments/
+mock-responses/
+
+# ========== API DOCUMENTATION ==========
+# Auto-generated API docs
+apidocs/
+swagger-ui/
+redoc-static.html
+
+# ========== TESTING ==========
+coverage/
+.nyc_output/
+*.test.js
+*.spec.js
+__tests__/
+__mocks__/
+jest.config.js
+test-results/
+
+# ========== DEBUGGING ==========
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+debug.log
+
+# ========== DEPENDENCY FOLDERS ==========
+node_modules/
+jspm_packages/
+bower_components/
+
+# ========== PACKAGE MANAGER FILES ==========
+# NPM
+.npm
+.npmrc
+
+# Yarn
+.yarn/
+.yarn-integrity
+.yarnclean
+.pnp.*
+.yarnrc.yml
+.yarnrc
+
+# ========== BUILD TOOLS ==========
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+.fusebox/
+.parcel-cache/
+
+# ========== SERVERLESS ==========
+.serverless/
+.serverless_plugins/
+
+# ========== DOCKER ==========
+docker-compose.override.yml
+.dockerignore
+*.dockerfile
+docker-data/
+
+# ========== NGINX / PROXY ==========
+nginx.conf
+.htaccess
+.htpasswd
+
+# ========== SSL CERTIFICATES (DEVELOPMENT) ==========
+# Only ignore dev certs, not production
+*.dev.crt
+*.dev.key
+localhost.crt
+localhost.key
+
+# ========== APPLICATION-SPECIFIC ==========
+# WeBA Infinity Solutions specific
+subscription-exports/
+reports/
+invoice-templates/cache/
+customer-uploads/
+
+# ========== BACKUP FILES ==========
+*.bak
+*.backup
+*.old
+*.orig
+
+# ========== OS SPECIFIC ==========
+# macOS
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+.directory-lock
+.fuse_hidden*
+
+# ========== ENVIRONMENT EXAMPLE FILES ==========
+# Keep the example file
+!.env.example
+!.env.sample
+!.env.template
+
+# ========== CONFIGURATION FILES WITH SECRETS ==========
+config/production.json
+config/development.json
+config/staging.json
+config/local.json
+config/secrets.json
+
+# ========== DEVELOPMENT ONLY ==========
+# Local development environment (these should NEVER be in version control)
 REACT_APP_API_URL=http://localhost:5000/api
 REACT_APP_SUPPORT_EMAIL=webasolution@gmail.com
 REACT_APP_SALES_EMAIL=webasolution@gmail.com
@@ -152,15 +244,160 @@ REACT_APP_COMPANY_NAME=Weba Solutions
 REACT_APP_MAINTENANCE_MODE=false
 NODE_ENV=development
 
-# Production Environment
-REACT_APP_API_URL=https://api.webasolutions.net
-REACT_APP_SUPPORT_EMAIL=support@webasolutions.net
-REACT_APP_SALES_EMAIL=sales@webasolutions.net
-REACT_APP_INFO_EMAIL=info@webasolutions.net
-REACT_APP_SUPPORT_PHONE=+254712200198
-REACT_APP_EMERGENCY_PHONE=+254712200198
-REACT_APP_COMPANY_NAME=Weba Solutions
-REACT_APP_GOOGLE_ANALYTICS_ID=UA-XXXXXXXXX-X
-REACT_APP_MAINTENANCE_MODE=false
-NODE_ENV=production
-GENERATE_SOURCEMAP=false
+# ========== PRODUCTION ENVIRONMENT ==========
+# These should be set in Vercel dashboard, NEVER in .env file!
+# REACT_APP_API_URL=https://api.webasolutions.net
+# REACT_APP_SUPPORT_EMAIL=support@webasolutions.net
+# REACT_APP_SALES_EMAIL=sales@webasolutions.net
+# REACT_APP_INFO_EMAIL=info@webasolutions.net
+# REACT_APP_SUPPORT_PHONE=+254712200198
+# REACT_APP_EMERGENCY_PHONE=+254712200198
+# REACT_APP_COMPANY_NAME=Weba Solutions
+# REACT_APP_GOOGLE_ANALYTICS_ID=UA-XXXXXXXXX-X
+# REACT_APP_MAINTENANCE_MODE=false
+# NODE_ENV=production
+# GENERATE_SOURCEMAP=false
+
+# ========== PAYMENT GATEWAY KEYS (NEVER COMMIT) ==========
+# PayStack
+PAYSTACK_SECRET_KEY=*
+PAYSTACK_PUBLIC_KEY=*
+PAYSTACK_LIVE_SECRET_KEY=*
+PAYSTACK_LIVE_PUBLIC_KEY=*
+
+# PayPal
+PAYPAL_CLIENT_ID=*
+PAYPAL_CLIENT_SECRET=*
+PAYPAL_MERCHANT_EMAIL=*
+PAYPAL_MERCHANT_ID=*
+PAYPAL_WEBHOOK_ID=*
+PAYPAL_LIVE_CLIENT_ID=*
+PAYPAL_LIVE_CLIENT_SECRET=*
+
+# ========== EMAIL CREDENTIALS ==========
+EMAIL_USER=*
+EMAIL_PASS=*
+EMAIL_HOST=*
+EMAIL_PORT=*
+ADMIN_EMAIL=*
+SMTP_PASSWORD=*
+SMTP_USERNAME=*
+
+# ========== DATABASE CREDENTIALS ==========
+MONGODB_URI=*
+MONGODB_USER=*
+MONGODB_PASSWORD=*
+DATABASE_URL=*
+DB_PASSWORD=*
+
+# ========== API KEYS ==========
+API_KEY=*
+API_SECRET=*
+SECRET_KEY=*
+JWT_SECRET=*
+JWT_REFRESH_SECRET=*
+ENCRYPTION_KEY=*
+
+# ========== THIRD-PARTY SERVICES ==========
+# Google
+GOOGLE_CLIENT_ID=*
+GOOGLE_CLIENT_SECRET=*
+GOOGLE_ANALYTICS_ID=*
+GOOGLE_MAPS_API_KEY=*
+
+# Facebook
+FACEBOOK_APP_ID=*
+FACEBOOK_APP_SECRET=*
+
+# Twitter
+TWITTER_API_KEY=*
+TWITTER_API_SECRET=*
+
+# Other
+SENDGRID_API_KEY=*
+STRIPE_SECRET_KEY=*
+STRIPE_PUBLIC_KEY=*
+S3_ACCESS_KEY=*
+S3_SECRET_KEY=*
+
+# Add to .gitignore
+# ============================================
+# LOCAL EXPRESS SERVER FILES (DO NOT PUSH)
+# ============================================
+
+# Ignore local server files
+server.js
+server-react.js
+server-local.js
+app.js
+index.js
+
+# Ignore Express server folders
+/models/
+/routes/
+/controllers/
+/middleware/
+/config/
+/seeders/
+/migrations/
+
+# Ignore any other server-related files
+*.pid
+*.seed
+*.lock
+
+# ============================================
+# DEPENDENCIES (Always ignore)
+# ============================================
+node_modules/
+package-lock.json
+yarn.lock
+
+# ============================================
+# ENVIRONMENT VARIABLES
+# ============================================
+.env
+.env.*
+!.env.example
+
+# ============================================
+# VERCEL FILES (Keep these, they're for deployment)
+# ============================================
+# Don't ignore api/ folder! That's for Vercel
+# api/ should be pushed
+# utils/ should be pushed
+
+# Only ignore local Vercel cache
+.vercel
+.vercel_cache
+
+# ============================================
+# IDE & OS FILES
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ============================================
+# LOGS & TEMP FILES
+# ============================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+temp/
+tmp/
+uploads/
+
+# ============================================
+# DATABASE FILES
+# ============================================
+*.db
+*.sqlite
+*.sqlite3
+dump/

@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/payment-callback",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/payment-cancelled",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
