@@ -15,7 +15,7 @@ const config = {
   // Backend API URL
   api: {
     // Your backend URL
-  // baseUrl: process.env.REACT_APP_API_URL || 'https://weba-payment.vercel.app/api',
+  baseUrl: process.env.REACT_APP_API_URL || 'https://weba-payment.vercel.app/api',
     
     // Helper method for making API calls
     async call(endpoint, options = {}) {
@@ -60,7 +60,7 @@ const config = {
   company: {
     name: process.env.REACT_APP_COMPANY_NAME || 'Weba Solutions',
     slogan: process.env.REACT_APP_COMPANY_SLOGAN || 'Powering Homes & Businesses with Excellence',
-    website: process.env.REACT_APP_WEBSITE_URL || 'https://we-ba-solutions-branch-git-webabranch-weba-solutions-projects.vercel.app'
+    website: process.env.REACT_APP_WEBSITE_URL || 'we-ba-solutions-branch.vercel.app'
   },
   
   // Contact Information
