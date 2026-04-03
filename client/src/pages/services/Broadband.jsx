@@ -555,7 +555,11 @@ const Broadband = () => {
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
                     required
+ HEAD
+                    placeholder="e.g., 0718831298"
 
+                    
+webabranch
                   />
                 </div>
                 

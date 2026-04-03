@@ -58,15 +58,15 @@ const config = {
   
   // Company Info
   company: {
-<<<<<<< HEAD
+
     name: process.env.REACT_APP_COMPANY_NAME || 'WeBA Infinity Solutions',
     slogan: process.env.REACT_APP_COMPANY_SLOGAN || 'Your Technology Partner',
-    website: process.env.REACT_APP_WEBSITE_URL || 'https://webasolutions.vercel.app'
-=======
+    website: process.env.REACT_APP_WEBSITE_URL || 'https://webasolutions.vercel.app',
+
     name: process.env.REACT_APP_COMPANY_NAME || 'Weba Solutions',
     slogan: process.env.REACT_APP_COMPANY_SLOGAN || 'Powering Homes & Businesses with Excellence',
     website: process.env.REACT_APP_WEBSITE_URL || 'we-ba-solutions-branch.vercel.app'
->>>>>>> webabranch
+
   },
   
   // Contact Information
