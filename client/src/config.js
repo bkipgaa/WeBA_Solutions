@@ -15,7 +15,7 @@ const config = {
   // Backend API URL
   api: {
     // Your backend URL
-   // baseUrl: process.env.REACT_APP_API_URL || 'https://weba-payment.vercel.app/api',
+   baseUrl: process.env.REACT_APP_API_URL || 'https://weba-payment.vercel.app/api',
     
     // Helper method for making API calls
     async call(endpoint, options = {}) {

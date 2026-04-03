@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 // Hardcoded API URL
-const API_BASE_URL = 'https://weba-payment.vercel.app/payment-callback';
+const API_BASE_URL = 'https://weba-payment.vercel.app/api';
 
 const PaymentCallback = () => {
   const location = useLocation();
