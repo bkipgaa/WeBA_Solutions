@@ -60,7 +60,7 @@ const config = {
   company: {
     name: process.env.REACT_APP_COMPANY_NAME || 'Weba Solutions',
     slogan: process.env.REACT_APP_COMPANY_SLOGAN || 'Powering Homes & Businesses with Excellence',
-    website: process.env.REACT_APP_WEBSITE_URL || 'https://we-ba-solutions-branch.vercel.app'
+    website: process.env.REACT_APP_WEBSITE_URL || 'https://we-ba-solutions-branch-git-webabranch-weba-solutions-projects.vercel.app'
   },
   
   // Contact Information
