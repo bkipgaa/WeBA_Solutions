@@ -10,6 +10,7 @@ import Support from './pages/Support';
 import SelfCare from './pages/SelfCare';
 // Import service pages
 import Broadband from './pages/services/Broadband';
+import PaymentCallback from './pages/PaymentCallback'; // Make sure this path is correct
 import Hotspot from './pages/services/Hotspot';
 import Electrical from './pages/services/Electrical';
 import CCTV from './pages/services/CCTV';
@@ -31,6 +32,7 @@ function App() {
             
             {/* Service Routes */}
             <Route path="/services/broadband" element={<Broadband />} />
+             <Route path="/PaymentCallback" element={<PaymentCallback />} />
             <Route path="/services/hotspot" element={<Hotspot />} />
             <Route path="/services/electrical" element={<Electrical />} />
             <Route path="/services/cctv" element={<CCTV />} />

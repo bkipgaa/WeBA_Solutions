@@ -1,34 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const crypto = require('crypto'); // ✅ ADD THIS - was missing
-const { body, param, validationResult } = require('express-validator');
+const { body, validationResult } = require('express-validator');
+const axios = require('axios');
+const crypto = require('crypto');
 const { 
   pendingTransactions, 
   getTransaction, 
   updateTransaction,
   clearExpiredTransactions,
-  generateReference
+  generateReference,
+  sanitizePhone
 } = require('../../utils/helpers');
-const axios = require('axios'); // ✅ ADD THIS for HTTP calls
 const { getPayPalAccessToken, PAYPAL_API_URL } = require('../../utils/paypal');
-
-// Import your existing route handlers
-const paypalRoutes = require('./paypal');
-const paystackRoutes = require('./paystack');
-const transactionRoutes = require('./transactions');
-const webhookRoutes = require('./webhooks');
-
-// ============================================
-// HELPER FUNCTION: Get route handler from router
-// ============================================
-const getRouteHandler = (router, method, path) => {
-  for (const layer of router.stack) {
-    if (layer.route && layer.route.path === path && layer.route.methods[method]) {
-      return layer.route.stack[0].handle;
-    }
-  }
-  return null;
-};
+const { saveSubscriptionToDatabase, sendConfirmationEmail } = require('../../utils/email');
 
 // ============================================
 // UNIFIED PAYMENT INITIALIZATION
@@ -55,32 +39,205 @@ router.post(
       });
     }
 
-    const { gateway } = req.body;
-    
+    const { 
+      email, 
+      amount, 
+      packageName, 
+      customerName, 
+      phone, 
+      location, 
+      gateway,
+      currency = gateway === 'paystack' ? 'KES' : 'USD'
+    } = req.body;
+
+    // ✅ FIX: Ensure amount is a number and properly formatted
+    const numericAmount = parseFloat(amount);
+    if (isNaN(numericAmount)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid amount format'
+      });
+    }
+
     try {
       if (gateway === 'paypal') {
-        // Find and call your existing PayPal initialization handler
-        const handler = getRouteHandler(paypalRoutes, 'post', '/initialize-paypal-payment');
-        if (handler) {
-          await handler(req, res);
-        } else {
-          throw new Error('PayPal initialization handler not found');
+        // ========== PAYPAL INITIALIZATION ==========
+        const reference = generateReference('PAYPAL');
+        
+        pendingTransactions.set(reference, {
+          email,
+          amount: numericAmount,
+          packageName,
+          customerName,
+          phone,
+          location,
+          currency,
+          createdAt: new Date(),
+          status: 'pending',
+          gateway: 'paypal'
+        });
+
+        const accessToken = await getPayPalAccessToken();
+
+        // ✅ FIX: Format amount properly for PayPal
+        const formattedAmount = numericAmount.toFixed(2);
+        
+        console.log(`💰 PayPal payment: ${currency} ${formattedAmount}`);
+
+        const orderData = {
+          intent: 'CAPTURE',
+          purchase_units: [{
+            reference_id: reference,
+            description: `${packageName} - WiFi Subscription`,
+            custom_id: reference,
+            amount: {
+              currency_code: currency,
+              value: formattedAmount,
+              breakdown: {
+                item_total: {
+                  currency_code: currency,
+                  value: formattedAmount
+                }
+              }
+            },
+            items: [{
+              name: `${packageName} Broadband Package`,
+              description: `Monthly ${packageName} internet subscription`,
+              quantity: '1',
+              unit_amount: {
+                currency_code: currency,
+                value: formattedAmount
+              },
+              sku: packageName.replace(/\s/g, '-').toLowerCase(),
+              category: 'DIGITAL_GOODS'
+            }],
+            payee: {
+              email: process.env.PAYPAL_MERCHANT_EMAIL
+            }
+          }],
+          application_context: {
+            brand_name: 'WeBA Solutions',
+            locale: 'en-US',
+            landing_page: 'BILLING',
+            user_action: 'PAY_NOW',
+            return_url: `${process.env.FRONTEND_URL}/payment-callback?gateway=paypal&reference=${reference}`,
+            cancel_url: `${process.env.FRONTEND_URL}/payment-cancelled`,
+            shipping_preference: 'NO_SHIPPING'
+          },
+          payer: {
+            name: {
+              given_name: customerName.split(' ')[0],
+              surname: customerName.split(' ').slice(1).join(' ') || 'Customer'
+            },
+            email_address: email,
+            phone: {
+              phone_type: 'MOBILE',
+              phone_number: {
+                national_number: sanitizePhone(phone)
+              }
+            }
+          }
+        };
+
+        const response = await axios.post(
+          `${PAYPAL_API_URL}/v2/checkout/orders`,
+          orderData,
+          {
+            headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+              'Prefer': 'return=representation'
+            }
+          }
+        );
+
+        const approvalLink = response.data.links?.find(link => link.rel === 'approve');
+
+        if (!approvalLink) {
+          throw new Error('Failed to get PayPal approval link');
         }
+
+        return res.json({
+          success: true,
+          gateway: 'paypal',
+          data: {
+            approval_url: approvalLink.href,
+            order_id: response.data.id,
+            reference: reference,
+            requiresRedirect: true
+          }
+        });
+
       } else if (gateway === 'paystack') {
-        // Find and call your existing PayStack initialization handler
-        const handler = getRouteHandler(paystackRoutes, 'post', '/initialize-paystack-payment');
-        if (handler) {
-          await handler(req, res);
-        } else {
-          throw new Error('PayStack initialization handler not found');
+        // ========== PAYSTACK INITIALIZATION ==========
+        const reference = generateReference('PAYSTACK');
+        
+        pendingTransactions.set(reference, {
+          email,
+          amount: numericAmount,
+          packageName,
+          customerName,
+          phone,
+          location,
+          currency,
+          createdAt: new Date(),
+          status: 'pending',
+          gateway: 'paystack'
+        });
+
+        // ✅ PayStack amount must be in cents/kobo
+        const paystackAmount = Math.round(numericAmount * 100);
+        
+        console.log(`💰 PayStack payment: ${currency} ${numericAmount} (${paystackAmount} cents)`);
+
+        const response = await axios.post(
+          'https://api.paystack.co/transaction/initialize',
+          {
+            email,
+            amount: paystackAmount,
+            reference,
+            currency: currency === 'KES' ? 'KES' : 'USD',
+            metadata: {
+              customer_name: customerName,
+              package_name: packageName,
+              phone,
+              location,
+              custom_fields: [
+                { display_name: "Package", variable_name: "package", value: packageName },
+                { display_name: "Location", variable_name: "location", value: location }
+              ]
+            },
+            callback_url: `${process.env.FRONTEND_URL}/payment-callback?gateway=paystack&reference=${reference}`
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+
+        if (!response.data.status) {
+          throw new Error(response.data.message);
         }
+
+        return res.json({
+          success: true,
+          gateway: 'paystack',
+          data: {
+            authorization_url: response.data.data.authorization_url,
+            reference: response.data.data.reference,
+            requiresRedirect: true
+          }
+        });
       }
+
     } catch (error) {
-      console.error('❌ Unified payment initialization error:', error);
+      console.error(`❌ ${gateway} initialization error:`, error.response?.data || error.message);
       return res.status(500).json({
         success: false,
-        message: 'Payment initialization failed',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        message: `Failed to initialize ${gateway} payment`,
+        error: process.env.NODE_ENV === 'development' ? error.message : 'Payment initialization failed'
       });
     }
   }
@@ -106,35 +263,166 @@ router.post(
       });
     }
 
-    const { gateway, reference, orderId } = req.body;
+    const { reference, gateway, orderId } = req.body;
 
     try {
-      if (gateway === 'paypal') {
-        // Call your existing PayPal capture endpoint
-        const handler = getRouteHandler(paypalRoutes, 'post', '/capture-paypal-payment');
-        if (handler) {
-          // Modify request to match what your endpoint expects
-          req.body = { orderId, reference };
-          await handler(req, res);
+      const transaction = pendingTransactions.get(reference);
+      
+      if (!transaction) {
+        return res.status(404).json({
+          success: false,
+          message: 'Transaction not found'
+        });
+      }
+
+      if (transaction.status === 'completed') {
+        return res.json({
+          success: true,
+          message: 'Payment already processed',
+          data: transaction
+        });
+      }
+
+      let paymentData;
+      let captureData = null;
+
+      if (gateway === 'paystack') {
+        // Verify PayStack payment
+        const response = await axios.get(
+          `https://api.paystack.co/transaction/verify/${reference}`,
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+            }
+          }
+        );
+        
+        paymentData = response.data.data;
+        
+        if (paymentData.status === 'success') {
+          captureData = {
+            id: paymentData.id,
+            amount: paymentData.amount / 100,
+            currency: paymentData.currency,
+            paymentMethod: paymentData.channel,
+            status: 'COMPLETED'
+          };
         } else {
-          throw new Error('PayPal capture handler not found');
+          return res.json({
+            success: false,
+            message: 'Payment verification failed',
+            status: paymentData.status
+          });
         }
-      } else if (gateway === 'paystack') {
-        // Call your existing PayStack verify endpoint
-        const handler = getRouteHandler(paystackRoutes, 'get', '/verify-paystack-payment/:reference');
-        if (handler) {
-          // Modify request to match what your endpoint expects
-          req.params = { reference };
-          await handler(req, res);
+
+      } else if (gateway === 'paypal') {
+        // Capture PayPal payment
+        if (!orderId) {
+          return res.status(400).json({
+            success: false,
+            message: 'Order ID is required for PayPal verification'
+          });
+        }
+
+        const accessToken = await getPayPalAccessToken();
+
+        const response = await axios.post(
+          `${PAYPAL_API_URL}/v2/checkout/orders/${orderId}/capture`,
+          {},
+          {
+            headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+
+        paymentData = response.data;
+        
+        if (paymentData.status === 'COMPLETED') {
+          const capture = paymentData.purchase_units?.[0]?.payments?.captures?.[0];
+          const paymentSource = capture?.payment_source;
+          
+          captureData = {
+            id: capture?.id,
+            amount: parseFloat(capture?.amount?.value),
+            currency: capture?.amount?.currency_code,
+            paymentMethod: paymentSource?.card?.brand || paymentSource?.paypal?.email_address || 'paypal',
+            status: 'COMPLETED'
+          };
         } else {
-          throw new Error('PayStack verify handler not found');
+          return res.json({
+            success: false,
+            message: 'Payment capture failed',
+            status: paymentData.status
+          });
         }
       }
+
+      // Process successful payment
+      if (captureData && captureData.status === 'COMPLETED') {
+        transaction.status = 'completed';
+        transaction.paymentData = paymentData;
+        transaction.completedAt = new Date();
+        pendingTransactions.set(reference, transaction);
+
+        const emailPaymentData = {
+          customer: { email: transaction.email },
+          metadata: {
+            customer_name: transaction.customerName,
+            package_name: transaction.packageName,
+            phone: transaction.phone,
+            location: transaction.location
+          },
+          amount: captureData.amount,
+          currency: captureData.currency,
+          reference: reference,
+          channel: captureData.paymentMethod,
+          paid_at: new Date().toISOString(),
+          id: captureData.id
+        };
+
+        if (process.env.MONGODB_URI) {
+          await saveSubscriptionToDatabase({
+            reference,
+            customerName: transaction.customerName,
+            email: transaction.email,
+            phone: transaction.phone,
+            location: transaction.location,
+            packageName: transaction.packageName,
+            amount: captureData.amount,
+            currency: captureData.currency,
+            paymentDate: new Date(),
+            transactionId: captureData.id,
+            paymentMethod: captureData.paymentMethod,
+            paymentGateway: gateway,
+            status: 'active'
+          });
+        }
+
+        await sendConfirmationEmail(emailPaymentData);
+
+        return res.json({
+          success: true,
+          message: 'Payment verified successfully',
+          data: {
+            reference: reference,
+            amount: captureData.amount,
+            currency: captureData.currency,
+            packageName: transaction.packageName,
+            transactionId: captureData.id,
+            paymentMethod: captureData.paymentMethod,
+            gateway: gateway,
+            status: 'completed'
+          }
+        });
+      }
+
     } catch (error) {
-      console.error('❌ Unified verification error:', error);
+      console.error(`❌ ${gateway} verification error:`, error.response?.data || error.message);
       return res.status(500).json({
         success: false,
-        message: 'Payment verification failed',
+        message: `Failed to verify ${gateway} payment`,
         error: process.env.NODE_ENV === 'development' ? error.message : undefined
       });
     }
@@ -142,47 +430,7 @@ router.post(
 );
 
 // ============================================
-// WEBHOOK ENDPOINTS (Forward to existing webhook handlers)
-// ============================================
-
-// PayPal Webhook - Forward to existing handler
-router.post('/paypal-webhook', async (req, res) => {
-  try {
-    const handler = getRouteHandler(webhookRoutes, 'post', '/paypal-webhook');
-    if (handler) {
-      await handler(req, res);
-    } else {
-      throw new Error('PayPal webhook handler not found');
-    }
-  } catch (error) {
-    console.error('❌ PayPal webhook forwarding error:', error);
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Webhook processing failed' 
-    });
-  }
-});
-
-// PayStack Webhook - Forward to existing handler
-router.post('/paystack-webhook', async (req, res) => {
-  try {
-    const handler = getRouteHandler(webhookRoutes, 'post', '/paystack-webhook');
-    if (handler) {
-      await handler(req, res);
-    } else {
-      throw new Error('PayStack webhook handler not found');
-    }
-  } catch (error) {
-    console.error('❌ PayStack webhook forwarding error:', error);
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Webhook processing failed' 
-    });
-  }
-});
-
-// ============================================
-// UNIFIED TRANSACTION STATUS
+// GET PAYMENT STATUS
 // ============================================
 router.get('/payment/status/:reference', async (req, res) => {
   try {
@@ -213,7 +461,6 @@ router.get('/payment/status/:reference', async (req, res) => {
           status: transaction.status,
           gateway: transaction.gateway,
           createdAt: transaction.createdAt,
-          updatedAt: transaction.updatedAt || null,
           completedAt: transaction.completedAt || null
         }
       });
@@ -234,267 +481,30 @@ router.get('/payment/status/:reference', async (req, res) => {
 });
 
 // ============================================
-// GET ALL TRANSACTIONS (Admin)
-// ============================================
-router.get('/transactions/all', async (req, res) => {
-  try {
-    // Optional: Add API key authentication
-    const apiKey = req.headers['x-api-key'];
-    if (process.env.ADMIN_API_KEY && apiKey !== process.env.ADMIN_API_KEY) {
-      return res.status(401).json({ success: false, message: 'Unauthorized' });
-    }
-    
-    const clearedCount = clearExpiredTransactions();
-    const transactions = [];
-    
-    for (const [reference, data] of pendingTransactions.entries()) {
-      transactions.push({
-        reference,
-        ...data,
-        age: Date.now() - new Date(data.createdAt).getTime(),
-        ageMinutes: Math.floor((Date.now() - new Date(data.createdAt).getTime()) / 60000)
-      });
-    }
-    
-    transactions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    
-    return res.json({
-      success: true,
-      count: transactions.length,
-      clearedExpired: clearedCount,
-      data: transactions
-    });
-  } catch (error) {
-    console.error('❌ Get all transactions error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Failed to get transactions'
-    });
-  }
-});
-
-// ============================================
-// TRANSACTION STATISTICS (Admin)
-// ============================================
-router.get('/transactions/stats', async (req, res) => {
-  try {
-    const apiKey = req.headers['x-api-key'];
-    if (process.env.ADMIN_API_KEY && apiKey !== process.env.ADMIN_API_KEY) {
-      return res.status(401).json({ success: false, message: 'Unauthorized' });
-    }
-    
-    let total = 0;
-    let pending = 0;
-    let completed = 0;
-    let failed = 0;
-    let totalAmount = 0;
-    let byGateway = {
-      paypal: { count: 0, amount: 0 },
-      paystack: { count: 0, amount: 0 }
-    };
-    
-    for (const [, data] of pendingTransactions.entries()) {
-      total++;
-      
-      switch (data.status) {
-        case 'pending':
-          pending++;
-          break;
-        case 'completed':
-          completed++;
-          totalAmount += data.amount;
-          if (data.gateway === 'paypal') {
-            byGateway.paypal.count++;
-            byGateway.paypal.amount += data.amount;
-          } else if (data.gateway === 'paystack') {
-            byGateway.paystack.count++;
-            byGateway.paystack.amount += data.amount;
-          }
-          break;
-        case 'failed':
-          failed++;
-          break;
-      }
-    }
-    
-    return res.json({
-      success: true,
-      stats: {
-        total,
-        pending,
-        completed,
-        failed,
-        totalAmount,
-        formattedTotalAmount: totalAmount > 0 ? `KSh ${totalAmount.toLocaleString()}` : 'KSh 0',
-        byGateway
-      }
-    });
-  } catch (error) {
-    console.error('❌ Transaction stats error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Failed to get transaction stats'
-    });
-  }
-});
-
-// ============================================
-// UPDATE TRANSACTION STATUS (Webhook helper)
-// ============================================
-router.post('/transaction/update', async (req, res) => {
-  try {
-    const { reference, status, paymentData } = req.body;
-    
-    if (!reference) {
-      return res.status(400).json({
-        success: false,
-        message: 'Transaction reference is required'
-      });
-    }
-    
-    if (!status) {
-      return res.status(400).json({
-        success: false,
-        message: 'Status is required'
-      });
-    }
-    
-    const validStatuses = ['pending', 'completed', 'failed', 'processing', 'refunded'];
-    if (!validStatuses.includes(status)) {
-      return res.status(400).json({
-        success: false,
-        message: `Invalid status. Must be one of: ${validStatuses.join(', ')}`
-      });
-    }
-    
-    const updated = updateTransaction(reference, status, paymentData);
-    
-    if (updated) {
-      const transaction = getTransaction(reference);
-      return res.json({
-        success: true,
-        message: 'Transaction updated successfully',
-        data: transaction
-      });
-    } else {
-      return res.status(404).json({
-        success: false,
-        message: 'Transaction not found'
-      });
-    }
-  } catch (error) {
-    console.error('❌ Update transaction error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Failed to update transaction'
-    });
-  }
-});
-
-// ============================================
-// DELETE TRANSACTION (Cleanup)
-// ============================================
-router.delete('/transaction/:reference', async (req, res) => {
-  try {
-    const apiKey = req.headers['x-api-key'];
-    if (process.env.ADMIN_API_KEY && apiKey !== process.env.ADMIN_API_KEY) {
-      return res.status(401).json({ success: false, message: 'Unauthorized' });
-    }
-    
-    const { reference } = req.params;
-    
-    if (!reference) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Transaction reference is required' 
-      });
-    }
-    
-    const transaction = getTransaction(reference);
-    
-    if (transaction) {
-      pendingTransactions.delete(reference);
-      return res.json({
-        success: true,
-        message: 'Transaction removed successfully',
-        data: transaction
-      });
-    } else {
-      return res.status(404).json({
-        success: false,
-        message: 'Transaction not found'
-      });
-    }
-  } catch (error) {
-    console.error('❌ Delete transaction error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Failed to delete transaction'
-    });
-  }
-});
-
-// ============================================
-// CLEANUP EXPIRED TRANSACTIONS
-// ============================================
-router.post('/transactions/cleanup', async (req, res) => {
-  try {
-    const apiKey = req.headers['x-api-key'];
-    if (process.env.ADMIN_API_KEY && apiKey !== process.env.ADMIN_API_KEY) {
-      return res.status(401).json({ success: false, message: 'Unauthorized' });
-    }
-    
-    const clearedCount = clearExpiredTransactions();
-    
-    return res.json({
-      success: true,
-      message: `Cleaned up ${clearedCount} expired transactions`,
-      clearedCount: clearedCount
-    });
-  } catch (error) {
-    console.error('❌ Cleanup error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Failed to clean up transactions'
-    });
-  }
-});
-
-// ============================================
 // GET AVAILABLE PAYMENT METHODS
 // ============================================
 router.get('/payment/methods', async (req, res) => {
   try {
     const methods = [
       {
+        id: 'paystack',
+        name: 'PayStack',
+        displayName: 'Pay with Card',
+        icon: 'fas fa-credit-card',
+        currencies: ['KES'],
+        defaultCurrency: 'KES',
+        description: 'Pay with M-Pesa, credit card, or bank transfer',
+        enabled: true
+      },
+      {
         id: 'paypal',
         name: 'PayPal',
         displayName: 'PayPal',
         icon: 'fab fa-paypal',
-        currencies: ['USD', 'EUR', 'GBP'],
+        currencies: ['USD'],
         defaultCurrency: 'USD',
         description: 'Pay securely with PayPal or credit card',
-        enabled: true,
-        webhookEndpoint: '/api/paypal-webhook',
-        endpoints: {
-          initialize: '/api/payment/initialize',
-          verify: '/api/payment/verify'
-        }
-      },
-      {
-        id: 'paystack',
-        name: 'PayStack',
-        displayName: 'PayStack',
-        icon: 'fas fa-credit-card',
-        currencies: ['KES', 'USD', 'GHS', 'NGN'],
-        defaultCurrency: 'KES',
-        description: 'Pay with M-Pesa, credit card, or bank transfer',
-        enabled: true,
-        webhookEndpoint: '/api/paystack-webhook',
-        endpoints: {
-          initialize: '/api/payment/initialize',
-          verify: '/api/payment/verify'
-        }
+        enabled: true
       }
     ];
     
@@ -507,132 +517,6 @@ router.get('/payment/methods', async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Failed to get payment methods'
-    });
-  }
-});
-
-// ============================================
-// WEBHOOK STATUS (For debugging)
-// ============================================
-router.get('/webhooks/status', async (req, res) => {
-  try {
-    const apiKey = req.headers['x-api-key'];
-    if (process.env.ADMIN_API_KEY && apiKey !== process.env.ADMIN_API_KEY) {
-      return res.status(401).json({ success: false, message: 'Unauthorized' });
-    }
-    
-    return res.json({
-      success: true,
-      data: {
-        paypal: {
-          endpoint: '/api/paypal-webhook',
-          events: ['PAYMENT.CAPTURE.COMPLETED'],
-          status: 'active',
-          description: 'Handles PayPal payment confirmations'
-        },
-        paystack: {
-          endpoint: '/api/paystack-webhook',
-          events: ['charge.success', 'charge.failed'],
-          status: 'active',
-          description: 'Handles PayStack payment confirmations'
-        }
-      }
-    });
-  } catch (error) {
-    console.error('❌ Webhook status error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Failed to get webhook status'
-    });
-  }
-});
-
-// ============================================
-// WEBHOOK TEST ENDPOINT (For testing)
-// ============================================
-router.post('/webhooks/test/:gateway', async (req, res) => {
-  try {
-    const { gateway } = req.params;
-    const testData = req.body;
-    
-    console.log(`🧪 Test webhook for ${gateway}:`, testData);
-    
-    if (gateway === 'paypal') {
-      // Create a test PayPal webhook event
-      const testEvent = {
-        event_type: 'PAYMENT.CAPTURE.COMPLETED',
-        resource: {
-          id: 'TEST_' + Date.now(),
-          custom_id: testData.reference || 'TEST_REFERENCE',
-          amount: {
-            value: testData.amount || '10.00',
-            currency_code: testData.currency || 'USD'
-          },
-          create_time: new Date().toISOString(),
-          payment_source: {
-            card: { brand: 'visa' }
-          }
-        }
-      };
-      
-      req.body = testEvent;
-      const handler = getRouteHandler(webhookRoutes, 'post', '/paypal-webhook');
-      if (handler) {
-        await handler(req, res);
-      } else {
-        throw new Error('PayPal webhook handler not found');
-      }
-    } else if (gateway === 'paystack') {
-      // Create a test PayStack webhook event
-      const testEvent = {
-        event: 'charge.success',
-        data: {
-          reference: testData.reference || 'TEST_REFERENCE',
-          amount: (testData.amount || 2500) * 100,
-          currency: testData.currency || 'KES',
-          customer: {
-            email: testData.email || 'test@example.com'
-          },
-          metadata: {
-            customer_name: testData.customerName || 'Test Customer',
-            package_name: testData.packageName || 'Standard',
-            phone: testData.phone || '0712345678',
-            location: testData.location || 'Nairobi'
-          },
-          paid_at: new Date().toISOString(),
-          id: 'TEST_' + Date.now(),
-          channel: 'card'
-        }
-      };
-      
-      // Create a raw body for signature verification
-      const rawBody = JSON.stringify(testEvent);
-      req.body = Buffer.from(rawBody);
-      req.headers = {
-        'x-paystack-signature': crypto
-          .createHmac('sha512', process.env.PAYSTACK_SECRET_KEY)
-          .update(rawBody)
-          .digest('hex')
-      };
-      
-      const handler = getRouteHandler(webhookRoutes, 'post', '/paystack-webhook');
-      if (handler) {
-        await handler(req, res);
-      } else {
-        throw new Error('PayStack webhook handler not found');
-      }
-    } else {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid gateway. Use paypal or paystack'
-      });
-    }
-  } catch (error) {
-    console.error('❌ Test webhook error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Test webhook failed',
-      error: error.message
     });
   }
 });

@@ -8,14 +8,10 @@ import {
   ArrowLeft, 
   CreditCard, 
   Wallet,
-  Shield, 
-  Lock 
+  Shield
 } from 'lucide-react';
 import './Broadband.css';
 import PaymentGateway from '../../components/PaymentGateway';
-
-// Hardcoded API URL
-const API_BASE_URL = 'https://weba-payment.vercel.app/api';
 
 const Broadband = () => {
   // State management for modals and forms
@@ -23,9 +19,6 @@ const Broadband = () => {
   const [showPackageSelection, setShowPackageSelection] = useState(false);
   const [showPaymentGateway, setShowPaymentGateway] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-  const [paymentError, setPaymentError] = useState('');
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('paystack');
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Form data state
@@ -52,58 +45,77 @@ const Broadband = () => {
     { icon: '🔄', title: 'Dual WAN', desc: 'Failover options for reliability' }
   ];
 
-  // Broadband packages
+  // ✅ Broadband packages with correct KES prices (for PayStack)
   const broadbandPackages = [
     { 
-      id: 'wifi-swift',
-      name: 'WiFi Swift', 
+      id: 'basic',
+      name: 'Basic',
+      displayName: 'Basic Broadband',
       speed: '5 Mbps',
-      details: '5M/5M',
       priceKES: 1500,
       priceUSD: 12,
-      priceEUR: 11,
-      priceGBP: 9,
-      priceFormatted: 'Ksh 1,500.00',
-      duration: '1 Month', 
-      type: 'PPPoE', 
-      devices: '1', 
-      enabled: true,
+      priceFormatted: 'KSh 1,500',
+      duration: '1 Month',
       popular: false,
-      tag: 'Budget Friendly'
+      tag: 'Budget Friendly',
+      description: 'Perfect for light browsing and email',
+      devices: '1-2'
     },
     { 
-      id: 'wifi-plus',
-      name: 'WiFi Plus', 
+      id: 'standard',
+      name: 'Standard',
+      displayName: 'Standard Broadband',
       speed: '10 Mbps',
-      details: '10M/10M',
-      priceKES: 2000,
-      priceUSD: 16,
-      priceEUR: 15,
-      priceGBP: 13,
-      priceFormatted: 'Ksh 2,000.00',
-      duration: '1 Month', 
-      type: 'PPPoE', 
-      devices: '1', 
-      enabled: true,
+      priceKES: 2500,
+      priceUSD: 19,
+      priceFormatted: 'KSh 2,500',
+      duration: '1 Month',
       popular: true,
-      tag: 'Most Popular'
+      tag: 'Most Popular',
+      description: 'Ideal for streaming and home office',
+      devices: '3-5'
     },
     { 
-      id: 'wifi-turbo',
-      name: 'WiFi Turbo', 
-      speed: '15 Mbps',
-      details: '15M/15M',
-      priceKES: 3000,
-      priceUSD: 24,
-      priceEUR: 22,
-      priceGBP: 19,
-      priceFormatted: 'Ksh 3,000.00',
-      duration: '1 Month', 
-      type: 'PPPoE', 
-      devices: '1', 
-      enabled: true,
+      id: 'premium',
+      name: 'Premium',
+      displayName: 'Premium Broadband',
+      speed: '20 Mbps',
+      priceKES: 4000,
+      priceUSD: 31,
+      priceFormatted: 'KSh 4,000',
+      duration: '1 Month',
       popular: false,
-      tag: 'High Speed'
+      tag: 'High Speed',
+      description: 'Great for gaming and 4K streaming',
+      devices: '5-10'
+    },
+    { 
+      id: 'business',
+      name: 'Business',
+      displayName: 'Business Broadband',
+      speed: '50 Mbps',
+      priceKES: 7000,
+      priceUSD: 54,
+      priceFormatted: 'KSh 7,000',
+      duration: '1 Month',
+      popular: false,
+      tag: 'Business Grade',
+      description: 'For small to medium businesses',
+      devices: '10-20'
+    },
+    { 
+      id: 'home-package',
+      name: 'Home Package',
+      displayName: 'Home Package',
+      speed: '15 Mbps',
+      priceKES: 3000,
+      priceUSD: 23,
+      priceFormatted: 'KSh 3,000',
+      duration: '1 Month',
+      popular: false,
+      tag: 'Family Friendly',
+      description: 'Perfect for family use',
+      devices: '3-6'
     }
   ];
 
@@ -114,49 +126,12 @@ const Broadband = () => {
     { title: 'Secure Network', desc: 'Advanced security features included', icon: '🔒' }
   ];
 
-  const getUserCurrency = () => {
-    const savedCurrency = localStorage.getItem('preferredCurrency');
-    if (savedCurrency) return savedCurrency;
-    
-    const browserLang = navigator.language || navigator.userLanguage;
-    if (browserLang.includes('en-US')) return 'USD';
-    if (browserLang.includes('en-GB')) return 'GBP';
-    if (browserLang.includes('de') || browserLang.includes('fr') || browserLang.includes('es')) return 'EUR';
-    return 'KES';
-  };
-
   const getFormattedPrice = (pkg) => {
-    const currency = getUserCurrency();
-    
-    switch(currency) {
-      case 'USD':
-        return `$${pkg.priceUSD}`;
-      case 'EUR':
-        return `€${pkg.priceEUR}`;
-      case 'GBP':
-        return `£${pkg.priceGBP}`;
-      default:
-        return pkg.priceFormatted;
-    }
+    return pkg.priceFormatted;
   };
 
   const getNumericPrice = (pkg) => {
-    const currency = getUserCurrency();
-    
-    switch(currency) {
-      case 'USD':
-        return pkg.priceUSD;
-      case 'EUR':
-        return pkg.priceEUR;
-      case 'GBP':
-        return pkg.priceGBP;
-      default:
-        return pkg.priceKES;
-    }
-  };
-
-  const getCurrencyCode = () => {
-    return getUserCurrency();
+    return pkg.priceKES;
   };
 
   const handlePackageClick = (pkg) => {
@@ -227,8 +202,14 @@ const Broadband = () => {
       return;
     }
     
-    setShowPaymentGateway(true);
-    setShowPackageForm(false);
+    setIsSubmitting(true);
+    
+    // Small delay to show loading state
+    setTimeout(() => {
+      setShowPaymentGateway(true);
+      setShowPackageForm(false);
+      setIsSubmitting(false);
+    }, 500);
   };
 
   const handleCloseAll = () => {
@@ -236,8 +217,6 @@ const Broadband = () => {
     setShowPackageSelection(false);
     setShowPaymentGateway(false);
     setSelectedPackage(null);
-    setPaymentError('');
-    setSelectedPaymentMethod('paystack');
     setFormData({
       firstName: '',
       lastName: '',
@@ -253,7 +232,6 @@ const Broadband = () => {
   const handlePaymentSuccess = (paymentData) => {
     console.log('Payment successful:', paymentData);
     handleCloseAll();
-    // Optionally redirect to success page or show success message
   };
 
   return (
@@ -292,17 +270,7 @@ const Broadband = () => {
         </div>
 
         <div className="service-content">
-          {/* Introduction Section */}
-          <div className="intro-section">
-            <h2>Ultra-Fast Fiber Internet</h2>
-            <p className="intro-text">
-              Experience lightning-fast internet with our fiber optic broadband. Perfect for streaming, 
-              gaming, remote work, and running your business smoothly. Get reliable connectivity with 
-              guaranteed speeds and exceptional support.
-            </p>
-          </div>
-
-          {/* WiFi Packages Section */}
+          {/* Packages Grid */}
           <div className="packages-section">
             <div className="section-header">
               <h2>Monthly WiFi Packages</h2>
@@ -318,7 +286,7 @@ const Broadband = () => {
                 >
                   {pkg.popular && <div className="popular-badge">Most Popular</div>}
                   <div className="packages-header">
-                    <h3 className="packages-name">{pkg.name}</h3>
+                    <h3 className="packages-name">{pkg.displayName}</h3>
                     <div className="packages-speed">
                       <Zap size={20} />
                       <span>{pkg.speed}</span>
@@ -328,6 +296,14 @@ const Broadband = () => {
                   <div className="packages-price">
                     <span className="current-price">{getFormattedPrice(pkg)}</span>
                     <span className="price-period">per month</span>
+                  </div>
+
+                  <div className="packages-description">
+                    <p>{pkg.description}</p>
+                  </div>
+
+                  <div className="packages-features">
+                    <small>📱 Up to {pkg.devices} devices</small>
                   </div>
 
                   <div className="packages-cta">
@@ -342,19 +318,19 @@ const Broadband = () => {
 
           {/* Payment Methods Showcase */}
           <div className="payment-methods-showcase">
-            <h3>Secure Payments Accepted Worldwide</h3>
+            <h3>Secure Payments Accepted</h3>
             <div className="payment-icons-container">
               <div className="payment-icon-card">
                 <CreditCard size={32} />
-                <span>Visa</span>
+                <span>Visa (KES)</span>
               </div>
               <div className="payment-icon-card">
                 <CreditCard size={32} />
-                <span>Mastercard</span>
+                <span>Mastercard (KES)</span>
               </div>
               <div className="payment-icon-card">
                 <Wallet size={32} />
-                <span>PayPal</span>
+                <span>PayPal (USD)</span>
               </div>
               <div className="payment-icon-card">
                 <Shield size={32} />
@@ -362,7 +338,7 @@ const Broadband = () => {
               </div>
             </div>
             <p className="settlement-note">
-              💰 All payments securely processed and settled to <strong>Equity Bank Kenya</strong>
+              💰 Card payments in KES via PayStack | PayPal payments in USD
             </p>
           </div>
 
@@ -409,7 +385,7 @@ const Broadband = () => {
                 </button>
                 
                 <button className="btn btn-outline">
-                  <span>Call: 0730862862</span>
+                  <span>Call: 0718831298</span>
                 </button>
               </div>
               
@@ -441,7 +417,7 @@ const Broadband = () => {
                 <h2 className="modal-title">Choose Your WiFi Package</h2>
                 <p className="modal-subtitle">Select one of our affordable monthly plans</p>
               </div>
-              <button className="modal-close-btn" onClick={handleCloseAll} aria-label="Close modal">
+              <button className="modal-close-btn" onClick={handleCloseAll}>
                 <X size={24} />
               </button>
             </div>
@@ -456,7 +432,7 @@ const Broadband = () => {
                   {pkg.popular && <div className="package-badge">Most Popular</div>}
                   
                   <div className="package-selection-header">
-                    <h3 className="package-selection-name">{pkg.name}</h3>
+                    <h3 className="package-selection-name">{pkg.displayName}</h3>
                     <div className="package-selection-speed">
                       <Zap size={18} />
                       <span>{pkg.speed}</span>
@@ -468,27 +444,19 @@ const Broadband = () => {
                     <span className="price-period">per month</span>
                   </div>
 
+                  <div className="package-selection-description">
+                    <p>{pkg.description}</p>
+                  </div>
+
                   <div className="package-selection-tag">
                     <span>{pkg.tag}</span>
                   </div>
 
                   <div className="package-selection-cta">
-                    <button 
-                      className="select-package-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handlePackageSelect(pkg);
-                      }}
-                    >
+                    <button className="select-package-btn">
                       {selectedPackage?.id === pkg.id ? '✓ Selected' : 'Select Package'}
                     </button>
                   </div>
-
-                  {selectedPackage?.id === pkg.id && (
-                    <div className="selection-indicator">
-                      ✓ Package Selected
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
@@ -506,13 +474,10 @@ const Broadband = () => {
                 }}
                 disabled={!selectedPackage}
               >
-                Continue with {selectedPackage?.name || 'Package'}
+                Continue with {selectedPackage?.displayName || 'Package'}
               </button>
               
-              <button 
-                className="back-to-packages-btn"
-                onClick={handleCloseAll}
-              >
+              <button className="back-to-packages-btn" onClick={handleCloseAll}>
                 Cancel
               </button>
             </div>
@@ -527,9 +492,9 @@ const Broadband = () => {
             <div className="package-modal-header">
               <div className="modal-header-content">
                 <h2 className="modal-title">Complete Your Subscription</h2>
-                <p className="modal-subtitle">Fill out your details for {selectedPackage.name} package</p>
+                <p className="modal-subtitle">Fill out your details for {selectedPackage.displayName} package</p>
               </div>
-              <button className="modal-close-btn" onClick={handleCloseAll} aria-label="Close modal">
+              <button className="modal-close-btn" onClick={handleCloseAll}>
                 <X size={24} />
               </button>
             </div>
@@ -542,21 +507,19 @@ const Broadband = () => {
             </div>
 
             <div className="selected-package-summary">
-              <div className="summary-header">
-                <h3>Selected Package</h3>
-              </div>
+              <h3>Selected Package</h3>
               <div className="summary-details">
                 <div className="summary-row">
-                  <span className="summary-label">Package:</span>
-                  <span className="summary-value">{selectedPackage.name}</span>
+                  <span>Package:</span>
+                  <strong>{selectedPackage.displayName}</strong>
                 </div>
                 <div className="summary-row">
-                  <span className="summary-label">Speed:</span>
-                  <span className="summary-value">{selectedPackage.speed}</span>
+                  <span>Speed:</span>
+                  <strong>{selectedPackage.speed}</strong>
                 </div>
                 <div className="summary-row">
-                  <span className="summary-label">Price:</span>
-                  <span className="summary-value">{getFormattedPrice(selectedPackage)} per month</span>
+                  <span>Price:</span>
+                  <strong>{getFormattedPrice(selectedPackage)}/month</strong>
                 </div>
               </div>
             </div>
@@ -564,95 +527,68 @@ const Broadband = () => {
             <form className="package-form" onSubmit={handleSubmit}>
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="firstName" className="form-label">
-                    First Name <span className="required">*</span>
-                  </label>
+                  <label>First Name *</label>
                   <input
                     type="text"
-                    id="firstName"
-                    className="form-input"
                     value={formData.firstName}
                     onChange={(e) => setFormData({...formData, firstName: e.target.value})}
                     required
-                    placeholder="Enter your first name"
                   />
                 </div>
                 
                 <div className="form-group">
-                  <label htmlFor="lastName" className="form-label">
-                    Last Name <span className="required">*</span>
-                  </label>
+                  <label>Last Name *</label>
                   <input
                     type="text"
-                    id="lastName"
-                    className="form-input"
                     value={formData.lastName}
                     onChange={(e) => setFormData({...formData, lastName: e.target.value})}
                     required
-                    placeholder="Enter your last name"
                   />
                 </div>
               </div>
 
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="phone" className="form-label">
-                    Phone Number <span className="required">*</span>
-                  </label>
+                  <label>Phone Number *</label>
                   <input
                     type="tel"
-                    id="phone"
-                    className="form-input"
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
                     required
-                    placeholder="e.g., +254730862862"
+                    placeholder="0712345678"
                   />
                 </div>
                 
                 <div className="form-group">
-                  <label htmlFor="email" className="form-label">
-                    Email Address <span className="required">*</span>
-                  </label>
+                  <label>Email Address *</label>
                   <input
                     type="email"
-                    id="email"
-                    className="form-input"
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                     required
-                    placeholder="your.email@example.com"
                   />
                 </div>
               </div>
 
               <div className="form-group">
-                <label htmlFor="location" className="form-label">
-                  Location/Address <span className="required">*</span>
-                </label>
+                <label>Location/Address *</label>
                 <input
                   type="text"
-                  id="location"
-                  className="form-input"
                   value={formData.location}
                   onChange={(e) => setFormData({...formData, location: e.target.value})}
                   required
-                  placeholder="Enter your full address for installation"
+                  placeholder="Enter your full address"
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="description" className="form-label">
-                  Additional Notes (Optional)
-                </label>
+                <label>Additional Notes (Optional)</label>
                 <textarea
-                  id="description"
-                  className="form-textarea"
                   rows="3"
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  placeholder="Any special requirements or notes for installation..."
-                ></textarea>
+                  placeholder="Any special requirements..."
+                />
               </div>
 
               <div className="form-footer">
@@ -663,31 +599,22 @@ const Broadband = () => {
                     checked={formData.agreeTerms}
                     onChange={(e) => setFormData({...formData, agreeTerms: e.target.checked})}
                     required
-                    className="terms-checkbox"
                   />
-                  <label htmlFor="terms" className="terms-label">
-                    I agree to the terms and conditions and understand that a technician will contact me to schedule installation.
+                  <label htmlFor="terms">
+                    I agree to the terms and conditions
                   </label>
                 </div>
 
-                <button 
-                  type="submit" 
-                  className="submit-btn"
-                  disabled={isSubmitting}
-                >
-                  Proceed to Payment
+                <button type="submit" className="submit-btn" disabled={isSubmitting}>
+                  {isSubmitting ? 'Processing...' : 'Proceed to Payment'}
                 </button>
-                
-                <p className="form-note">
-                  You will be redirected to our secure payment page. We accept Visa, Mastercard, and PayPal.
-                </p>
               </div>
             </form>
           </div>
         </div>
       )}
 
-      {/* Payment Gateway Modal - Using Unified PaymentGateway Component */}
+      {/* Payment Gateway Modal */}
       {showPaymentGateway && selectedPackage && (
         <PaymentGateway
           email={formData.email}
@@ -696,7 +623,7 @@ const Broadband = () => {
           customerName={`${formData.firstName} ${formData.lastName}`}
           phone={formData.phone}
           location={formData.location}
-          currency={getCurrencyCode()}
+          currency="KES"
           onSuccess={handlePaymentSuccess}
           onClose={handleCloseAll}
         />

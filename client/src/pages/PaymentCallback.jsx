@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './PaymentCallback.css';
 
 // Hardcoded API URL
 const API_BASE_URL = 'https://weba-payment.vercel.app/api';
@@ -19,7 +18,8 @@ const PaymentCallback = () => {
       const reference = params.get('reference');
       const gateway = params.get('gateway');
       const token = params.get('token');
-      const payerId = params.get('PayerID');
+      // ✅ Remove unused payerId
+      // const payerId = params.get('PayerID');
       
       // Try to get reference from localStorage if not in URL
       let actualReference = reference;
