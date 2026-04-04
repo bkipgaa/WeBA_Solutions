@@ -50,7 +50,7 @@ const Broadband = () => {
     // ✅ NEW: Test Plan - Very Small Amount (KSh 10)
     { 
       id: 'test-micro',
-      name: 'Test Micro',
+      name: 'Basic',
       displayName: '🧪 TEST - Micro Plan',
       speed: '1 Mbps',
       priceKES: 10,
@@ -66,7 +66,7 @@ const Broadband = () => {
     // ✅ NEW: Test Plan - Small Amount (KSh 150)
     { 
       id: 'test-small',
-      name: 'Test Small',
+      name: 'Standard',
       displayName: '🧪 TEST - Small Plan',
       speed: '2 Mbps',
       priceKES: 150,
