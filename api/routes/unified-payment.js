@@ -14,6 +14,164 @@ const {
 const { getPayPalAccessToken, PAYPAL_API_URL } = require('../../utils/paypal');
 const { saveSubscriptionToDatabase, sendConfirmationEmail } = require('../../utils/email');
 
+// Import models for database checks
+let Subscription, Transaction;
+try {
+  const models = require('../../models/Index');
+  Subscription = models.Subscription;
+  Transaction = models.Transaction;
+} catch (error) {
+  console.log('ℹ️ Models not loaded yet, will use memory-only mode');
+}
+
+// ============================================
+// HELPER: Check if transaction already processed
+// ============================================
+async function isTransactionProcessed(reference) {
+  try {
+    // Check in-memory first
+    const memTransaction = pendingTransactions.get(reference);
+    if (memTransaction && memTransaction.status === 'completed') {
+      console.log(`ℹ️ Found completed transaction in memory: ${reference}`);
+      return { processed: true, source: 'memory', data: memTransaction };
+    }
+    
+    // Check database if available
+    if (process.env.MONGODB_URI && Subscription) {
+      const dbSubscription = await Subscription.findOne({ reference, status: 'active' });
+      if (dbSubscription) {
+        console.log(`ℹ️ Found active subscription in database: ${reference}`);
+        return { processed: true, source: 'database', data: dbSubscription };
+      }
+    }
+    
+    return { processed: false };
+  } catch (error) {
+    console.error('Error checking transaction status:', error.message);
+    return { processed: false };
+  }
+}
+
+// ============================================
+// HELPER: Save payment data with duplicate prevention
+// ============================================
+// Helper function to map payment method to allowed enum values
+function mapPaymentMethod(paymentMethod) {
+  const methodMap = {
+    'card': 'card',
+    'visa': 'visa',
+    'mastercard': 'mastercard',
+    'paypal': 'paypal',
+    'bank_transfer': 'bank_transfer',
+    'ussd': 'ussd',
+    'mobile_money': 'mobile_money'
+  };
+  
+  const lowerMethod = (paymentMethod || 'card').toLowerCase();
+  return methodMap[lowerMethod] || 'card';
+}
+
+async function savePaymentDataSafely(reference, transaction, paymentData, gateway) {
+  if (!process.env.MONGODB_URI) {
+    console.log('ℹ️ MongoDB not configured, skipping database save');
+    return null;
+  }
+  
+  try {
+    // Get the payment method from paymentData
+    let paymentMethod = paymentData.channel || paymentData.paymentMethod || 'card';
+    paymentMethod = mapPaymentMethod(paymentMethod);
+    
+    // Check if subscription already exists
+    const existingSubscription = await Subscription.findOne({ reference });
+    
+    if (existingSubscription) {
+      if (existingSubscription.status === 'active') {
+        console.log(`ℹ️ Subscription already active for: ${reference}`);
+        return existingSubscription;
+      }
+      
+      // Update existing subscription
+      existingSubscription.status = 'active';
+      existingSubscription.paymentDate = new Date(paymentData.paid_at || new Date());
+      existingSubscription.transactionId = paymentData.id;
+      existingSubscription.paymentMethod = paymentMethod; // ✅ Use mapped value
+      existingSubscription.updatedAt = new Date();
+      await existingSubscription.save();
+      console.log(`✅ Subscription updated: ${reference}`);
+      
+      // Update transaction if exists
+      const existingTransaction = await Transaction.findOne({ reference });
+      if (existingTransaction) {
+        existingTransaction.status = 'success';
+        existingTransaction.completedAt = new Date();
+        existingTransaction.gatewayReference = paymentData.id;
+        existingTransaction.paymentMethod = paymentMethod; // ✅ Add payment method
+        await existingTransaction.save();
+        console.log(`✅ Transaction updated: ${reference}`);
+      }
+      return existingSubscription;
+    }
+    
+    // Create new subscription with correct payment method
+    const subscription = new Subscription({
+      reference,
+      customerName: transaction.customerName,
+      email: transaction.email,
+      phone: transaction.phone,
+      location: transaction.location,
+      packageName: transaction.packageName,
+      amount: transaction.amount,
+      currency: transaction.currency,
+      paymentDate: new Date(paymentData.paid_at || new Date()),
+      transactionId: paymentData.id,
+      paymentMethod: paymentMethod, // ✅ Use mapped value
+      paymentGateway: gateway,
+      status: 'active'
+    });
+    await subscription.save();
+    console.log(`✅ Subscription saved: ${reference}`);
+    
+    // Create transaction (check if exists first)
+    const existingTransaction = await Transaction.findOne({ reference });
+    if (!existingTransaction) {
+      const newTransaction = new Transaction({
+        reference,
+        subscriptionId: subscription._id,
+        customer: {
+          email: transaction.email,
+          name: transaction.customerName,
+          phone: transaction.phone
+        },
+        amount: transaction.amount,
+        currency: transaction.currency,
+        gateway: gateway,
+        gatewayReference: paymentData.id,
+        status: 'success',
+        paymentMethod: paymentMethod, // ✅ Add payment method
+        completedAt: new Date()
+      });
+      await newTransaction.save();
+      console.log(`✅ Transaction saved: ${reference}`);
+    }
+    
+    return subscription;
+  } catch (error) {
+    if (error.code === 11000) {
+      console.log(`ℹ️ Duplicate key ignored for: ${reference}`);
+      const existing = await Subscription.findOne({ reference });
+      if (existing) {
+        existing.status = 'active';
+        await existing.save();
+        return existing;
+      }
+    } else {
+      console.error('❌ Database error:', error.message);
+    }
+    return null;
+  }
+}
+
 // ============================================
 // UNIFIED PAYMENT INITIALIZATION
 // ============================================
@@ -50,7 +208,6 @@ router.post(
       currency = gateway === 'paystack' ? 'KES' : 'USD'
     } = req.body;
 
-    // ✅ FIX: Ensure amount is a number and properly formatted
     const numericAmount = parseFloat(amount);
     if (isNaN(numericAmount)) {
       return res.status(400).json({
@@ -78,8 +235,6 @@ router.post(
         });
 
         const accessToken = await getPayPalAccessToken();
-
-        // ✅ FIX: Format amount properly for PayPal
         const formattedAmount = numericAmount.toFixed(2);
         
         console.log(`💰 PayPal payment: ${currency} ${formattedAmount}`);
@@ -185,7 +340,6 @@ router.post(
           gateway: 'paystack'
         });
 
-        // ✅ PayStack amount must be in cents/kobo
         const paystackAmount = Math.round(numericAmount * 100);
         
         console.log(`💰 PayStack payment: ${currency} ${numericAmount} (${paystackAmount} cents)`);
@@ -251,7 +405,7 @@ router.post(
   [
     body('reference').notEmpty().withMessage('Transaction reference is required'),
     body('gateway').isIn(['paypal', 'paystack']).withMessage('Gateway must be paypal or paystack'),
-    body('orderId').optional().isString()
+    body('orderId').optional({ nullable: true, checkFalsy: true })
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -264,9 +418,111 @@ router.post(
     }
 
     const { reference, gateway, orderId } = req.body;
+    
+    // ✅ CRITICAL: Check if already processed at the very beginning
+    const alreadyProcessed = await isTransactionProcessed(reference);
+    if (alreadyProcessed.processed) {
+      console.log(`ℹ️ Payment already processed for: ${reference} (from ${alreadyProcessed.source})`);
+      return res.json({
+        success: true,
+        message: 'Payment already processed',
+        data: alreadyProcessed.data
+      });
+    }
 
     try {
-      const transaction = pendingTransactions.get(reference);
+      let transaction = pendingTransactions.get(reference);
+      
+      // If not found in memory and it's PayStack, verify directly with PayStack API
+      if (!transaction && gateway === 'paystack') {
+        console.log('⚠️ Transaction not in memory, verifying directly with PayStack...');
+        
+        try {
+          const paystackResponse = await axios.get(
+            `https://api.paystack.co/transaction/verify/${reference}`,
+            {
+              headers: {
+                Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+              }
+            }
+          );
+          
+          const paymentData = paystackResponse.data.data;
+          
+          if (paymentData.status === 'success') {
+            console.log('✅ PayStack payment verified successfully:', paymentData.reference);
+            
+            transaction = {
+              email: paymentData.customer.email,
+              amount: paymentData.amount / 100,
+              packageName: paymentData.metadata?.package_name || 'Standard',
+              customerName: paymentData.metadata?.customer_name || 'Customer',
+              phone: paymentData.metadata?.phone || '',
+              location: paymentData.metadata?.location || '',
+              currency: paymentData.currency,
+              createdAt: new Date(paymentData.created_at),
+              status: 'completed',
+              gateway: 'paystack',
+              paymentData: paymentData,
+              completedAt: new Date(paymentData.paid_at)
+            };
+            
+            pendingTransactions.set(reference, transaction);
+            
+            // Save to database using safe method
+            await savePaymentDataSafely(reference, transaction, paymentData, 'paystack');
+            
+            // Send confirmation email (non-blocking)
+            const emailData = {
+              customer: { email: transaction.email },
+              metadata: {
+                customer_name: transaction.customerName,
+                package_name: transaction.packageName,
+                phone: transaction.phone,
+                location: transaction.location
+              },
+              amount: transaction.amount,
+              currency: transaction.currency,
+              reference: reference,
+              channel: paymentData.channel,
+              paid_at: paymentData.paid_at,
+              id: paymentData.id
+            };
+            
+            // Email in background (don't await to avoid blocking)
+            sendConfirmationEmail(emailData).catch(err => 
+              console.error('Email error (non-critical):', err.message)
+            );
+            
+            return res.json({
+              success: true,
+              message: 'Payment verified successfully',
+              data: {
+                reference: reference,
+                amount: transaction.amount,
+                currency: transaction.currency,
+                packageName: transaction.packageName,
+                transactionId: paymentData.id,
+                paymentMethod: paymentData.channel,
+                gateway: 'paystack',
+                status: 'completed'
+              }
+            });
+          } else {
+            return res.status(404).json({
+              success: false,
+              message: 'Payment verification failed',
+              status: paymentData.status
+            });
+          }
+        } catch (paystackError) {
+          console.error('PayStack verification error:', paystackError.response?.data || paystackError.message);
+          return res.status(404).json({
+            success: false,
+            message: 'Transaction not found or verification failed'
+          });
+        }
+      }
       
       if (!transaction) {
         return res.status(404).json({
@@ -287,7 +543,6 @@ router.post(
       let captureData = null;
 
       if (gateway === 'paystack') {
-        // Verify PayStack payment
         const response = await axios.get(
           `https://api.paystack.co/transaction/verify/${reference}`,
           {
@@ -316,7 +571,6 @@ router.post(
         }
 
       } else if (gateway === 'paypal') {
-        // Capture PayPal payment
         if (!orderId) {
           return res.status(400).json({
             success: false,
@@ -359,7 +613,6 @@ router.post(
         }
       }
 
-      // Process successful payment
       if (captureData && captureData.status === 'COMPLETED') {
         transaction.status = 'completed';
         transaction.paymentData = paymentData;
@@ -382,25 +635,12 @@ router.post(
           id: captureData.id
         };
 
-        if (process.env.MONGODB_URI) {
-          await saveSubscriptionToDatabase({
-            reference,
-            customerName: transaction.customerName,
-            email: transaction.email,
-            phone: transaction.phone,
-            location: transaction.location,
-            packageName: transaction.packageName,
-            amount: captureData.amount,
-            currency: captureData.currency,
-            paymentDate: new Date(),
-            transactionId: captureData.id,
-            paymentMethod: captureData.paymentMethod,
-            paymentGateway: gateway,
-            status: 'active'
-          });
-        }
-
-        await sendConfirmationEmail(emailPaymentData);
+        await savePaymentDataSafely(reference, transaction, captureData, gateway);
+        
+        // Email in background
+        sendConfirmationEmail(emailPaymentData).catch(err => 
+          console.error('Email error (non-critical):', err.message)
+        );
 
         return res.json({
           success: true,

@@ -32,7 +32,7 @@ function App() {
             
             {/* Service Routes */}
             <Route path="/services/broadband" element={<Broadband />} />
-             <Route path="/PaymentCallback" element={<PaymentCallback />} />
+             <Route path="/payment-callback" element={<PaymentCallback />} />
              <Route path="/payment-cancelled" element={<div>Payment Cancelled</div>} />
             <Route path="/services/hotspot" element={<Hotspot />} />
             <Route path="/services/electrical" element={<Electrical />} />
