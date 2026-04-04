@@ -45,16 +45,49 @@ const Broadband = () => {
     { icon: '🔄', title: 'Dual WAN', desc: 'Failover options for reliability' }
   ];
 
-  // ✅ Broadband packages with correct KES prices (for PayStack)
+  // ✅ Broadband packages with TEST amounts
   const broadbandPackages = [
+    // ✅ NEW: Test Plan - Very Small Amount (KSh 10)
+    { 
+      id: 'test-micro',
+      name: 'Test Micro',
+      displayName: '🧪 TEST - Micro Plan',
+      speed: '1 Mbps',
+      priceKES: 10,
+      priceUSD: 0.08,
+      priceFormatted: 'KSh 10',
+      duration: 'Test',
+      popular: false,
+      tag: '🧪 TEST - Lowest',
+      description: 'For testing payments only - KSh 10',
+      devices: '1',
+      isTestPlan: true
+    },
+    // ✅ NEW: Test Plan - Small Amount (KSh 150)
+    { 
+      id: 'test-small',
+      name: 'Test Small',
+      displayName: '🧪 TEST - Small Plan',
+      speed: '2 Mbps',
+      priceKES: 150,
+      priceUSD: 1.15,
+      priceFormatted: 'KSh 150',
+      duration: 'Test',
+      popular: false,
+      tag: '🧪 TEST - Small',
+      description: 'For testing payments only - KSh 150',
+      devices: '1-2',
+      isTestPlan: true
+    },
+    // Original packages with reduced amounts for testing
     { 
       id: 'basic',
       name: 'Basic',
       displayName: 'Basic Broadband',
       speed: '5 Mbps',
-      priceKES: 1500,
-      priceUSD: 12,
-      priceFormatted: 'KSh 1,500',
+      priceKES: 150, // Changed from 1500 to 150 for testing
+      priceUSD: 1.15,
+      priceFormatted: 'KSh 150',
       duration: '1 Month',
       popular: false,
       tag: 'Budget Friendly',
@@ -66,9 +99,9 @@ const Broadband = () => {
       name: 'Standard',
       displayName: 'Standard Broadband',
       speed: '10 Mbps',
-      priceKES: 2500,
-      priceUSD: 19,
-      priceFormatted: 'KSh 2,500',
+      priceKES: 250, // Changed from 2500 to 250 for testing
+      priceUSD: 1.92,
+      priceFormatted: 'KSh 250',
       duration: '1 Month',
       popular: true,
       tag: 'Most Popular',
@@ -80,9 +113,9 @@ const Broadband = () => {
       name: 'Premium',
       displayName: 'Premium Broadband',
       speed: '20 Mbps',
-      priceKES: 4000,
-      priceUSD: 31,
-      priceFormatted: 'KSh 4,000',
+      priceKES: 400, // Changed from 4000 to 400 for testing
+      priceUSD: 3.08,
+      priceFormatted: 'KSh 400',
       duration: '1 Month',
       popular: false,
       tag: 'High Speed',
@@ -94,9 +127,9 @@ const Broadband = () => {
       name: 'Business',
       displayName: 'Business Broadband',
       speed: '50 Mbps',
-      priceKES: 7000,
-      priceUSD: 54,
-      priceFormatted: 'KSh 7,000',
+      priceKES: 700, // Changed from 7000 to 700 for testing
+      priceUSD: 5.38,
+      priceFormatted: 'KSh 700',
       duration: '1 Month',
       popular: false,
       tag: 'Business Grade',
@@ -108,9 +141,9 @@ const Broadband = () => {
       name: 'Home Package',
       displayName: 'Home Package',
       speed: '15 Mbps',
-      priceKES: 3000,
-      priceUSD: 23,
-      priceFormatted: 'KSh 3,000',
+      priceKES: 300, // Changed from 3000 to 300 for testing
+      priceUSD: 2.31,
+      priceFormatted: 'KSh 300',
       duration: '1 Month',
       popular: false,
       tag: 'Family Friendly',
@@ -232,6 +265,7 @@ const Broadband = () => {
   const handlePaymentSuccess = (paymentData) => {
     console.log('Payment successful:', paymentData);
     handleCloseAll();
+    alert(`Payment of KSh ${paymentData.amount} successful! Check your email for confirmation.`);
   };
 
   return (
@@ -270,21 +304,30 @@ const Broadband = () => {
         </div>
 
         <div className="service-content">
+          {/* Warning Banner for Test Mode */}
+          <div style={{ backgroundColor: '#fff3cd', border: '1px solid #ffeeba', borderRadius: '8px', padding: '12px 20px', marginBottom: '20px', textAlign: 'center' }}>
+            <p style={{ color: '#856404', margin: 0 }}>
+              🧪 <strong>TEST MODE ACTIVE:</strong> Low test amounts enabled. Use test card 4242 4242 4242 4242 for PayStack or sandbox account for PayPal.
+            </p>
+          </div>
+
           {/* Packages Grid */}
           <div className="packages-section">
             <div className="section-header">
-              <h2>Monthly WiFi Packages</h2>
-              <p className="section-subtitle">Affordable monthly plans for reliable internet access</p>
+              <h2>Test Packages (Low Amounts)</h2>
+              <p className="section-subtitle">Select a test package to verify your payment system</p>
             </div>
 
             <div className="packages-grid">
               {broadbandPackages.map((pkg, index) => (
                 <div 
                   key={index} 
-                  className={`packages-card ${pkg.popular ? 'popular' : ''}`}
+                  className={`packages-card ${pkg.popular ? 'popular' : ''} ${pkg.isTestPlan ? 'test-plan' : ''}`}
                   onClick={() => handlePackageClick(pkg)}
+                  style={pkg.isTestPlan ? { border: '2px solid #ff9800', backgroundColor: '#fff8e1' } : {}}
                 >
                   {pkg.popular && <div className="popular-badge">Most Popular</div>}
+                  {pkg.isTestPlan && <div style={{ position: 'absolute', top: '-10px', right: '10px', backgroundColor: '#ff9800', color: 'white', padding: '2px 8px', borderRadius: '20px', fontSize: '10px' }}>TEST</div>}
                   <div className="packages-header">
                     <h3 className="packages-name">{pkg.displayName}</h3>
                     <div className="packages-speed">
@@ -316,6 +359,7 @@ const Broadband = () => {
             </div>
           </div>
 
+          {/* Rest of your component remains the same... */}
           {/* Payment Methods Showcase */}
           <div className="payment-methods-showcase">
             <h3>Secure Payments Accepted</h3>
@@ -408,6 +452,7 @@ const Broadband = () => {
         </div>
       </div>
 
+      {/* Rest of your modals remain the same */}
       {/* Package Selection Modal */}
       {showPackageSelection && (
         <div className="package-modal-overlay">
@@ -555,11 +600,7 @@ const Broadband = () => {
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
                     required
- HEAD
                     placeholder="e.g., 0718831298"
-
-                    
-webabranch
                   />
                 </div>
                 

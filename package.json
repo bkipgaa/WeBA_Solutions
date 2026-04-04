@@ -6,8 +6,8 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "dev": "nodemon server.js",
-    "start": "node server.js",
+    "dev": "nodemon index.js",
+    "start": "node index.js",
     "vercel-dev": "vercel dev",
     "deploy": "vercel deploy --prod"
   },
