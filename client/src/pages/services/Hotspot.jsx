@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Wifi, Clock,  Zap, CheckCircle } from 'lucide-react';
-import './Hotspot.css';
+import { Wifi, Clock, Zap, CheckCircle } from 'lucide-react';
 
 const Hotspot = () => {
   const solutions = [
@@ -14,86 +13,16 @@ const Hotspot = () => {
   ];
 
   const hotspotpackages = [
-    { 
-      name: 'Diamond Day', 
-      speed: '8Mbps',
-      price: 'Ksh 50.00', 
-      duration: '1 Day', 
-      popular: false,
-      tag: 'Full Day'
-    },
-    { 
-      name: 'Bronze Pass', 
-      speed: '4Mbps',
-      price: 'Ksh 10.00', 
-      duration: '1 Hour', 
-      popular: false,
-      tag: 'Quick Access'
-    },
-    { 
-      name: 'Silver Boost', 
-      speed: '4Mbps',
-      price: 'Ksh 20.00', 
-      duration: '3 Hours', 
-      popular: false,
-      tag: 'Best Seller'
-    },
-    { 
-      name: 'Gold Access', 
-      speed: '5Mbps',
-      price: 'Ksh 30.00', 
-      duration: '6 Hours', 
-      popular: true,
-      tag: 'Most Popular'
-    },
-    { 
-      name: 'Platinum Surf', 
-      speed: '5Mbps',
-      price: 'Ksh 40.00', 
-      duration: '12 Hours', 
-      popular: false,
-      tag: 'Extended Use'
-    },
-    { 
-      name: 'Triple Ruby', 
-      speed: '8Mbps',
-      price: 'Ksh 100.00', 
-      duration: '3 Days', 
-      popular: true,
-      tag: 'Value Pack'
-    },
-    { 
-      name: 'Seven Days', 
-      speed: '10Mbps',
-      price: 'Ksh 150.00', 
-      duration: '7 Days', 
-      popular: false,
-      tag: 'Weekly Plan'
-    },
-    { 
-      name: '14 Days - 2 Devices', 
-      speed: '10Mbps',
-      price: 'Ksh 300.00', 
-      duration: '14 Days', 
-      popular: true,
-      tag: 'Multi-Device'
-    },
-    { 
-      name: '21 Days packages', 
-      speed: '10Mbps',
-      price: 'Ksh 250.00', 
-      duration: '21 Days', 
-      popular: false,
-      tag: 'Long Term'
-    },
-    { 
-      name: 'One Month - 2 Users', 
-      speed: '10Mbps',
-      price: 'Ksh 500.00', 
-      duration: '1 Month', 
-      popular: true,
-      tag: 'Premium'
-    }
+    { name: 'Diamond Day', speed: '8Mbps', price: 'Ksh 50.00', duration: '1 Day', popular: false, tag: 'Full Day' },
+    { name: 'Bronze Pass', speed: '4Mbps', price: 'Ksh 10.00', duration: '1 Hour', popular: false, tag: 'Quick Access' },
+    { name: 'Silver Boost', speed: '4Mbps', price: 'Ksh 20.00', duration: '3 Hours', popular: false, tag: 'Best Seller' },
+    { name: 'Gold Access', speed: '5Mbps', price: 'Ksh 30.00', duration: '6 Hours', popular: true, tag: 'Most Popular' },
+    { name: 'Platinum Surf', speed: '5Mbps', price: 'Ksh 40.00', duration: '12 Hours', popular: false, tag: 'Extended Use' },
+    { name: 'Triple Ruby', speed: '8Mbps', price: 'Ksh 100.00', duration: '3 Days', popular: true, tag: 'Value Pack' },
+    { name: 'Seven Days', speed: '10Mbps', price: 'Ksh 150.00', duration: '7 Days', popular: false, tag: 'Weekly Plan' },
+    { name: '14 Days - 2 Devices', speed: '10Mbps', price: 'Ksh 300.00', duration: '14 Days', popular: true, tag: 'Multi-Device' },
+    { name: '21 Days packages', speed: '10Mbps', price: 'Ksh 250.00', duration: '21 Days', popular: false, tag: 'Long Term' },
+    { name: 'One Month - 2 Users', speed: '10Mbps', price: 'Ksh 500.00', duration: '1 Month', popular: true, tag: 'Premium' }
   ];
 
   const features = [
@@ -108,145 +37,200 @@ const Hotspot = () => {
   ];
 
   return (
-    <div className="service-page hotspot-page">
-      <div className="container">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
         {/* Header Section */}
-        <div className="service-header hotspot-header">
-          <Link to="/" className="back-link">← Back to Home</Link>
-          <div className="header-content">
-            <div className="header-icon">
-              <Wifi size={48} />
-            </div>
-            <h1>Hotspot Services</h1>
-            <p className="service-tagline">Affordable WiFi packages for students & professional solutions for businesses</p>
-            <div className="header-stats">
-              <div className="stat-item">
-                <span className="stat-number">10+</span>
-                <span className="stat-label">packages Options</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-number">24/7</span>
-                <span className="stat-label">Support</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-number">Instant</span>
-                <span className="stat-label">Activation</span>
+        <div className="mb-8">
+          {/* Back to Home Link */}
+          <Link to="/" className="inline-flex items-center text-gray-500 hover:text-red-600 text-sm mb-6 transition-colors">
+            ← Back to Home
+          </Link>
+          
+          {/* Header Content */}
+          <div className="text-center">
+            <div className="flex justify-center mb-4">
+              <div className="bg-gray-900 text-white p-4 rounded-full">
+                <Wifi size={36} />
               </div>
             </div>
-          </div>
-        </div>
-
-        <div className="service-content">
-          {/* Introduction Section */}
-          <div className="intro-section">
-            <h2>Perfect for Campus Students</h2>
-            <p className="intro-text">
-              We understand student needs - that's why we offer flexible, affordable WiFi packages 
-              specifically designed for hostel living. Choose from hourly, daily, weekly, or monthly 
-              plans that fit your schedule and budget.
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+              Hotspot Services
+            </h1>
+            <p className="text-gray-500 text-base md:text-lg max-w-md mx-auto">
+              Affordable WiFi packages for students & professional solutions for businesses
             </p>
-          </div>
-
-          {/* Hotspot packages in Card Layout */}
-          
-<div className="packages-grid">
-  {hotspotpackages.map((pkg, index) => (
-    <div 
-      key={index} 
-      className={`packages-card ${pkg.popular ? 'popular' : ''}`}
-    >
-      {pkg.popular && <div className="popular-badge">🔥 Popular</div>}
-      
-      <div className="packages-content">
-        
-        <h3 className="packages-name">{pkg.name}</h3>
-        
-        <div className="packages-details">
-          <div className="packages-speed">
-            <Zap size={16} />
-            <span>{pkg.speed}</span>
-          </div>
-          
-          <div className="packages-duration">
-            <Clock size={16} />
-            <span>{pkg.duration}</span>
-          </div>
-        </div>
-        
-        <div className="packages-price">
-          <span className="current-price">{pkg.price}</span>
-        </div>
-        
-        
-      </div>
-    </div>
-  ))}
-</div>
-          
-
-          {/* Features Section */}
-          <div className="features-section">
-            <h2>Why Choose Our Hotspot Service?</h2>
-            <div className="features-grid">
-              {features.map((feature, index) => (
-                <div key={index} className="feature-card">
-                  <CheckCircle size={20} className="feature-icon" />
-                  <span>{feature}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Solutions Section */}
-          <div className="solutions-section">
-            <h2>Professional Solutions</h2>
-            <p className="section-subtitle">Enterprise-grade WiFi solutions for various businesses</p>
             
-            <div className="solutions-grid">
-              {solutions.map((solution, index) => (
-                <div key={index} className="solution-card">
-                  <div className="solution-icon">{solution.icon}</div>
-                  <h3>{solution.type}</h3>
-                  <p>{solution.desc}</p>
-                  <button className="solution-btn">Learn More</button>
-                </div>
-              ))}
+            {/* Header Stats */}
+            <div className="flex justify-center gap-12 mt-8">
+              <div className="text-center">
+                <div className="text-2xl md:text-3xl font-bold text-gray-900">10+</div>
+                <div className="text-sm text-gray-500">Package Options</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl md:text-3xl font-bold text-gray-900">24/7</div>
+                <div className="text-sm text-gray-500">Support</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl md:text-3xl font-bold text-gray-900">Instant</div>
+                <div className="text-sm text-gray-500">Activation</div>
+              </div>
             </div>
           </div>
+        </div>
 
-          {/* CTA Section */}
-          <div className="cta-section">
-            <div className="cta-content">
-              <h2>Need Help Choosing a packages?</h2>
-              <p>Our student support team is here to help you select the perfect WiFi plan for your needs.</p>
-              
-              <div className="cta-buttons">
-                <button className="btn btn-primary">
-                  <Wifi size={18} />
-                  <span>Browse All packages</span>
-                </button>
-                <button className="btn btn-secondary">
-                  <span>Contact Support</span>
-                </button>
-                <button className="btn btn-outline">
-                  <span>Download Brochure</span>
+        {/* Introduction Section */}
+        <div className="text-center mb-12">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+            Perfect for Campus Students
+          </h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            We understand student needs - that's why we offer flexible, affordable WiFi packages 
+            specifically designed for hostel living. Choose from hourly, daily, weekly, or monthly 
+            plans that fit your schedule and budget.
+          </p>
+        </div>
+
+        {/* Hotspot Packages Grid */}
+        <div className="mb-16">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">WiFi Packages</h2>
+            <p className="text-gray-500">Choose the perfect plan for your needs</p>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {hotspotpackages.map((pkg, index) => (
+              <div 
+                key={index} 
+                className={`bg-white rounded-xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group relative ${
+                  pkg.popular ? 'ring-1 ring-gray-300' : ''
+                }`}
+              >
+                {pkg.popular && (
+                  <div className="absolute top-0 right-0 bg-gray-800 text-white text-xs font-semibold px-3 py-1 rounded-bl-lg z-10">
+                    🔥 Popular
+                  </div>
+                )}
+                
+                <div className="p-5">
+                  <h3 className="text-lg font-bold text-gray-900 group-hover:text-red-600 transition-colors mb-2">
+                    {pkg.name}
+                  </h3>
+                  
+                  <div className="flex items-center gap-4 mb-3">
+                    <div className="flex items-center text-gray-500 text-sm">
+                      <Zap size={14} className="mr-1" />
+                      <span>{pkg.speed}</span>
+                    </div>
+                    <div className="flex items-center text-gray-500 text-sm">
+                      <Clock size={14} className="mr-1" />
+                      <span>{pkg.duration}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="mb-3">
+                    <span className="text-2xl font-bold text-gray-900 group-hover:text-red-600 transition-colors">
+                      {pkg.price}
+                    </span>
+                  </div>
+                  
+                  <div className="inline-block bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs mb-3">
+                    {pkg.tag}
+                  </div>
+                  
+                  <button className="w-full bg-gray-900 text-white py-2 rounded-lg text-sm font-semibold hover:bg-red-600 transition-colors duration-300">
+                    Buy Now
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Features Section */}
+        <div className="mb-16">
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-8">
+            Why Choose Our Hotspot Service?
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {features.map((feature, index) => (
+              <div key={index} className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg hover:border-red-300 hover:shadow-md transition-all duration-300 group">
+                <CheckCircle size={18} className="text-gray-400 group-hover:text-red-600 transition-colors" />
+                <span className="text-gray-700 text-sm group-hover:text-gray-900">{feature}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Solutions Section */}
+        <div className="mb-16">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+              Professional Solutions
+            </h2>
+            <p className="text-gray-500">Enterprise-grade WiFi solutions for various businesses</p>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {solutions.map((solution, index) => (
+              <div 
+                key={index} 
+                className="bg-white border border-gray-200 rounded-xl p-6 text-center transition-all duration-300 hover:border-red-300 hover:shadow-lg hover:-translate-y-1 group"
+              >
+                <div className="text-5xl mb-3 group-hover:scale-110 transition-transform duration-300">
+                  {solution.icon}
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">
+                  {solution.type}
+                </h3>
+                <p className="text-gray-600 text-sm mb-4">
+                  {solution.desc}
+                </p>
+                <button className="text-gray-900 font-semibold text-sm inline-flex items-center gap-1 group-hover:text-red-600 group-hover:gap-2 transition-all">
+                  Learn More
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <path d="M8 0L6.59 1.41L12.17 7H0V9H12.17L6.59 14.59L8 16L16 8L8 0Z" fill="currentColor"/>
+                  </svg>
                 </button>
               </div>
-              
-              <div className="cta-features">
-                <div className="cta-feature">
-                  <div className="feature-dot"></div>
-                  <span>No hidden fees</span>
-                </div>
-                <div className="cta-feature">
-                  <div className="feature-dot"></div>
-                  <span>Instant activation</span>
-                </div>
-                <div className="cta-feature">
-                  <div className="feature-dot"></div>
-                  <span>24/7 student support</span>
-                </div>
-              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* CTA Section */}
+        <div className="bg-gray-900 rounded-2xl p-8 text-center">
+          <h2 className="text-xl md:text-2xl font-bold text-white mb-3">
+            Need Help Choosing a Package?
+          </h2>
+          <p className="text-gray-300 mb-6 max-w-md mx-auto">
+            Our student support team is here to help you select the perfect WiFi plan for your needs.
+          </p>
+          
+          <div className="flex flex-wrap justify-center gap-4 mb-6">
+            <button className="bg-white text-gray-900 px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-red-600 hover:text-white transition-all duration-300 flex items-center gap-2">
+              <Wifi size={16} />
+              <span>Browse All Packages</span>
+            </button>
+            <button className="border border-white text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-red-600 hover:border-red-600 transition-all duration-300">
+              Contact Support
+            </button>
+            <button className="border border-white text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-red-600 hover:border-red-600 transition-all duration-300">
+              Download Brochure
+            </button>
+          </div>
+          
+          <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-gray-500 rounded-full"></div>
+              <span>No hidden fees</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-gray-500 rounded-full"></div>
+              <span>Instant activation</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-gray-500 rounded-full"></div>
+              <span>24/7 student support</span>
             </div>
           </div>
         </div>
