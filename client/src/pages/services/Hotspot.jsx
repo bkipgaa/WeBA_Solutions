@@ -36,49 +36,79 @@ const Hotspot = () => {
     'Usage statistics'
   ];
 
+  // Scroll to packages section when clicking "Browse Packages"
+  const scrollToPackages = () => {
+    const packagesSection = document.getElementById('packages-section');
+    if (packagesSection) {
+      packagesSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        {/* Header Section */}
-        <div className="mb-8">
-          {/* Back to Home Link */}
-          <Link to="/" className="inline-flex items-center text-gray-500 hover:text-red-600 text-sm mb-6 transition-colors">
-            ← Back to Home
-          </Link>
-          
-          {/* Header Content */}
+      {/* Hero Section - Styled exactly like Home page */}
+      <div className="bg-gradient-to-br from-gray-900 to-gray-800 text-white py-16 md:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="flex justify-center mb-4">
-              <div className="bg-gray-900 text-white p-4 rounded-full">
-                <Wifi size={36} />
-              </div>
+            {/* Back to Home Link - positioned absolute */}
+            <div className="absolute top-6 left-6 md:top-8 md:left-8">
+              <Link to="/" className="inline-flex items-center text-white/80 hover:text-white text-sm transition-colors">
+                ← Back to Home
+              </Link>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-              Hotspot Services
+
+            <div className="inline-block bg-white/10 px-4 py-2 rounded-full mb-6">
+              <span className="text-sm font-medium">⚡ Trusted Since 2024</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
+              Hotspot & Public WiFi
             </h1>
-            <p className="text-gray-500 text-base md:text-lg max-w-md mx-auto">
-              Affordable WiFi packages for students & professional solutions for businesses
+            <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+              Affordable, flexible WiFi packages for students, plus enterprise-grade solutions 
+              for businesses. Instant activation, no contracts, and 24/7 support.
             </p>
+            <div className="flex flex-wrap justify-center gap-4 mb-12">
+              <button 
+                onClick={scrollToPackages}
+                className="bg-white text-gray-900 px-6 py-3 rounded-lg font-semibold hover:bg-red-600 hover:text-white transition-all duration-300"
+              >
+                Browse Packages →
+              </button>
+              <Link 
+                to="/coverage" 
+                className="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-600 hover:border-red-600 transition-all duration-300"
+              >
+                Check Coverage Areas
+              </Link>
+            </div>
             
-            {/* Header Stats */}
-            <div className="flex justify-center gap-12 mt-8">
+            {/* Stats Row */}
+            <div className="flex flex-wrap justify-center gap-8 md:gap-12">
               <div className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-gray-900">10+</div>
-                <div className="text-sm text-gray-500">Package Options</div>
+                <div className="text-2xl md:text-3xl font-bold">10+</div>
+                <div className="text-sm text-gray-300">Package Options</div>
               </div>
+              <div className="w-px h-12 bg-gray-600 hidden md:block"></div>
               <div className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-gray-900">24/7</div>
-                <div className="text-sm text-gray-500">Support</div>
+                <div className="text-2xl md:text-3xl font-bold">24/7</div>
+                <div className="text-sm text-gray-300">Student Support</div>
               </div>
+              <div className="w-px h-12 bg-gray-600 hidden md:block"></div>
               <div className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-gray-900">Instant</div>
-                <div className="text-sm text-gray-500">Activation</div>
+                <div className="text-2xl md:text-3xl font-bold">Instant</div>
+                <div className="text-sm text-gray-300">Activation</div>
+              </div>
+              <div className="w-px h-12 bg-gray-600 hidden md:block"></div>
+              <div className="text-center">
+                <div className="text-2xl md:text-3xl font-bold">No Contracts</div>
+                <div className="text-sm text-gray-300">Pay as you go</div>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Introduction Section */}
         <div className="text-center mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
@@ -91,8 +121,8 @@ const Hotspot = () => {
           </p>
         </div>
 
-        {/* Hotspot Packages Grid */}
-        <div className="mb-16">
+        {/* Hotspot Packages Grid - added id for scrolling */}
+        <div id="packages-section" className="mb-16">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">WiFi Packages</h2>
             <p className="text-gray-500">Choose the perfect plan for your needs</p>
@@ -207,7 +237,7 @@ const Hotspot = () => {
           </p>
           
           <div className="flex flex-wrap justify-center gap-4 mb-6">
-            <button className="bg-white text-gray-900 px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-red-600 hover:text-white transition-all duration-300 flex items-center gap-2">
+            <button onClick={scrollToPackages} className="bg-white text-gray-900 px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-red-600 hover:text-white transition-all duration-300 flex items-center gap-2">
               <Wifi size={16} />
               <span>Browse All Packages</span>
             </button>

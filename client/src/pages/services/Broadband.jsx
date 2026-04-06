@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { 
   Zap, 
   CheckCircle, 
-  Globe, 
   X, 
   ArrowLeft
 } from 'lucide-react';
@@ -217,47 +216,70 @@ const Broadband = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        {/* Header Section */}
-        <div className="mb-8">
-          {/* Back to Home Link */}
-          <Link to="/" className="inline-flex items-center text-gray-500 hover:text-red-600 text-sm mb-6 transition-colors">
-            ← Back to Home
-          </Link>
-          
-          {/* Header Content */}
+      {/* Hero Section - Updated to match Home page style */}
+      <div className="bg-gradient-to-br from-gray-900 to-gray-800 text-white py-16 md:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="flex justify-center mb-4">
-              <div className="bg-gray-900 text-white p-4 rounded-full">
-                <Globe size={36} />
-              </div>
+            {/* Back to Home Link - positioned absolutely for clean hero */}
+            <div className="absolute top-6 left-6 md:top-8 md:left-8">
+              <Link to="/" className="inline-flex items-center text-white/80 hover:text-white text-sm transition-colors">
+                ← Back to Home
+              </Link>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+
+            <div className="inline-block bg-white/10 px-4 py-2 rounded-full mb-6">
+              <span className="text-sm font-medium">⚡ Trusted Since 2024</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
               Fixed Broadband Internet
             </h1>
-            <p className="text-gray-500 text-base md:text-lg max-w-md mx-auto">
-              High-speed, reliable fiber internet for homes and businesses worldwide
+            <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+              High-speed fiber optic internet for homes and businesses. 
+              Reliable connectivity, unlimited data, and 24/7 support – 
+              all at affordable monthly plans.
             </p>
+            <div className="flex flex-wrap justify-center gap-4 mb-12">
+              <button 
+                onClick={handleOrderNowClick}
+                className="bg-white text-gray-900 px-6 py-3 rounded-lg font-semibold hover:bg-red-600 hover:text-white transition-all duration-300"
+              >
+                Order Now →
+              </button>
+              <Link 
+                to="/coverage" 
+                className="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-600 hover:border-red-600 transition-all duration-300"
+              >
+                Check Coverage Areas
+              </Link>
+            </div>
             
-            {/* Header Stats */}
-            <div className="flex justify-center gap-12 mt-8">
+            {/* Stats Row */}
+            <div className="flex flex-wrap justify-center gap-8 md:gap-12">
               <div className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-gray-900">99.9%</div>
-                <div className="text-sm text-gray-500">Uptime</div>
+                <div className="text-2xl md:text-3xl font-bold">99.9%</div>
+                <div className="text-sm text-gray-300">Uptime</div>
               </div>
+              <div className="w-px h-12 bg-gray-600 hidden md:block"></div>
               <div className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-gray-900">24/7</div>
-                <div className="text-sm text-gray-500">Support</div>
+                <div className="text-2xl md:text-3xl font-bold">24/7</div>
+                <div className="text-sm text-gray-300">Support</div>
               </div>
+              <div className="w-px h-12 bg-gray-600 hidden md:block"></div>
               <div className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-gray-900">Instant</div>
-                <div className="text-sm text-gray-500">Activation</div>
+                <div className="text-2xl md:text-3xl font-bold">Instant</div>
+                <div className="text-sm text-gray-300">Activation</div>
+              </div>
+              <div className="w-px h-12 bg-gray-600 hidden md:block"></div>
+              <div className="text-center">
+                <div className="text-2xl md:text-3xl font-bold">30-Day</div>
+                <div className="text-sm text-gray-300">Guarantee</div>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Overview Section */}
         <div className="bg-white border border-gray-200 rounded-xl p-6 mb-8 transition-all duration-300 hover:border-red-300 hover:shadow-md">
           <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">Overview</h2>
@@ -415,7 +437,7 @@ const Broadband = () => {
         </div>
       </div>
 
-      {/* Modals remain the same */}
+      {/* Modals remain unchanged */}
       {/* Package Selection Modal */}
       {showPackageSelection && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -502,4 +524,4 @@ const Broadband = () => {
   );
 };
 
-export default Broadband;
+export default Broadband; 
