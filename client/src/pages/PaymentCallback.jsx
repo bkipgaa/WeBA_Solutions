@@ -115,7 +115,7 @@ const PaymentCallback = () => {
           
           // Redirect after 5 seconds
           setTimeout(() => {
-            navigate('/services/broadband');
+            navigate('/services');
           }, 5000);
         } else {
           setStatus('error');
@@ -198,7 +198,7 @@ const PaymentCallback = () => {
               </div>
             )}
             
-            <button onClick={() => navigate('/services/broadband')} className="continue-btn">
+            <button onClick={() => navigate('/services')} className="continue-btn">
               Continue to Dashboard
             </button>
           </div>
@@ -211,7 +211,7 @@ const PaymentCallback = () => {
             <p>{message}</p>
             
             <div className="error-actions">
-              <button onClick={() => navigate('/services/broadband')} className="primary-btn">
+              <button onClick={() => navigate('/services')} className="primary-btn">
                 Return to Broadband
               </button>
               <button onClick={() => window.location.href = '/contact'} className="secondary-btn">
