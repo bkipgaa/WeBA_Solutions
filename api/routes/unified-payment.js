@@ -9,7 +9,8 @@ const {
   updateTransaction,
   clearExpiredTransactions,
   generateReference,
-  sanitizePhone
+  sanitizePhone,
+  generateActivationCode 
 } = require('../../utils/helpers');
 const { getPayPalAccessToken, PAYPAL_API_URL } = require('../../utils/paypal');
 const { saveSubscriptionToDatabase, sendConfirmationEmail } = require('../../utils/email');
@@ -95,7 +96,7 @@ async function savePaymentDataSafely(reference, transaction, paymentData, gatewa
       existingSubscription.status = 'active';
       existingSubscription.paymentDate = new Date(paymentData.paid_at || new Date());
       existingSubscription.transactionId = paymentData.id;
-      existingSubscription.paymentMethod = paymentMethod; // ✅ Use mapped value
+      existingSubscription.paymentMethod = paymentMethod;
       existingSubscription.updatedAt = new Date();
       await existingSubscription.save();
       console.log(`✅ Subscription updated: ${reference}`);
@@ -106,7 +107,7 @@ async function savePaymentDataSafely(reference, transaction, paymentData, gatewa
         existingTransaction.status = 'success';
         existingTransaction.completedAt = new Date();
         existingTransaction.gatewayReference = paymentData.id;
-        existingTransaction.paymentMethod = paymentMethod; // ✅ Add payment method
+        existingTransaction.paymentMethod = paymentMethod;
         await existingTransaction.save();
         console.log(`✅ Transaction updated: ${reference}`);
       }
@@ -114,6 +115,9 @@ async function savePaymentDataSafely(reference, transaction, paymentData, gatewa
     }
     
     // Create new subscription with correct payment method
+    const isSecurityPackage = ['Starter Shield', 'Home Shield', 'Smart Shield', 'Business Shield', 'Elite Shield']
+      .includes(transaction.packageName);
+
     const subscription = new Subscription({
       reference,
       customerName: transaction.customerName,
@@ -125,10 +129,13 @@ async function savePaymentDataSafely(reference, transaction, paymentData, gatewa
       currency: transaction.currency,
       paymentDate: new Date(paymentData.paid_at || new Date()),
       transactionId: paymentData.id,
-      paymentMethod: paymentMethod, // ✅ Use mapped value
+      paymentMethod: paymentMethod,
       paymentGateway: gateway,
-      status: 'active'
+      status: 'active',
+      serviceType: isSecurityPackage ? 'security' : 'broadband',
+      activationCode: isSecurityPackage ? generateActivationCode() : null
     });
+
     await subscription.save();
     console.log(`✅ Subscription saved: ${reference}`);
     
@@ -148,7 +155,7 @@ async function savePaymentDataSafely(reference, transaction, paymentData, gatewa
         gateway: gateway,
         gatewayReference: paymentData.id,
         status: 'success',
-        paymentMethod: paymentMethod, // ✅ Add payment method
+        paymentMethod: paymentMethod,
         completedAt: new Date()
       });
       await newTransaction.save();
@@ -472,6 +479,13 @@ router.post(
             // Save to database using safe method
             await savePaymentDataSafely(reference, transaction, paymentData, 'paystack');
             
+            // Retrieve activation code (if any)
+            let activationCode = null;
+            if (process.env.MONGODB_URI && Subscription) {
+              const sub = await Subscription.findOne({ reference });
+              if (sub) activationCode = sub.activationCode;
+            }
+            
             // Send confirmation email (non-blocking)
             const emailData = {
               customer: { email: transaction.email },
@@ -489,7 +503,6 @@ router.post(
               id: paymentData.id
             };
             
-            // Email in background (don't await to avoid blocking)
             sendConfirmationEmail(emailData).catch(err => 
               console.error('Email error (non-critical):', err.message)
             );
@@ -505,7 +518,8 @@ router.post(
                 transactionId: paymentData.id,
                 paymentMethod: paymentData.channel,
                 gateway: 'paystack',
-                status: 'completed'
+                status: 'completed',
+                activationCode: activationCode
               }
             });
           } else {
@@ -637,6 +651,13 @@ router.post(
 
         await savePaymentDataSafely(reference, transaction, captureData, gateway);
         
+        // Retrieve activation code (if any)
+        let activationCode = null;
+        if (process.env.MONGODB_URI && Subscription) {
+          const sub = await Subscription.findOne({ reference });
+          if (sub) activationCode = sub.activationCode;
+        }
+        
         // Email in background
         sendConfirmationEmail(emailPaymentData).catch(err => 
           console.error('Email error (non-critical):', err.message)
@@ -653,7 +674,8 @@ router.post(
             transactionId: captureData.id,
             paymentMethod: captureData.paymentMethod,
             gateway: gateway,
-            status: 'completed'
+            status: 'completed',
+            activationCode: activationCode
           }
         });
       }
@@ -760,5 +782,76 @@ router.get('/payment/methods', async (req, res) => {
     });
   }
 });
+
+// ============================================
+// VERIFY ACTIVATION CODE (for mobile app)
+// ============================================
+router.post(
+  '/verify-activation',
+  [
+    body('code').notEmpty().withMessage('Activation code is required')
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
+    const { code } = req.body;
+
+    try {
+      if (!process.env.MONGODB_URI || !Subscription) {
+        return res.status(503).json({
+          success: false,
+          message: 'Database not configured. Please contact support.'
+        });
+      }
+
+      const subscription = await Subscription.findOne({
+        activationCode: code,
+        serviceType: 'security',
+        status: 'active'
+      });
+
+      if (!subscription) {
+        return res.status(404).json({
+          success: false,
+          message: 'Invalid or expired activation code'
+        });
+      }
+
+      // Check if subscription is still active (not expired)
+      if (subscription.subscriptionEnd < new Date()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Subscription has expired. Please renew.'
+        });
+      }
+
+      // Return subscription details for the mobile app
+      return res.json({
+        success: true,
+        data: {
+          package: subscription.packageName,
+          expiresAt: subscription.subscriptionEnd,
+          customer: subscription.customerName,
+          email: subscription.email,
+          phone: subscription.phone
+        }
+      });
+
+    } catch (error) {
+      console.error('❌ Activation verification error:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to verify activation code'
+      });
+    }
+  }
+);
 
 module.exports = router;

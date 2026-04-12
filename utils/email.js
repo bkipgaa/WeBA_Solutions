@@ -118,6 +118,25 @@ async function sendConfirmationEmail(paymentData) {
     const customerEmail = paymentData.customer?.email || paymentData.email;
     const customerName = paymentData.metadata?.customer_name || paymentData.customerName;
     const packageName = paymentData.metadata?.package_name || paymentData.packageName;
+    const reference = paymentData.reference || paymentData.id;
+
+    // ✅ Fetch subscription details to get serviceType and activationCode
+    let activationCode = null;
+    let serviceType = 'broadband';
+    let subscriptionEnd = null;
+    
+    if (process.env.MONGODB_URI && reference) {
+      try {
+        const subscription = await Subscription.findOne({ reference });
+        if (subscription) {
+          activationCode = subscription.activationCode;
+          serviceType = subscription.serviceType || 'broadband';
+          subscriptionEnd = subscription.subscriptionEnd;
+        }
+      } catch (err) {
+        console.error('Error fetching subscription for email:', err.message);
+      }
+    }
 
     // ✅ FIXED: Proper amount handling
     let amount = paymentData.amount;
@@ -132,35 +151,58 @@ async function sendConfirmationEmail(paymentData) {
                            paymentData.currency === 'EUR' ? '€' : 
                            paymentData.currency === 'GBP' ? '£' : '$';
 
+    // ✅ Build email HTML with activation code section for security packages
+    let activationHtml = '';
+    if (serviceType === 'security' && activationCode) {
+      activationHtml = `
+        <div style="background-color: #e3f2fd; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
+          <h3 style="color: #1976d2; margin-top: 0;">🔐 Your Activation Code</h3>
+          <div style="font-size: 28px; font-weight: bold; font-family: monospace; letter-spacing: 4px; background: white; padding: 15px; border-radius: 8px; border: 2px dashed #1976d2;">
+            ${activationCode}
+          </div>
+          <p style="margin-top: 15px;">
+            Use this code in the <strong>WEBASECURE mobile app</strong> to activate your security subscription.<br>
+            The code is valid until <strong>${new Date(subscriptionEnd).toLocaleDateString()}</strong>.
+          </p>
+        </div>
+      `;
+    }
+
     const mailOptions = {
       from: `"WeBA Solutions" <${process.env.EMAIL_USER}>`,
       to: customerEmail,
-      subject: 'Payment Confirmation - WeBA Solutions',
+      subject: serviceType === 'security' 
+        ? 'Payment Confirmation - WEBASECURE Security Subscription' 
+        : 'Payment Confirmation - WeBA Solutions Broadband',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <div style="background-color: #4CAF50; padding: 20px; text-align: center;">
+          <div style="background-color: ${serviceType === 'security' ? '#1976d2' : '#4CAF50'}; padding: 20px; text-align: center;">
             <h1 style="color: white;">Payment Confirmed!</h1>
           </div>
           
           <div style="padding: 20px;">
             <p>Dear ${customerName},</p>
-            <p>Thank you for your payment. Your subscription has been successfully activated.</p>
+            <p>Thank you for your payment. Your ${serviceType === 'security' ? 'WEBASECURE security' : 'broadband'} subscription has been successfully activated.</p>
             
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <h3>Payment Details:</h3>
               <ul style="list-style: none; padding: 0;">
                 <li><strong>Package:</strong> ${packageName}</li>
                 <li><strong>Amount:</strong> ${currencySymbol} ${formattedAmount}</li>
-                <li><strong>Reference:</strong> ${paymentData.reference}</li>
+                <li><strong>Reference:</strong> ${reference}</li>
                 <li><strong>Payment Method:</strong> ${paymentData.channel || paymentData.paymentMethod || 'card'}</li>
                 <li><strong>Date:</strong> ${new Date(paymentData.paid_at || paymentData.paymentDate).toLocaleString()}</li>
               </ul>
             </div>
             
+            ${activationHtml}
+            
             <div style="background-color: #e8f5e9; padding: 15px; border-radius: 5px;">
               <h3>Next Steps:</h3>
-              <p>Your WiFi service will be activated within 24 hours.</p>
-              <p>A technician will contact you to schedule installation.</p>
+              ${serviceType === 'security' 
+                ? `<p>Download the WEBASECURE app from Google Play or App Store, enter your activation code, and start protecting your devices immediately.</p>`
+                : `<p>Your WiFi service will be activated within 24 hours. A technician will contact you to schedule installation.</p>`
+              }
             </div>
             
             <p style="margin-top: 30px;">
@@ -198,15 +240,31 @@ async function sendAdminNotification(paymentData) {
       amount = amount / 100;
     }
 
+    // Try to fetch subscription details for admin
+    let activationCode = null;
+    let serviceType = null;
+    if (process.env.MONGODB_URI && paymentData.reference) {
+      try {
+        const subscription = await Subscription.findOne({ reference: paymentData.reference });
+        if (subscription) {
+          activationCode = subscription.activationCode;
+          serviceType = subscription.serviceType;
+        }
+      } catch (err) {
+        console.error('Error fetching subscription for admin:', err.message);
+      }
+    }
+
     const mailOptions = {
       from: `"WeBA Solutions" <${process.env.EMAIL_USER}>`,
       to: process.env.ADMIN_EMAIL,
-      subject: '🔔 New Payment Received - WeBA Solutions',
+      subject: `🔔 New ${serviceType === 'security' ? 'SECURITY' : 'BROADBAND'} Payment - WeBA Solutions`,
       html: `
         <div style="font-family: Arial, sans-serif;">
           <h2>New Payment Received</h2>
           
           <ul>
+            <li><strong>Service:</strong> ${serviceType === 'security' ? 'WEBASECURE Security' : 'Broadband Internet'}</li>
             <li><strong>Customer:</strong> ${paymentData.metadata?.customer_name || paymentData.customerName}</li>
             <li><strong>Email:</strong> ${paymentData.customer?.email || paymentData.email}</li>
             <li><strong>Phone:</strong> ${paymentData.metadata?.phone || paymentData.phone}</li>
@@ -217,6 +275,7 @@ async function sendAdminNotification(paymentData) {
             <li><strong>Transaction ID:</strong> ${paymentData.id || paymentData.transactionId}</li>
             <li><strong>Payment Method:</strong> ${paymentData.channel || paymentData.paymentMethod}</li>
             <li><strong>Date:</strong> ${new Date(paymentData.paid_at || paymentData.paymentDate).toLocaleString()}</li>
+            ${activationCode ? `<li><strong>Activation Code:</strong> ${activationCode}</li>` : ''}
           </ul>
         </div>
       `

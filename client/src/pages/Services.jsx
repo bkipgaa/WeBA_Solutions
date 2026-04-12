@@ -13,7 +13,8 @@ const Services = () => {
     { icon: '⚡', title: 'Electrical Installation', description: 'Professional wiring and electrical service', path: '/services/electrical' },
     { icon: '📹', title: 'CCTV Installation', description: 'Advanced security and surveillance systems', path: '/services/cctv' },
     { icon: '☀️', title: 'Solar Installation', description: 'Complete solar power solutions', path: '/services/solar' },
-    { icon: '🔧', title: 'PLC Design & Installation', description: 'Industrial automation and control systems', path: '/services/plc' }
+    { icon: '🔧', title: 'PLC Design & Installation', description: 'Industrial automation and control systems', path: '/services/plc' },
+    { icon: '🔧', title: 'Security', description: 'Smart Internet Security', path: '/services/security' }
   ];
 
   return (

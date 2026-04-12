@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 /**
  * UTILITY HELPER FUNCTIONS
  * ============================================
@@ -5,6 +7,7 @@
  * - Generating unique transaction references
  * - Currency conversion (to/from smallest units)
  * - Data validation and formatting
+ * - Generating activation codes for security subscriptions
  */
 
 // In-memory storage for pending transactions
@@ -26,6 +29,19 @@ const generateReference = (gateway = 'PAY') => {
   
   // Combine gateway, timestamp, and random string
   return `${gateway}_${timestamp}_${random}`;
+};
+
+/**
+ * Generate a unique activation code for security subscriptions
+ * Format: WBSC-XXXX-XXXX-XXXX (12 alphanumeric characters, uppercase)
+ * Example: WBSC-3F8A-9D2E-1B4C
+ * @returns {string} Activation code
+ */
+const generateActivationCode = () => {
+  // Generate 6 random bytes (12 hex characters)
+  const random = crypto.randomBytes(6).toString('hex').toUpperCase();
+  // Format as WBSC-XXXX-XXXX-XXXX
+  return `WBSC-${random.slice(0,4)}-${random.slice(4,8)}-${random.slice(8,12)}`;
 };
 
 /**
@@ -140,6 +156,7 @@ const sanitizePhone = (phone) => {
 
   return phone;
 };
+
 /**
  * Generate random order ID
  * @returns {string} Random order ID
@@ -236,8 +253,6 @@ const updateTransaction = (reference, status, paymentData = null) => {
   return false;
 };
 
-
-
 // Export all functions
 module.exports = {
   // Storage
@@ -246,6 +261,7 @@ module.exports = {
   // Generation functions
   generateReference,
   generateOrderId,
+  generateActivationCode,   // <-- NEW EXPORT
   
   // Currency functions
   convertToSmallestUnit,

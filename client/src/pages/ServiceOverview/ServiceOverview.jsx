@@ -175,8 +175,42 @@ const ServiceOverview = () => {
         { name: 'Full Automation', scope: 'Complete SCADA', price: 'Custom Quote' }
       ],
       color: 'red'
+    },
+
+     // ==================== NEW SECURITY SERVICE ====================
+    security: {
+      id: 'security',
+      name: 'WEBASECURE – Smart Internet Security',
+      icon: '🛡️',
+      tagline: 'Stay Safe. Stay Fast. Stay in Control.',
+      description: 'WEBASECURE is a powerful, affordable internet security solution designed to protect your home, business, and devices. Whether you are browsing, streaming, working, or running a business — WEBASECURE keeps you safe from harmful websites, cyber threats, and unauthorized access.',
+      features: [
+        'Block harmful websites (malware, phishing, scams)',
+        'Protect your family with parental controls',
+        'Secure your Wi-Fi from unknown users',
+        'Monitor and control internet usage',
+        'Enjoy safer, faster, and more reliable browsing',
+        'Simple, affordable, built for everyday users'
+      ],
+      benefits: [
+        'Peace of mind while browsing',
+        'Child-safe internet environment',
+        'Prevent unauthorized Wi-Fi access',
+        'Real-time usage insights',
+        'Protection against cyber threats',
+        'Affordable monthly subscription'
+      ],
+      packages: [
+        { name: 'Starter Shield', price: 'Ksh 1,500/month', description: 'Basic protection for everyday browsing' },
+        { name: 'Home Shield', price: 'Ksh 5,000/month', description: 'Perfect for families' },
+        { name: 'Smart Shield', price: 'Ksh 15,000/month', description: 'Advanced control & visibility' },
+        { name: 'Business Shield', price: 'Ksh 30,000/month', description: 'Reliable protection for your business' },
+        { name: 'Elite Shield', price: 'Ksh 50,000/month', description: 'Full enterprise-grade security' }
+      ],
+      color: 'blue'   // Use blue theme for security
     }
   };
+  
 
   // If specific service ID, show that service, otherwise show all
   const service = serviceId in allServices ? allServices[serviceId] : null;

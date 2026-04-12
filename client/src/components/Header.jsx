@@ -16,7 +16,8 @@ const Header = () => {
     { id: 'electrical', name: 'Electrical Installation', path: '/services/electrical' },
     { id: 'cctv', name: 'CCTV Installation', path: '/services/cctv' },
     { id: 'solar', name: 'Solar Installation', path: '/services/solar' },
-    { id: 'plc', name: 'Networking', path: '/services/plc' }
+    { id: 'plc', name: 'Networking', path: '/services/plc' },
+    { id: 'security', name: 'Security', path: '/services/security' }
   ];
 
   // Effect for handling scroll events
