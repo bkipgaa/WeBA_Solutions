@@ -16,8 +16,8 @@ const Security = () => {
   });
 
   const securityPackages = [
-    { id: 'starter', name: 'Starter Shield', displayName: 'Starter Shield', priceKES: 1500, priceFormatted: 'KSh 1,500', tag: 'Basic', description: 'Safe browsing & malware protection', devices: 'All devices on Wi-Fi' },
-    { id: 'home', name: 'Home Shield', displayName: 'Home Shield', priceKES: 5000, priceFormatted: 'KSh 5,000', tag: 'Family', description: 'Parental controls & safe search', devices: 'Family protection' },
+    { id: 'starter', name: 'Starter Shield', displayName: 'Starter Shield', priceKES: 150, priceFormatted: 'KSh 150', tag: 'Basic', description: 'Safe browsing & malware protection', devices: 'All devices on Wi-Fi' },
+    { id: 'home', name: 'Home Shield', displayName: 'Home Shield', priceKES: 50, priceFormatted: 'KSh 50', tag: 'Family', description: 'Parental controls & safe search', devices: 'Family protection' },
     { id: 'smart', name: 'Smart Shield', displayName: 'Smart Shield', priceKES: 15000, priceFormatted: 'KSh 15,000', tag: 'Advanced', description: 'View devices, block unknown users', devices: 'Smart home ready' },
     { id: 'business', name: 'Business Shield', displayName: 'Business Shield', priceKES: 30000, priceFormatted: 'KSh 30,000', tag: 'Business', description: 'Firewall & intrusion detection', devices: 'SMEs' },
     { id: 'elite', name: 'Elite Shield', displayName: 'Elite Shield', priceKES: 50000, priceFormatted: 'KSh 50,000', tag: 'Enterprise', description: 'Real-time monitoring & SLA', devices: 'Corporates' }
