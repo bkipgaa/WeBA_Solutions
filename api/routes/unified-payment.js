@@ -394,13 +394,21 @@ router.post(
       }
 
     } catch (error) {
-      console.error(`❌ ${gateway} initialization error:`, error.response?.data || error.message);
-      return res.status(500).json({
-        success: false,
-        message: `Failed to initialize ${gateway} payment`,
-        error: process.env.NODE_ENV === 'development' ? error.message : 'Payment initialization failed'
-      });
-    }
+  // Detailed logging for debugging
+  console.error(`❌ ${gateway} initialization error DETAILS:`);
+  console.error('Message:', error.message);
+  console.error('Response data:', error.response?.data);
+  console.error('Response status:', error.response?.status);
+  console.error('Stack:', error.stack);
+  
+  // Return detailed error in development, generic in production
+  return res.status(500).json({
+    success: false,
+    message: `Failed to initialize ${gateway} payment`,
+    error: process.env.NODE_ENV === 'development' ? error.message : 'Payment initialization failed',
+    details: process.env.NODE_ENV === 'development' ? error.response?.data : undefined
+  });
+}
   }
 );
 

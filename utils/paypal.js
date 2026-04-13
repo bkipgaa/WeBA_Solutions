@@ -1,11 +1,10 @@
 const axios = require('axios');
 
 // Determine PayPal API URL based on environment
-// NOTE: PayPal uses different URLs for sandbox vs production
-const PAYPAL_API_URL = process.env.PAYPAL_MODE === 'sandbox' 
-  ? 'https://api-m.sandbox.paypal.com'
-  : 'https://api-m.paypal.com';
-
+// Determine PayPal API URL based on environment
+const PAYPAL_API_URL = process.env.PAYPAL_MODE === 'live' 
+  ? 'https://api-m.paypal.com'          // Live
+  : 'https://api-m.sandbox.paypal.com'; // Sandbox (default)
 /**
  * Get PayPal access token with better error handling
  */

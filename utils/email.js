@@ -12,6 +12,13 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+// Helper to generate activation code
+function generateActivationCode() {
+  const crypto = require('crypto');
+  const random = crypto.randomBytes(6).toString('hex').toUpperCase();
+  return `WBSC-${random.slice(0,4)}-${random.slice(4,8)}-${random.slice(8,12)}`;
+}
+
 async function saveSubscriptionToDatabase(data) {
   try {
     if (!process.env.MONGODB_URI) {
@@ -44,7 +51,13 @@ async function saveSubscriptionToDatabase(data) {
       return subscription;
     }
 
-    // ✅ ONLY create new if doesn't exist
+    // ✅ Determine serviceType and activationCode
+    const securityPackages = ['Starter Shield', 'Home Shield', 'Smart Shield', 'Business Shield', 'Elite Shield'];
+    const isSecurity = securityPackages.includes(data.packageName);
+    const serviceType = isSecurity ? 'security' : 'broadband';
+    const activationCode = isSecurity ? generateActivationCode() : null;
+
+    // ✅ Create new subscription
     subscription = new Subscription({
       reference: data.reference,
       customerName: data.customerName,
@@ -58,12 +71,14 @@ async function saveSubscriptionToDatabase(data) {
       transactionId: data.transactionId,
       paymentMethod: data.paymentMethod,
       paymentGateway: data.paymentGateway,
-      status: data.status
+      status: data.status,
+      serviceType: serviceType,
+      activationCode: activationCode
     });
     await subscription.save();
-    console.log(`✅ Subscription saved: ${data.reference}`);
+    console.log(`✅ Subscription saved: ${data.reference} (${serviceType})`);
 
-    // ✅ Check if transaction already exists before creating
+    // ✅ Create transaction record
     let existingTransaction = await Transaction.findOne({ reference: data.reference });
     if (!existingTransaction) {
       const transaction = new Transaction({
@@ -90,13 +105,10 @@ async function saveSubscriptionToDatabase(data) {
 
     return subscription;
   } catch (error) {
-    // ✅ Handle duplicate key error gracefully
     if (error.code === 11000) {
-      console.log(`ℹ️ Record already exists for: ${data.reference} (duplicate ignored)`);
-      // Try to fetch and return the existing record
+      console.log(`ℹ️ Duplicate key ignored for: ${data.reference}`);
       const existingSubscription = await Subscription.findOne({ reference: data.reference });
       if (existingSubscription) {
-        // Update it just in case
         existingSubscription.status = data.status;
         await existingSubscription.save();
         return existingSubscription;
@@ -120,10 +132,12 @@ async function sendConfirmationEmail(paymentData) {
     const packageName = paymentData.metadata?.package_name || paymentData.packageName;
     const reference = paymentData.reference || paymentData.id;
 
-    // ✅ Fetch subscription details to get serviceType and activationCode
+    // ✅ Fetch subscription details from database
     let activationCode = null;
     let serviceType = 'broadband';
     let subscriptionEnd = null;
+    let dbAmount = null;
+    let dbCurrency = null;
     
     if (process.env.MONGODB_URI && reference) {
       try {
@@ -132,28 +146,54 @@ async function sendConfirmationEmail(paymentData) {
           activationCode = subscription.activationCode;
           serviceType = subscription.serviceType || 'broadband';
           subscriptionEnd = subscription.subscriptionEnd;
+          dbAmount = subscription.amount;      // already in main unit
+          dbCurrency = subscription.currency;
         }
       } catch (err) {
         console.error('Error fetching subscription for email:', err.message);
       }
     }
 
-    // ✅ FIXED: Proper amount handling
-    let amount = paymentData.amount;
-    // If amount is in cents (greater than 1000 for KES), convert to main unit
-    if (amount > 1000 && paymentData.currency === 'KES') {
-      amount = amount / 100;
+    // ✅ Fallback: derive from packageName if DB fetch failed
+    if (serviceType === 'broadband') {
+      const securityPackages = ['Starter Shield', 'Home Shield', 'Smart Shield', 'Business Shield', 'Elite Shield'];
+      if (securityPackages.includes(packageName)) {
+        serviceType = 'security';
+      }
     }
-    // If amount is already in main unit but has decimal, keep as is
+
+    // ✅ AMOUNT HANDLING: prefer database amount (already correct)
+    let amount = dbAmount;
+    let currency = dbCurrency || paymentData.currency || 'KES';
+    
+    if (amount === null) {
+      // Use paymentData.amount and convert from cents if needed
+      amount = paymentData.amount;
+      // PayStack returns amount in cents (e.g., 1000 = 10 KES). Convert if amount >= 100.
+      if (currency === 'KES' && amount >= 100) {
+        amount = amount / 100;
+      }
+      if (currency === 'USD' && amount >= 100) {
+        amount = amount / 100;
+      }
+    }
+    
     const formattedAmount = amount.toLocaleString();
+    const currencySymbol = currency === 'KES' ? 'KSh' : 
+                           currency === 'EUR' ? '€' : 
+                           currency === 'GBP' ? '£' : '$';
 
-    const currencySymbol = paymentData.currency === 'KES' ? 'KSh' : 
-                           paymentData.currency === 'EUR' ? '€' : 
-                           paymentData.currency === 'GBP' ? '£' : '$';
-
-    // ✅ Build email HTML with activation code section for security packages
+    // ✅ Build activation code section for security packages
     let activationHtml = '';
-    if (serviceType === 'security' && activationCode) {
+    if (serviceType === 'security') {
+      // If no activation code from DB, generate one now (fallback)
+      if (!activationCode) {
+        activationCode = generateActivationCode();
+        // Update subscription with this code
+        if (process.env.MONGODB_URI && reference) {
+          await Subscription.updateOne({ reference }, { activationCode });
+        }
+      }
       activationHtml = `
         <div style="background-color: #e3f2fd; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
           <h3 style="color: #1976d2; margin-top: 0;">🔐 Your Activation Code</h3>
@@ -162,7 +202,7 @@ async function sendConfirmationEmail(paymentData) {
           </div>
           <p style="margin-top: 15px;">
             Use this code in the <strong>WEBASECURE mobile app</strong> to activate your security subscription.<br>
-            The code is valid until <strong>${new Date(subscriptionEnd).toLocaleDateString()}</strong>.
+            The code is valid until <strong>${subscriptionEnd ? new Date(subscriptionEnd).toLocaleDateString() : '30 days'}</strong>.
           </p>
         </div>
       `;
@@ -224,7 +264,7 @@ async function sendConfirmationEmail(paymentData) {
 
   } catch (error) {
     console.error('❌ Failed to send email:', error.message);
-    // Don't throw - email failure shouldn't break payment flow
+    // Don't throw – email failure shouldn't break payment flow
   }
 }
 
@@ -235,24 +275,35 @@ async function sendAdminNotification(paymentData) {
       return;
     }
 
-    let amount = paymentData.amount;
-    if (amount > 1000 && paymentData.currency === 'KES') {
-      amount = amount / 100;
-    }
-
-    // Try to fetch subscription details for admin
+    // Fetch subscription details for accurate info
     let activationCode = null;
     let serviceType = null;
+    let dbAmount = null;
+    let dbCurrency = null;
+    
     if (process.env.MONGODB_URI && paymentData.reference) {
       try {
         const subscription = await Subscription.findOne({ reference: paymentData.reference });
         if (subscription) {
           activationCode = subscription.activationCode;
           serviceType = subscription.serviceType;
+          dbAmount = subscription.amount;
+          dbCurrency = subscription.currency;
         }
       } catch (err) {
         console.error('Error fetching subscription for admin:', err.message);
       }
+    }
+
+    let amount = dbAmount || paymentData.amount;
+    let currency = dbCurrency || paymentData.currency || 'KES';
+    
+    // Convert from cents if necessary (fallback)
+    if (!dbAmount && currency === 'KES' && amount >= 100) {
+      amount = amount / 100;
+    }
+    if (!dbAmount && currency === 'USD' && amount >= 100) {
+      amount = amount / 100;
     }
 
     const mailOptions = {
@@ -270,7 +321,7 @@ async function sendAdminNotification(paymentData) {
             <li><strong>Phone:</strong> ${paymentData.metadata?.phone || paymentData.phone}</li>
             <li><strong>Location:</strong> ${paymentData.metadata?.location || paymentData.location}</li>
             <li><strong>Package:</strong> ${paymentData.metadata?.package_name || paymentData.packageName}</li>
-            <li><strong>Amount:</strong> ${paymentData.currency || 'KES'} ${amount}</li>
+            <li><strong>Amount:</strong> ${currency} ${amount.toLocaleString()}</li>
             <li><strong>Reference:</strong> ${paymentData.reference}</li>
             <li><strong>Transaction ID:</strong> ${paymentData.id || paymentData.transactionId}</li>
             <li><strong>Payment Method:</strong> ${paymentData.channel || paymentData.paymentMethod}</li>
